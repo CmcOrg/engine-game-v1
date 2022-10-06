@@ -9,8 +9,8 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>netty-tcp-protobuf</artifactId>
-    <description>netty-tcp-protobuf</description>
+    <artifactId>game-netty-tcp-protobuf</artifactId>
+    <description>game-netty-tcp-protobuf</description>
 
     <dependencies>
 
@@ -20,10 +20,10 @@
             <artifactId>protobuf-java</artifactId>
         </dependency>
 
-        <!-- netty-boot -->
+        <!-- web-netty-boot -->
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>netty-boot</artifactId>
+            <artifactId>web-netty-boot</artifactId>
         </dependency>
 
     </dependencies>
