@@ -28,17 +28,6 @@
                 <version>${project.version}</version>
             </dependency>
 
-            <!-- 其他依赖 ↓ -->
-
-            <!-- netty-boot -->
-            <dependency>
-                <groupId>${project.groupId}</groupId>
-                <artifactId>netty-boot</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-
-            <!-- 其他依赖 ↑ -->
-
         </dependencies>
     </dependencyManagement>
 
