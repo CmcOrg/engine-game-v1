@@ -4,9 +4,6 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <packaging>pom</packaging>
-    <modules>
-        <module>protobuf</module>
-    </modules>
 
     <parent>
         <artifactId>engine-web-v1</artifactId>
@@ -17,9 +14,19 @@
     <artifactId>engine-game-v1</artifactId>
     <description>项目顶级 pom.xml，目的：1 方便打包modules 2 依赖版本控制（所以不要在其他 pom.xml里面，添加带有 version标签的依赖）</description>
 
+    <modules>
+        <module>netty-tcp-protobuf</module>
+    </modules>
+
     <dependencyManagement>
         <dependencies>
 
+            <!-- netty-tcp-protobuf -->
+            <dependency>
+                <groupId>${project.groupId}</groupId>
+                <artifactId>netty-tcp-protobuf</artifactId>
+                <version>${project.version}</version>
+            </dependency>
 
         </dependencies>
     </dependencyManagement>

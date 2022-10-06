@@ -1,0 +1,7 @@
+syntax = "proto3";
+
+option java_package = "com.cmcorg.engine.game.tcp.netty.protobuf.proto";
+
+message SecurityRequest{
+  string code = 1; // 用于校验：是否是合法的连接
+}
