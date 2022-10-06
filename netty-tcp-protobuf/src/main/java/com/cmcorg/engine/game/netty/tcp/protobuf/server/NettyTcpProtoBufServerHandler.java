@@ -168,7 +168,7 @@ public class NettyTcpProtoBufServerHandler extends AbstractNettyServerHandler {
      */
     @Override
     public void exceptionAdvice(Throwable e) {
-        e.printStackTrace(); // 只打印错误信息
+        e.printStackTrace(); // 只打印错误信息，因为：handlerMessage 方法已经处理了
     }
 
     /**
