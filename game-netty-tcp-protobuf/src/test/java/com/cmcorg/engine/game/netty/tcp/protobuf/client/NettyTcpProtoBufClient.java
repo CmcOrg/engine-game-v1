@@ -10,6 +10,7 @@ import cn.hutool.core.util.StrUtil;
 import com.cmcorg.engine.game.netty.tcp.protobuf.model.enums.NettyOtherPathEnum;
 import com.cmcorg.engine.game.netty.tcp.protobuf.proto.BaseProto;
 import com.cmcorg.engine.game.netty.tcp.protobuf.proto.ConnectProto;
+import com.cmcorg.engine.game.netty.tcp.protobuf.server.NettyTcpProtoBufServerHandler;
 import com.cmcorg.engine.web.redisson.enums.RedisKeyEnum;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.Channel;
@@ -45,7 +46,7 @@ public class NettyTcpProtoBufClient {
     }
 
     private static final String IP = "127.0.0.1";
-    private static final int PORT = 20001;
+    private static final int PORT = 11000;
 
     private static final String NODE_ADDRESS_STR =
         "192.168.56.10:6001,192.168.56.10:6002,192.168.56.10:6003,192.168.56.10:6004,192.168.56.10:6005,192.168.56.10:6006";
@@ -140,7 +141,7 @@ public class NettyTcpProtoBufClient {
                         ch.pipeline().addLast(new ProtobufDecoder(BaseProto.BaseResponse.getDefaultInstance()));
                         ch.pipeline().addLast(new ProtobufVarint32LengthFieldPrepender());
                         ch.pipeline().addLast(new ProtobufEncoder());
-                        ch.pipeline().addLast(new NettyTcpProtoBufClientHandler());
+                        ch.pipeline().addLast(new NettyTcpProtoBufServerHandler());
                     }
                 });
             ChannelFuture future = bootstrap.connect(IP, PORT).sync();
