@@ -5,12 +5,10 @@ import ch.qos.logback.classic.Logger;
 import ch.qos.logback.classic.LoggerContext;
 import cn.hutool.core.thread.GlobalThreadPool;
 import cn.hutool.core.thread.ThreadUtil;
-import cn.hutool.core.util.IdUtil;
 import cn.hutool.core.util.StrUtil;
 import com.cmcorg.engine.game.netty.tcp.protobuf.model.enums.NettyOtherPathEnum;
 import com.cmcorg.engine.game.netty.tcp.protobuf.proto.BaseProto;
 import com.cmcorg.engine.game.netty.tcp.protobuf.proto.ConnectProto;
-import com.cmcorg.engine.web.redisson.enums.RedisKeyEnum;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
@@ -25,10 +23,6 @@ import io.netty.handler.codec.protobuf.ProtobufVarint32FrameDecoder;
 import io.netty.handler.codec.protobuf.ProtobufVarint32LengthFieldPrepender;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
-import org.redisson.Redisson;
-import org.redisson.api.RedissonClient;
-import org.redisson.codec.JsonJacksonCodec;
-import org.redisson.config.Config;
 import org.slf4j.LoggerFactory;
 
 import java.util.List;
@@ -55,17 +49,6 @@ public class NettyTcpProtoBufClient {
     public static Channel channel = null;
 
     public static void main(String[] args) {
-
-        String[] nodeAddressArr =
-            StrUtil.splitTrim(NODE_ADDRESS_STR, ",").stream().map(it -> StrUtil.addPrefixIfNot(it, "redis://"))
-                .toArray(String[]::new);
-
-        Config config = new Config();
-        config.useClusterServers().addNodeAddress(nodeAddressArr).setPassword(PASSWORD)
-            .setMasterConnectionMinimumIdleSize(2).setSlaveConnectionMinimumIdleSize(2);
-        config.setCodec(new JsonJacksonCodec()); // 设置为：json序列化，目的：方便看
-
-        RedissonClient redissonClient = Redisson.create(config);
 
         ThreadUtil.execute(NettyTcpProtoBufClient::start);  // 启动客户端
 
@@ -95,10 +78,10 @@ public class NettyTcpProtoBufClient {
                         continue;
                     }
 
-                    if ("se".equals(nextLine)) {
-                        String code = IdUtil.simpleUUID();
-                        redissonClient.getBucket(RedisKeyEnum.PRE_NETTY_TCP_PROTO_BUF_CONNECT_SECURITY_CODE + code)
-                            .set(0L); // 0：admin账号
+                    if (nextLine.startsWith("se ")) {
+
+                        String code = StrUtil.subAfter(nextLine, "se ", false);
+
                         log.info("发送身份认证消息：{}", code);
                         channel.writeAndFlush(
                             BaseProto.BaseRequest.newBuilder().setUri(NettyOtherPathEnum.CONNECT_SECURITY.getUri())
