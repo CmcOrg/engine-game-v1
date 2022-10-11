@@ -10,7 +10,6 @@ import cn.hutool.core.util.StrUtil;
 import com.cmcorg.engine.game.netty.tcp.protobuf.model.enums.NettyOtherPathEnum;
 import com.cmcorg.engine.game.netty.tcp.protobuf.proto.BaseProto;
 import com.cmcorg.engine.game.netty.tcp.protobuf.proto.ConnectProto;
-import com.cmcorg.engine.game.netty.tcp.protobuf.server.NettyTcpProtoBufServerHandler;
 import com.cmcorg.engine.web.redisson.enums.RedisKeyEnum;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.Channel;
@@ -141,7 +140,7 @@ public class NettyTcpProtoBufClient {
                         ch.pipeline().addLast(new ProtobufDecoder(BaseProto.BaseResponse.getDefaultInstance()));
                         ch.pipeline().addLast(new ProtobufVarint32LengthFieldPrepender());
                         ch.pipeline().addLast(new ProtobufEncoder());
-                        ch.pipeline().addLast(new NettyTcpProtoBufServerHandler());
+                        ch.pipeline().addLast(new NettyTcpProtoBufClientHandler());
                     }
                 });
             ChannelFuture future = bootstrap.connect(IP, PORT).sync();
