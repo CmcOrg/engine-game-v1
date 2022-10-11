@@ -16,10 +16,18 @@
 
     <modules>
         <module>game-netty-tcp-protobuf</module>
+        <module>game-socket-server</module>
     </modules>
 
     <dependencyManagement>
         <dependencies>
+
+            <!-- game-socket-server -->
+            <dependency>
+                <groupId>${project.groupId}</groupId>
+                <artifactId>game-socket-server</artifactId>
+                <version>${project.version}</version>
+            </dependency>
 
             <!-- game-netty-tcp-protobuf -->
             <dependency>

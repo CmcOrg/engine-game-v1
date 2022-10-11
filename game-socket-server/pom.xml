@@ -9,27 +9,15 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>game-netty-tcp-protobuf</artifactId>
-    <description>game-netty-tcp-protobuf</description>
+    <artifactId>game-socket-server</artifactId>
+    <description>game-socket-server</description>
 
     <dependencies>
 
-        <!-- game-socket-server -->
+        <!-- web-auth-nacos -->
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>game-socket-server</artifactId>
-        </dependency>
-
-        <!-- protobuf -->
-        <dependency>
-            <groupId>com.google.protobuf</groupId>
-            <artifactId>protobuf-java</artifactId>
-        </dependency>
-
-        <!-- web-netty-boot -->
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>web-netty-boot</artifactId>
+            <artifactId>web-auth-nacos</artifactId>
         </dependency>
 
     </dependencies>
