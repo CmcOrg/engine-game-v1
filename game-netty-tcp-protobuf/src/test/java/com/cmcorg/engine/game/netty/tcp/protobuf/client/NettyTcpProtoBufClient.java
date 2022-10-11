@@ -41,11 +41,6 @@ public class NettyTcpProtoBufClient {
     private static final String IP = "127.0.0.1";
     private static final int PORT = 20001;
 
-    private static final String NODE_ADDRESS_STR =
-        "192.168.56.10:6001,192.168.56.10:6002,192.168.56.10:6003,192.168.56.10:6004,192.168.56.10:6005,192.168.56.10:6006";
-
-    private static final String PASSWORD = "123456";
-
     public static Channel channel = null;
 
     public static void main(String[] args) {
