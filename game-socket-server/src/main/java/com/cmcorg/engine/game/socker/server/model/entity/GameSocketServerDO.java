@@ -29,4 +29,8 @@ public class GameSocketServerDO extends BaseEntity {
     @Schema(description = "当前连接总数")
     private Long currentConnect;
 
+    @TableField(exist = false)
+    @Schema(description = "是否创建新的，当前房间")
+    private Boolean createNewRoomCurrentFlag;
+
 }
