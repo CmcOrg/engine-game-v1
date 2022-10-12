@@ -9,6 +9,9 @@ import lombok.EqualsAndHashCode;
 @Data
 public class GameSocketServerPageDTO extends MyPageDTO {
 
+    @Schema(description = "主键id")
+    private Long id;
+
     @Schema(description = "ip")
     private String ip;
 

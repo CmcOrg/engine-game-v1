@@ -24,7 +24,8 @@ public class GameSocketServerServiceImpl extends ServiceImpl<GameSocketServerMap
     @Override
     public Page<GameSocketServerDO> myPage(GameSocketServerPageDTO dto) {
 
-        return lambdaQuery().like(StrUtil.isNotBlank(dto.getIp()), GameSocketServerDO::getIp, dto.getIp())
+        return lambdaQuery().eq(dto.getId() != null, BaseEntity::getId, dto.getId())
+            .like(StrUtil.isNotBlank(dto.getIp()), GameSocketServerDO::getIp, dto.getIp())
             .eq(dto.getPort() != null, GameSocketServerDO::getPort, dto.getPort())
             .like(StrUtil.isNotBlank(dto.getRemark()), BaseEntity::getRemark, dto.getRemark())
             .orderByDesc(BaseEntity::getUpdateTime).page(dto.getPage(true));
