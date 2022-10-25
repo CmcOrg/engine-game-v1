@@ -609,19 +609,21 @@ public final class BaseProto {
        */
       public Builder setBody(com.google.protobuf.ByteString value) {
         if (value == null) {
-    throw new NullPointerException();
-  }
+          throw new NullPointerException();
+        }
 
         body_ = value;
         onChanged();
         return this;
       }
+
       /**
        * <pre>
        * body
        * </pre>
        *
        * <code>bytes body = 2;</code>
+       *
        * @return This builder for chaining.
        */
       public Builder clearBody() {
@@ -669,10 +671,9 @@ public final class BaseProto {
             } catch (com.google.protobuf.UninitializedMessageException e) {
               throw e.asInvalidProtocolBufferException().setUnfinishedMessage(builder.buildPartial());
             } catch (java.io.IOException e) {
-              throw new com.google.protobuf.InvalidProtocolBufferException(e)
-                  .setUnfinishedMessage(builder.buildPartial());
-            }
-            return builder.buildPartial();
+              throw new com.google.protobuf.InvalidProtocolBufferException(e).setUnfinishedMessage(builder.buildPartial());
+        }
+        return builder.buildPartial();
       }
     };
 
@@ -732,6 +733,7 @@ public final class BaseProto {
      * </pre>
      *
      * <code>int32 code = 3;</code>
+     *
      * @return The code.
      */
     int getCode();
@@ -810,7 +812,6 @@ public final class BaseProto {
      * </pre>
      *
      * <code>string uri = 1;</code>
-     *
      * @return The uri.
      */
     @java.lang.Override
@@ -820,7 +821,7 @@ public final class BaseProto {
         return (java.lang.String) ref;
       } else {
         com.google.protobuf.ByteString bs =
-            (com.google.protobuf.ByteString) ref;
+            (com.google.protobuf.ByteString)ref;
         java.lang.String s = bs.toStringUtf8();
         uri_ = s;
         return s;
@@ -889,16 +890,16 @@ public final class BaseProto {
      * </pre>
      *
      * <code>string msg = 4;</code>
-     *
      * @return The msg.
      */
     @java.lang.Override
     public java.lang.String getMsg() {
       java.lang.Object ref = msg_;
       if (ref instanceof java.lang.String) {
-        return (java.lang.String)ref;
+        return (java.lang.String) ref;
       } else {
-        com.google.protobuf.ByteString bs = (com.google.protobuf.ByteString)ref;
+        com.google.protobuf.ByteString bs =
+            (com.google.protobuf.ByteString)ref;
         java.lang.String s = bs.toStringUtf8();
         msg_ = s;
         return s;
@@ -911,7 +912,6 @@ public final class BaseProto {
      * </pre>
      *
      * <code>string msg = 4;</code>
-     *
      * @return The bytes for msg.
      */
     @java.lang.Override
@@ -919,7 +919,7 @@ public final class BaseProto {
         getMsgBytes() {
       java.lang.Object ref = msg_;
       if (ref instanceof java.lang.String) {
-        com.google.protobuf.ByteString b = com.google.protobuf.ByteString.copyFromUtf8((java.lang.String) ref);
+        com.google.protobuf.ByteString b = com.google.protobuf.ByteString.copyFromUtf8((java.lang.String)ref);
         msg_ = b;
         return b;
       } else {
@@ -1139,7 +1139,8 @@ public final class BaseProto {
       @java.lang.Override
       protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable internalGetFieldAccessorTable() {
         return protobuf.proto.BaseProto.internal_static_BaseResponse_fieldAccessorTable
-            .ensureFieldAccessorsInitialized(protobuf.proto.BaseProto.BaseResponse.class, protobuf.proto.BaseProto.BaseResponse.Builder.class);
+            .ensureFieldAccessorsInitialized(protobuf.proto.BaseProto.BaseResponse.class,
+                protobuf.proto.BaseProto.BaseResponse.Builder.class);
       }
 
       // Construct using protobuf.proto.BaseProto.BaseResponse.newBuilder()
@@ -1147,7 +1148,8 @@ public final class BaseProto {
 
       }
 
-      private Builder(com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+      private Builder(
+          com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
         super(parent);
 
       }
@@ -1350,10 +1352,13 @@ public final class BaseProto {
        * @return The bytes for uri.
        */
       @Override
-      public com.google.protobuf.ByteString getUriBytes() {
+      public com.google.protobuf.ByteString
+          getUriBytes() {
         java.lang.Object ref = uri_;
         if (ref instanceof String) {
-          com.google.protobuf.ByteString b = com.google.protobuf.ByteString.copyFromUtf8((java.lang.String)ref);
+          com.google.protobuf.ByteString b =
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
           uri_ = b;
           return b;
         } else {
@@ -1535,10 +1540,12 @@ public final class BaseProto {
        * @return The bytes for msg.
        */
       @Override
-      public com.google.protobuf.ByteString getMsgBytes() {
+      public com.google.protobuf.ByteString
+          getMsgBytes() {
         java.lang.Object ref = msg_;
         if (ref instanceof String) {
-          com.google.protobuf.ByteString b = com.google.protobuf.ByteString.copyFromUtf8((java.lang.String)ref);
+          com.google.protobuf.ByteString b =
+              com.google.protobuf.ByteString.copyFromUtf8((java.lang.String)ref);
           msg_ = b;
           return b;
         } else {
@@ -1593,7 +1600,7 @@ public final class BaseProto {
        */
       public Builder setMsgBytes(com.google.protobuf.ByteString value) {
         if (value == null) {
-    throw new NullPointerException();
+          throw new NullPointerException();
   }
   checkByteStringIsUtf8(value);
 
