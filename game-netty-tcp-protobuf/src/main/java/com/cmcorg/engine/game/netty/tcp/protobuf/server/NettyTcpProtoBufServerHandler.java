@@ -7,8 +7,6 @@ import cn.hutool.json.JSONUtil;
 import com.cmcorg.engine.game.netty.tcp.protobuf.exception.BaseException;
 import com.cmcorg.engine.game.netty.tcp.protobuf.model.enums.NettyOtherPathEnum;
 import com.cmcorg.engine.game.netty.tcp.protobuf.model.vo.NettyTcpProtoBufVO;
-import com.cmcorg.engine.game.netty.tcp.protobuf.proto.BaseProto;
-import com.cmcorg.engine.game.netty.tcp.protobuf.proto.ConnectProto;
 import com.cmcorg.engine.web.auth.exception.BaseBizCodeEnum;
 import com.cmcorg.engine.web.auth.util.AuthUserUtil;
 import com.cmcorg.engine.web.model.model.constant.LogTopicConstant;
@@ -22,6 +20,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.redisson.api.RBucket;
 import org.redisson.api.RedissonClient;
 import org.springframework.stereotype.Component;
+import protobuf.proto.BaseProto;
+import protobuf.proto.ConnectProto;
 
 import javax.annotation.Resource;
 import java.lang.reflect.Method;

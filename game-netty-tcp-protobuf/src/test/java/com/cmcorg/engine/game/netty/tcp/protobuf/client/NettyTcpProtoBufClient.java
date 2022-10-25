@@ -7,8 +7,6 @@ import cn.hutool.core.thread.GlobalThreadPool;
 import cn.hutool.core.thread.ThreadUtil;
 import cn.hutool.core.util.StrUtil;
 import com.cmcorg.engine.game.netty.tcp.protobuf.model.enums.NettyOtherPathEnum;
-import com.cmcorg.engine.game.netty.tcp.protobuf.proto.BaseProto;
-import com.cmcorg.engine.game.netty.tcp.protobuf.proto.ConnectProto;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
@@ -24,6 +22,8 @@ import io.netty.handler.codec.protobuf.ProtobufVarint32LengthFieldPrepender;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.LoggerFactory;
+import protobuf.proto.BaseProto;
+import protobuf.proto.ConnectProto;
 
 import java.util.List;
 import java.util.Scanner;

@@ -1,10 +1,10 @@
 package com.cmcorg.engine.game.netty.tcp.protobuf.client;
 
-import com.cmcorg.engine.game.netty.tcp.protobuf.proto.BaseProto;
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import lombok.extern.slf4j.Slf4j;
+import protobuf.proto.BaseProto;
 
 @Slf4j
 @ChannelHandler.Sharable

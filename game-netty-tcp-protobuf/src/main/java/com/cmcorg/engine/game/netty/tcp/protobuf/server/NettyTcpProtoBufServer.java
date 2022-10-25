@@ -2,7 +2,6 @@ package com.cmcorg.engine.game.netty.tcp.protobuf.server;
 
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.thread.ThreadUtil;
-import com.cmcorg.engine.game.netty.tcp.protobuf.proto.BaseProto;
 import com.cmcorg.engine.game.socker.server.model.entity.GameSocketServerDO;
 import com.cmcorg.engine.game.socker.server.service.GameSocketServerService;
 import com.cmcorg.engine.web.auth.configuration.BaseConfiguration;
@@ -27,6 +26,7 @@ import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
+import protobuf.proto.BaseProto;
 
 import javax.annotation.Resource;
 
