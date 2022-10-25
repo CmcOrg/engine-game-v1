@@ -358,7 +358,8 @@ public final class BaseProto {
       }
 
       @java.lang.Override
-      public com.google.protobuf.Descriptors.Descriptor getDescriptorForType() {
+      public com.google.protobuf.Descriptors.Descriptor
+          getDescriptorForType() {
         return protobuf.proto.BaseProto.internal_static_BaseRequest_descriptor;
       }
 
@@ -563,14 +564,12 @@ public final class BaseProto {
         onChanged();
         return this;
       }
-
       /**
        * <pre>
        * 路径
        * </pre>
        *
        * <code>string uri = 1;</code>
-       *
        * @param value The bytes for uri to set.
        * @return This builder for chaining.
        */
@@ -599,7 +598,6 @@ public final class BaseProto {
       public com.google.protobuf.ByteString getBody() {
         return body_;
       }
-
       /**
        * <pre>
        * body
@@ -611,21 +609,19 @@ public final class BaseProto {
        */
       public Builder setBody(com.google.protobuf.ByteString value) {
         if (value == null) {
-          throw new NullPointerException();
-        }
+    throw new NullPointerException();
+  }
 
         body_ = value;
         onChanged();
         return this;
       }
-
       /**
        * <pre>
        * body
        * </pre>
        *
        * <code>bytes body = 2;</code>
-       *
        * @return This builder for chaining.
        */
       public Builder clearBody() {
@@ -636,8 +632,7 @@ public final class BaseProto {
       }
 
       @java.lang.Override
-      public final Builder setUnknownFields(
-          final com.google.protobuf.UnknownFieldSet unknownFields) {
+      public final Builder setUnknownFields(final com.google.protobuf.UnknownFieldSet unknownFields) {
         return super.setUnknownFields(unknownFields);
       }
 
@@ -678,7 +673,7 @@ public final class BaseProto {
                   .setUnfinishedMessage(builder.buildPartial());
             }
             return builder.buildPartial();
-          }
+      }
     };
 
     public static com.google.protobuf.Parser<BaseRequest> parser() {
@@ -737,7 +732,6 @@ public final class BaseProto {
      * </pre>
      *
      * <code>int32 code = 3;</code>
-     *
      * @return The code.
      */
     int getCode();
@@ -803,8 +797,8 @@ public final class BaseProto {
     protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
         internalGetFieldAccessorTable() {
       return protobuf.proto.BaseProto.internal_static_BaseResponse_fieldAccessorTable
-          .ensureFieldAccessorsInitialized(protobuf.proto.BaseProto.BaseResponse.class,
-              protobuf.proto.BaseProto.BaseResponse.Builder.class);
+          .ensureFieldAccessorsInitialized(
+              protobuf.proto.BaseProto.BaseResponse.class, protobuf.proto.BaseProto.BaseResponse.Builder.class);
     }
 
     public static final int URI_FIELD_NUMBER = 1;
@@ -816,15 +810,17 @@ public final class BaseProto {
      * </pre>
      *
      * <code>string uri = 1;</code>
+     *
      * @return The uri.
      */
     @java.lang.Override
     public java.lang.String getUri() {
       java.lang.Object ref = uri_;
       if (ref instanceof java.lang.String) {
-        return (java.lang.String)ref;
+        return (java.lang.String) ref;
       } else {
-        com.google.protobuf.ByteString bs = (com.google.protobuf.ByteString)ref;
+        com.google.protobuf.ByteString bs =
+            (com.google.protobuf.ByteString) ref;
         java.lang.String s = bs.toStringUtf8();
         uri_ = s;
         return s;
@@ -893,6 +889,7 @@ public final class BaseProto {
      * </pre>
      *
      * <code>string msg = 4;</code>
+     *
      * @return The msg.
      */
     @java.lang.Override
@@ -914,22 +911,23 @@ public final class BaseProto {
      * </pre>
      *
      * <code>string msg = 4;</code>
+     *
      * @return The bytes for msg.
      */
     @java.lang.Override
-    public com.google.protobuf.ByteString getMsgBytes() {
+    public com.google.protobuf.ByteString
+        getMsgBytes() {
       java.lang.Object ref = msg_;
       if (ref instanceof java.lang.String) {
-        com.google.protobuf.ByteString b = com.google.protobuf.ByteString.copyFromUtf8((java.lang.String)ref);
+        com.google.protobuf.ByteString b = com.google.protobuf.ByteString.copyFromUtf8((java.lang.String) ref);
         msg_ = b;
         return b;
       } else {
-        return (com.google.protobuf.ByteString)ref;
+        return (com.google.protobuf.ByteString) ref;
       }
     }
 
     private byte memoizedIsInitialized = -1;
-
     @java.lang.Override
     public final boolean isInitialized() {
       byte isInitialized = memoizedIsInitialized;
@@ -1010,7 +1008,8 @@ public final class BaseProto {
           != other.getCode()) {
         return false;
       }
-      if (!getMsg().equals(other.getMsg())) {
+      if (!getMsg()
+          .equals(other.getMsg())) {
         return false;
       }
       if (!getUnknownFields().equals(other.getUnknownFields())) {
@@ -1099,7 +1098,8 @@ public final class BaseProto {
 
     public static protobuf.proto.BaseProto.BaseResponse parseFrom(com.google.protobuf.CodedInputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry) throws java.io.IOException {
-      return com.google.protobuf.GeneratedMessageV3.parseWithIOException(PARSER, input, extensionRegistry);
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input, extensionRegistry);
     }
 
     @java.lang.Override
@@ -1138,8 +1138,8 @@ public final class BaseProto {
 
       @java.lang.Override
       protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable internalGetFieldAccessorTable() {
-        return protobuf.proto.BaseProto.internal_static_BaseResponse_fieldAccessorTable.ensureFieldAccessorsInitialized(
-            protobuf.proto.BaseProto.BaseResponse.class, protobuf.proto.BaseProto.BaseResponse.Builder.class);
+        return protobuf.proto.BaseProto.internal_static_BaseResponse_fieldAccessorTable
+            .ensureFieldAccessorsInitialized(protobuf.proto.BaseProto.BaseResponse.class, protobuf.proto.BaseProto.BaseResponse.Builder.class);
       }
 
       // Construct using protobuf.proto.BaseProto.BaseResponse.newBuilder()
@@ -1151,7 +1151,6 @@ public final class BaseProto {
         super(parent);
 
       }
-
       @java.lang.Override
       public Builder clear() {
         super.clear();
@@ -1167,7 +1166,8 @@ public final class BaseProto {
       }
 
       @java.lang.Override
-      public com.google.protobuf.Descriptors.Descriptor getDescriptorForType() {
+      public com.google.protobuf.Descriptors.Descriptor
+          getDescriptorForType() {
         return protobuf.proto.BaseProto.internal_static_BaseResponse_descriptor;
       }
 
@@ -1223,7 +1223,8 @@ public final class BaseProto {
       }
 
       @java.lang.Override
-      public Builder addRepeatedField(com.google.protobuf.Descriptors.FieldDescriptor field, java.lang.Object value) {
+      public Builder addRepeatedField(com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
         return super.addRepeatedField(field, value);
       }
 
@@ -1368,23 +1369,22 @@ public final class BaseProto {
        * @param value The uri to set.
        * @return This builder for chaining.
        */
-      public Builder setUri(java.lang.String value) {
+      public Builder setUri(
+          java.lang.String value) {
         if (value == null) {
-          throw new NullPointerException();
-        }
+    throw new NullPointerException();
+  }
 
         uri_ = value;
         onChanged();
         return this;
       }
-
       /**
        * <pre>
        * 路径
        * </pre>
        *
        * <code>string uri = 1;</code>
-       *
        * @return This builder for chaining.
        */
       public Builder clearUri() {
@@ -1415,7 +1415,6 @@ public final class BaseProto {
       }
 
       private com.google.protobuf.ByteString data_ = com.google.protobuf.ByteString.EMPTY;
-
       /**
        * <pre>
        * 数据
@@ -1512,7 +1511,6 @@ public final class BaseProto {
        * </pre>
        *
        * <code>string msg = 4;</code>
-       *
        * @return The msg.
        */
       @Override
@@ -1534,15 +1532,13 @@ public final class BaseProto {
        * </pre>
        *
        * <code>string msg = 4;</code>
-       *
        * @return The bytes for msg.
        */
       @Override
       public com.google.protobuf.ByteString getMsgBytes() {
         java.lang.Object ref = msg_;
         if (ref instanceof String) {
-          com.google.protobuf.ByteString b = com.google.protobuf.ByteString.copyFromUtf8(
-                  (java.lang.String) ref);
+          com.google.protobuf.ByteString b = com.google.protobuf.ByteString.copyFromUtf8((java.lang.String)ref);
           msg_ = b;
           return b;
         } else {
@@ -1558,7 +1554,8 @@ public final class BaseProto {
        * @param value The msg to set.
        * @return This builder for chaining.
        */
-      public Builder setMsg(java.lang.String value) {
+      public Builder setMsg(
+          java.lang.String value) {
         if (value == null) {
           throw new NullPointerException();
         }
@@ -1590,14 +1587,15 @@ public final class BaseProto {
        * </pre>
        *
        * <code>string msg = 4;</code>
+       *
        * @param value The bytes for msg to set.
        * @return This builder for chaining.
        */
       public Builder setMsgBytes(com.google.protobuf.ByteString value) {
         if (value == null) {
-          throw new NullPointerException();
-        }
-        checkByteStringIsUtf8(value);
+    throw new NullPointerException();
+  }
+  checkByteStringIsUtf8(value);
 
         msg_ = value;
         onChanged();
