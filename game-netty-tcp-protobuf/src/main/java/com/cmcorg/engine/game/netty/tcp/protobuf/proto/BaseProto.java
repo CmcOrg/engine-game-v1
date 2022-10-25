@@ -82,13 +82,14 @@ public final class BaseProto {
     }
 
     public static final com.google.protobuf.Descriptors.Descriptor getDescriptor() {
-      return BaseProto.internal_static_BaseRequest_descriptor;
+      return com.cmcorg.engine.game.netty.tcp.protobuf.proto.BaseProto.internal_static_BaseRequest_descriptor;
     }
 
     @java.lang.Override
     protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable internalGetFieldAccessorTable() {
-      return BaseProto.internal_static_BaseRequest_fieldAccessorTable
-          .ensureFieldAccessorsInitialized(BaseProto.BaseRequest.class, BaseProto.BaseRequest.Builder.class);
+      return com.cmcorg.engine.game.netty.tcp.protobuf.proto.BaseProto.internal_static_BaseRequest_fieldAccessorTable
+          .ensureFieldAccessorsInitialized(com.cmcorg.engine.game.netty.tcp.protobuf.proto.BaseProto.BaseRequest.class,
+              com.cmcorg.engine.game.netty.tcp.protobuf.proto.BaseProto.BaseRequest.Builder.class);
     }
 
     public static final int URI_FIELD_NUMBER = 1;
@@ -205,10 +206,11 @@ public final class BaseProto {
       if (obj == this) {
         return true;
       }
-      if (!(obj instanceof BaseProto.BaseRequest)) {
+      if (!(obj instanceof com.cmcorg.engine.game.netty.tcp.protobuf.proto.BaseProto.BaseRequest)) {
         return super.equals(obj);
       }
-      BaseProto.BaseRequest other = (BaseProto.BaseRequest)obj;
+      com.cmcorg.engine.game.netty.tcp.protobuf.proto.BaseProto.BaseRequest other =
+          (com.cmcorg.engine.game.netty.tcp.protobuf.proto.BaseProto.BaseRequest)obj;
 
       if (!getUri().equals(other.getUri())) {
         return false;
@@ -238,64 +240,69 @@ public final class BaseProto {
       return hash;
     }
 
-    public static BaseProto.BaseRequest parseFrom(java.nio.ByteBuffer data)
+    public static com.cmcorg.engine.game.netty.tcp.protobuf.proto.BaseProto.BaseRequest parseFrom(
+        java.nio.ByteBuffer data) throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+
+    public static com.cmcorg.engine.game.netty.tcp.protobuf.proto.BaseProto.BaseRequest parseFrom(
+        java.nio.ByteBuffer data, com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+
+    public static com.cmcorg.engine.game.netty.tcp.protobuf.proto.BaseProto.BaseRequest parseFrom(
+        com.google.protobuf.ByteString data) throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+
+    public static com.cmcorg.engine.game.netty.tcp.protobuf.proto.BaseProto.BaseRequest parseFrom(
+        com.google.protobuf.ByteString data, com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+
+    public static com.cmcorg.engine.game.netty.tcp.protobuf.proto.BaseProto.BaseRequest parseFrom(byte[] data)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data);
     }
 
-    public static BaseProto.BaseRequest parseFrom(java.nio.ByteBuffer data,
+    public static com.cmcorg.engine.game.netty.tcp.protobuf.proto.BaseProto.BaseRequest parseFrom(byte[] data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data, extensionRegistry);
     }
 
-    public static BaseProto.BaseRequest parseFrom(com.google.protobuf.ByteString data)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      return PARSER.parseFrom(data);
-    }
-
-    public static BaseProto.BaseRequest parseFrom(com.google.protobuf.ByteString data,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      return PARSER.parseFrom(data, extensionRegistry);
-    }
-
-    public static BaseProto.BaseRequest parseFrom(byte[] data)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      return PARSER.parseFrom(data);
-    }
-
-    public static BaseProto.BaseRequest parseFrom(byte[] data,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      return PARSER.parseFrom(data, extensionRegistry);
-    }
-
-    public static BaseProto.BaseRequest parseFrom(java.io.InputStream input) throws java.io.IOException {
+    public static com.cmcorg.engine.game.netty.tcp.protobuf.proto.BaseProto.BaseRequest parseFrom(
+        java.io.InputStream input) throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3.parseWithIOException(PARSER, input);
     }
 
-    public static BaseProto.BaseRequest parseFrom(java.io.InputStream input,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry) throws java.io.IOException {
+    public static com.cmcorg.engine.game.netty.tcp.protobuf.proto.BaseProto.BaseRequest parseFrom(
+        java.io.InputStream input, com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3.parseWithIOException(PARSER, input, extensionRegistry);
     }
 
-    public static BaseProto.BaseRequest parseDelimitedFrom(java.io.InputStream input) throws java.io.IOException {
+    public static com.cmcorg.engine.game.netty.tcp.protobuf.proto.BaseProto.BaseRequest parseDelimitedFrom(
+        java.io.InputStream input) throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3.parseDelimitedWithIOException(PARSER, input);
     }
 
-    public static BaseProto.BaseRequest parseDelimitedFrom(java.io.InputStream input,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry) throws java.io.IOException {
+    public static com.cmcorg.engine.game.netty.tcp.protobuf.proto.BaseProto.BaseRequest parseDelimitedFrom(
+        java.io.InputStream input, com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3.parseDelimitedWithIOException(PARSER, input, extensionRegistry);
     }
 
-    public static BaseProto.BaseRequest parseFrom(com.google.protobuf.CodedInputStream input)
-        throws java.io.IOException {
+    public static com.cmcorg.engine.game.netty.tcp.protobuf.proto.BaseProto.BaseRequest parseFrom(
+        com.google.protobuf.CodedInputStream input) throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3.parseWithIOException(PARSER, input);
     }
 
-    public static BaseProto.BaseRequest parseFrom(com.google.protobuf.CodedInputStream input,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry) throws java.io.IOException {
+    public static com.cmcorg.engine.game.netty.tcp.protobuf.proto.BaseProto.BaseRequest parseFrom(
+        com.google.protobuf.CodedInputStream input, com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3.parseWithIOException(PARSER, input, extensionRegistry);
     }
 
@@ -308,7 +315,7 @@ public final class BaseProto {
       return DEFAULT_INSTANCE.toBuilder();
     }
 
-    public static Builder newBuilder(BaseProto.BaseRequest prototype) {
+    public static Builder newBuilder(com.cmcorg.engine.game.netty.tcp.protobuf.proto.BaseProto.BaseRequest prototype) {
       return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
     }
 
@@ -328,18 +335,20 @@ public final class BaseProto {
      */
     public static final class Builder extends com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
         // @@protoc_insertion_point(builder_implements:BaseRequest)
-        BaseProto.BaseRequestOrBuilder {
+        com.cmcorg.engine.game.netty.tcp.protobuf.proto.BaseProto.BaseRequestOrBuilder {
       public static final com.google.protobuf.Descriptors.Descriptor getDescriptor() {
-        return BaseProto.internal_static_BaseRequest_descriptor;
+        return com.cmcorg.engine.game.netty.tcp.protobuf.proto.BaseProto.internal_static_BaseRequest_descriptor;
       }
 
       @java.lang.Override
       protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable internalGetFieldAccessorTable() {
-        return BaseProto.internal_static_BaseRequest_fieldAccessorTable
-            .ensureFieldAccessorsInitialized(BaseProto.BaseRequest.class, BaseProto.BaseRequest.Builder.class);
+        return com.cmcorg.engine.game.netty.tcp.protobuf.proto.BaseProto.internal_static_BaseRequest_fieldAccessorTable
+            .ensureFieldAccessorsInitialized(
+                com.cmcorg.engine.game.netty.tcp.protobuf.proto.BaseProto.BaseRequest.class,
+                com.cmcorg.engine.game.netty.tcp.protobuf.proto.BaseProto.BaseRequest.Builder.class);
       }
 
-      // Construct using com.cmcorg.engine.game.tcp.netty.protobuf.proto.BaseProto.BaseRequest.newBuilder()
+      // Construct using com.cmcorg.engine.game.netty.tcp.protobuf.proto.BaseProto.BaseRequest.newBuilder()
       private Builder() {
 
       }
@@ -361,17 +370,17 @@ public final class BaseProto {
 
       @java.lang.Override
       public com.google.protobuf.Descriptors.Descriptor getDescriptorForType() {
-        return BaseProto.internal_static_BaseRequest_descriptor;
+        return com.cmcorg.engine.game.netty.tcp.protobuf.proto.BaseProto.internal_static_BaseRequest_descriptor;
       }
 
       @java.lang.Override
-      public BaseProto.BaseRequest getDefaultInstanceForType() {
-        return BaseProto.BaseRequest.getDefaultInstance();
+      public com.cmcorg.engine.game.netty.tcp.protobuf.proto.BaseProto.BaseRequest getDefaultInstanceForType() {
+        return com.cmcorg.engine.game.netty.tcp.protobuf.proto.BaseProto.BaseRequest.getDefaultInstance();
       }
 
       @java.lang.Override
-      public BaseProto.BaseRequest build() {
-        BaseProto.BaseRequest result = buildPartial();
+      public com.cmcorg.engine.game.netty.tcp.protobuf.proto.BaseProto.BaseRequest build() {
+        com.cmcorg.engine.game.netty.tcp.protobuf.proto.BaseProto.BaseRequest result = buildPartial();
         if (!result.isInitialized()) {
           throw newUninitializedMessageException(result);
         }
@@ -379,8 +388,9 @@ public final class BaseProto {
       }
 
       @java.lang.Override
-      public BaseProto.BaseRequest buildPartial() {
-        BaseProto.BaseRequest result = new BaseProto.BaseRequest(this);
+      public com.cmcorg.engine.game.netty.tcp.protobuf.proto.BaseProto.BaseRequest buildPartial() {
+        com.cmcorg.engine.game.netty.tcp.protobuf.proto.BaseProto.BaseRequest result =
+            new com.cmcorg.engine.game.netty.tcp.protobuf.proto.BaseProto.BaseRequest(this);
         result.uri_ = uri_;
         result.body_ = body_;
         onBuilt();
@@ -420,16 +430,16 @@ public final class BaseProto {
 
       @java.lang.Override
       public Builder mergeFrom(com.google.protobuf.Message other) {
-        if (other instanceof BaseProto.BaseRequest) {
-          return mergeFrom((BaseProto.BaseRequest)other);
+        if (other instanceof com.cmcorg.engine.game.netty.tcp.protobuf.proto.BaseProto.BaseRequest) {
+          return mergeFrom((com.cmcorg.engine.game.netty.tcp.protobuf.proto.BaseProto.BaseRequest)other);
         } else {
           super.mergeFrom(other);
           return this;
         }
       }
 
-      public Builder mergeFrom(BaseProto.BaseRequest other) {
-        if (other == BaseProto.BaseRequest.getDefaultInstance()) {
+      public Builder mergeFrom(com.cmcorg.engine.game.netty.tcp.protobuf.proto.BaseProto.BaseRequest other) {
+        if (other == com.cmcorg.engine.game.netty.tcp.protobuf.proto.BaseProto.BaseRequest.getDefaultInstance()) {
           return this;
         }
         if (!other.getUri().isEmpty()) {
@@ -657,13 +667,13 @@ public final class BaseProto {
     }
 
     // @@protoc_insertion_point(class_scope:BaseRequest)
-    private static final BaseProto.BaseRequest DEFAULT_INSTANCE;
+    private static final com.cmcorg.engine.game.netty.tcp.protobuf.proto.BaseProto.BaseRequest DEFAULT_INSTANCE;
 
     static {
-      DEFAULT_INSTANCE = new BaseProto.BaseRequest();
+      DEFAULT_INSTANCE = new com.cmcorg.engine.game.netty.tcp.protobuf.proto.BaseProto.BaseRequest();
     }
 
-    public static BaseProto.BaseRequest getDefaultInstance() {
+    public static com.cmcorg.engine.game.netty.tcp.protobuf.proto.BaseProto.BaseRequest getDefaultInstance() {
       return DEFAULT_INSTANCE;
     }
 
@@ -698,7 +708,7 @@ public final class BaseProto {
     }
 
     @java.lang.Override
-    public BaseProto.BaseRequest getDefaultInstanceForType() {
+    public com.cmcorg.engine.game.netty.tcp.protobuf.proto.BaseProto.BaseRequest getDefaultInstanceForType() {
       return DEFAULT_INSTANCE;
     }
 
@@ -806,13 +816,14 @@ public final class BaseProto {
     }
 
     public static final com.google.protobuf.Descriptors.Descriptor getDescriptor() {
-      return BaseProto.internal_static_BaseResponse_descriptor;
+      return com.cmcorg.engine.game.netty.tcp.protobuf.proto.BaseProto.internal_static_BaseResponse_descriptor;
     }
 
     @java.lang.Override
     protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable internalGetFieldAccessorTable() {
-      return BaseProto.internal_static_BaseResponse_fieldAccessorTable
-          .ensureFieldAccessorsInitialized(BaseProto.BaseResponse.class, BaseProto.BaseResponse.Builder.class);
+      return com.cmcorg.engine.game.netty.tcp.protobuf.proto.BaseProto.internal_static_BaseResponse_fieldAccessorTable
+          .ensureFieldAccessorsInitialized(com.cmcorg.engine.game.netty.tcp.protobuf.proto.BaseProto.BaseResponse.class,
+              com.cmcorg.engine.game.netty.tcp.protobuf.proto.BaseProto.BaseResponse.Builder.class);
     }
 
     public static final int URI_FIELD_NUMBER = 1;
@@ -1004,10 +1015,11 @@ public final class BaseProto {
       if (obj == this) {
         return true;
       }
-      if (!(obj instanceof BaseProto.BaseResponse)) {
+      if (!(obj instanceof com.cmcorg.engine.game.netty.tcp.protobuf.proto.BaseProto.BaseResponse)) {
         return super.equals(obj);
       }
-      BaseProto.BaseResponse other = (BaseProto.BaseResponse)obj;
+      com.cmcorg.engine.game.netty.tcp.protobuf.proto.BaseProto.BaseResponse other =
+          (com.cmcorg.engine.game.netty.tcp.protobuf.proto.BaseProto.BaseResponse)obj;
 
       if (!getUri().equals(other.getUri())) {
         return false;
@@ -1047,64 +1059,69 @@ public final class BaseProto {
       return hash;
     }
 
-    public static BaseProto.BaseResponse parseFrom(java.nio.ByteBuffer data)
+    public static com.cmcorg.engine.game.netty.tcp.protobuf.proto.BaseProto.BaseResponse parseFrom(
+        java.nio.ByteBuffer data) throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+
+    public static com.cmcorg.engine.game.netty.tcp.protobuf.proto.BaseProto.BaseResponse parseFrom(
+        java.nio.ByteBuffer data, com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+
+    public static com.cmcorg.engine.game.netty.tcp.protobuf.proto.BaseProto.BaseResponse parseFrom(
+        com.google.protobuf.ByteString data) throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+
+    public static com.cmcorg.engine.game.netty.tcp.protobuf.proto.BaseProto.BaseResponse parseFrom(
+        com.google.protobuf.ByteString data, com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+
+    public static com.cmcorg.engine.game.netty.tcp.protobuf.proto.BaseProto.BaseResponse parseFrom(byte[] data)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data);
     }
 
-    public static BaseProto.BaseResponse parseFrom(java.nio.ByteBuffer data,
+    public static com.cmcorg.engine.game.netty.tcp.protobuf.proto.BaseProto.BaseResponse parseFrom(byte[] data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data, extensionRegistry);
     }
 
-    public static BaseProto.BaseResponse parseFrom(com.google.protobuf.ByteString data)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      return PARSER.parseFrom(data);
-    }
-
-    public static BaseProto.BaseResponse parseFrom(com.google.protobuf.ByteString data,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      return PARSER.parseFrom(data, extensionRegistry);
-    }
-
-    public static BaseProto.BaseResponse parseFrom(byte[] data)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      return PARSER.parseFrom(data);
-    }
-
-    public static BaseProto.BaseResponse parseFrom(byte[] data,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      return PARSER.parseFrom(data, extensionRegistry);
-    }
-
-    public static BaseProto.BaseResponse parseFrom(java.io.InputStream input) throws java.io.IOException {
+    public static com.cmcorg.engine.game.netty.tcp.protobuf.proto.BaseProto.BaseResponse parseFrom(
+        java.io.InputStream input) throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3.parseWithIOException(PARSER, input);
     }
 
-    public static BaseProto.BaseResponse parseFrom(java.io.InputStream input,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry) throws java.io.IOException {
+    public static com.cmcorg.engine.game.netty.tcp.protobuf.proto.BaseProto.BaseResponse parseFrom(
+        java.io.InputStream input, com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3.parseWithIOException(PARSER, input, extensionRegistry);
     }
 
-    public static BaseProto.BaseResponse parseDelimitedFrom(java.io.InputStream input) throws java.io.IOException {
+    public static com.cmcorg.engine.game.netty.tcp.protobuf.proto.BaseProto.BaseResponse parseDelimitedFrom(
+        java.io.InputStream input) throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3.parseDelimitedWithIOException(PARSER, input);
     }
 
-    public static BaseProto.BaseResponse parseDelimitedFrom(java.io.InputStream input,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry) throws java.io.IOException {
+    public static com.cmcorg.engine.game.netty.tcp.protobuf.proto.BaseProto.BaseResponse parseDelimitedFrom(
+        java.io.InputStream input, com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3.parseDelimitedWithIOException(PARSER, input, extensionRegistry);
     }
 
-    public static BaseProto.BaseResponse parseFrom(com.google.protobuf.CodedInputStream input)
-        throws java.io.IOException {
+    public static com.cmcorg.engine.game.netty.tcp.protobuf.proto.BaseProto.BaseResponse parseFrom(
+        com.google.protobuf.CodedInputStream input) throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3.parseWithIOException(PARSER, input);
     }
 
-    public static BaseProto.BaseResponse parseFrom(com.google.protobuf.CodedInputStream input,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry) throws java.io.IOException {
+    public static com.cmcorg.engine.game.netty.tcp.protobuf.proto.BaseProto.BaseResponse parseFrom(
+        com.google.protobuf.CodedInputStream input, com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3.parseWithIOException(PARSER, input, extensionRegistry);
     }
 
@@ -1117,7 +1134,7 @@ public final class BaseProto {
       return DEFAULT_INSTANCE.toBuilder();
     }
 
-    public static Builder newBuilder(BaseProto.BaseResponse prototype) {
+    public static Builder newBuilder(com.cmcorg.engine.game.netty.tcp.protobuf.proto.BaseProto.BaseResponse prototype) {
       return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
     }
 
@@ -1137,18 +1154,20 @@ public final class BaseProto {
      */
     public static final class Builder extends com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
         // @@protoc_insertion_point(builder_implements:BaseResponse)
-        BaseProto.BaseResponseOrBuilder {
+        com.cmcorg.engine.game.netty.tcp.protobuf.proto.BaseProto.BaseResponseOrBuilder {
       public static final com.google.protobuf.Descriptors.Descriptor getDescriptor() {
-        return BaseProto.internal_static_BaseResponse_descriptor;
+        return com.cmcorg.engine.game.netty.tcp.protobuf.proto.BaseProto.internal_static_BaseResponse_descriptor;
       }
 
       @java.lang.Override
       protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable internalGetFieldAccessorTable() {
-        return BaseProto.internal_static_BaseResponse_fieldAccessorTable
-            .ensureFieldAccessorsInitialized(BaseProto.BaseResponse.class, BaseProto.BaseResponse.Builder.class);
+        return com.cmcorg.engine.game.netty.tcp.protobuf.proto.BaseProto.internal_static_BaseResponse_fieldAccessorTable
+            .ensureFieldAccessorsInitialized(
+                com.cmcorg.engine.game.netty.tcp.protobuf.proto.BaseProto.BaseResponse.class,
+                com.cmcorg.engine.game.netty.tcp.protobuf.proto.BaseProto.BaseResponse.Builder.class);
       }
 
-      // Construct using com.cmcorg.engine.game.tcp.netty.protobuf.proto.BaseProto.BaseResponse.newBuilder()
+      // Construct using com.cmcorg.engine.game.netty.tcp.protobuf.proto.BaseProto.BaseResponse.newBuilder()
       private Builder() {
 
       }
@@ -1174,17 +1193,17 @@ public final class BaseProto {
 
       @java.lang.Override
       public com.google.protobuf.Descriptors.Descriptor getDescriptorForType() {
-        return BaseProto.internal_static_BaseResponse_descriptor;
+        return com.cmcorg.engine.game.netty.tcp.protobuf.proto.BaseProto.internal_static_BaseResponse_descriptor;
       }
 
       @java.lang.Override
-      public BaseProto.BaseResponse getDefaultInstanceForType() {
-        return BaseProto.BaseResponse.getDefaultInstance();
+      public com.cmcorg.engine.game.netty.tcp.protobuf.proto.BaseProto.BaseResponse getDefaultInstanceForType() {
+        return com.cmcorg.engine.game.netty.tcp.protobuf.proto.BaseProto.BaseResponse.getDefaultInstance();
       }
 
       @java.lang.Override
-      public BaseProto.BaseResponse build() {
-        BaseProto.BaseResponse result = buildPartial();
+      public com.cmcorg.engine.game.netty.tcp.protobuf.proto.BaseProto.BaseResponse build() {
+        com.cmcorg.engine.game.netty.tcp.protobuf.proto.BaseProto.BaseResponse result = buildPartial();
         if (!result.isInitialized()) {
           throw newUninitializedMessageException(result);
         }
@@ -1192,8 +1211,9 @@ public final class BaseProto {
       }
 
       @java.lang.Override
-      public BaseProto.BaseResponse buildPartial() {
-        BaseProto.BaseResponse result = new BaseProto.BaseResponse(this);
+      public com.cmcorg.engine.game.netty.tcp.protobuf.proto.BaseProto.BaseResponse buildPartial() {
+        com.cmcorg.engine.game.netty.tcp.protobuf.proto.BaseProto.BaseResponse result =
+            new com.cmcorg.engine.game.netty.tcp.protobuf.proto.BaseProto.BaseResponse(this);
         result.uri_ = uri_;
         result.data_ = data_;
         result.code_ = code_;
@@ -1235,16 +1255,16 @@ public final class BaseProto {
 
       @java.lang.Override
       public Builder mergeFrom(com.google.protobuf.Message other) {
-        if (other instanceof BaseProto.BaseResponse) {
-          return mergeFrom((BaseProto.BaseResponse)other);
+        if (other instanceof com.cmcorg.engine.game.netty.tcp.protobuf.proto.BaseProto.BaseResponse) {
+          return mergeFrom((com.cmcorg.engine.game.netty.tcp.protobuf.proto.BaseProto.BaseResponse)other);
         } else {
           super.mergeFrom(other);
           return this;
         }
       }
 
-      public Builder mergeFrom(BaseProto.BaseResponse other) {
-        if (other == BaseProto.BaseResponse.getDefaultInstance()) {
+      public Builder mergeFrom(com.cmcorg.engine.game.netty.tcp.protobuf.proto.BaseProto.BaseResponse other) {
+        if (other == com.cmcorg.engine.game.netty.tcp.protobuf.proto.BaseProto.BaseResponse.getDefaultInstance()) {
           return this;
         }
         if (!other.getUri().isEmpty()) {
@@ -1640,13 +1660,13 @@ public final class BaseProto {
     }
 
     // @@protoc_insertion_point(class_scope:BaseResponse)
-    private static final BaseProto.BaseResponse DEFAULT_INSTANCE;
+    private static final com.cmcorg.engine.game.netty.tcp.protobuf.proto.BaseProto.BaseResponse DEFAULT_INSTANCE;
 
     static {
-      DEFAULT_INSTANCE = new BaseProto.BaseResponse();
+      DEFAULT_INSTANCE = new com.cmcorg.engine.game.netty.tcp.protobuf.proto.BaseProto.BaseResponse();
     }
 
-    public static BaseProto.BaseResponse getDefaultInstance() {
+    public static com.cmcorg.engine.game.netty.tcp.protobuf.proto.BaseProto.BaseResponse getDefaultInstance() {
       return DEFAULT_INSTANCE;
     }
 
@@ -1681,7 +1701,7 @@ public final class BaseProto {
     }
 
     @java.lang.Override
-    public BaseProto.BaseResponse getDefaultInstanceForType() {
+    public com.cmcorg.engine.game.netty.tcp.protobuf.proto.BaseProto.BaseResponse getDefaultInstanceForType() {
       return DEFAULT_INSTANCE;
     }
 
@@ -1704,7 +1724,7 @@ public final class BaseProto {
     java.lang.String[] descriptorData = {"\n\017BaseProto.proto\"(\n\013BaseRequest\022\013\n\003uri\030"
         + "\001 \001(\t\022\014\n\004body\030\002 \001(\014\"D\n\014BaseResponse\022\013\n\003u"
         + "ri\030\001 \001(\t\022\014\n\004data\030\002 \001(\014\022\014\n\004code\030\003 \001(\005\022\013\n\003"
-        + "msg\030\004 \001(\tB1\n/com.cmcorg.engine.game.tcp." + "netty.protobuf.protob\006proto3"};
+        + "msg\030\004 \001(\tB1\n/com.cmcorg.engine.game.nett" + "y.tcp.protobuf.protob\006proto3"};
     descriptor = com.google.protobuf.Descriptors.FileDescriptor
         .internalBuildGeneratedFileFrom(descriptorData, new com.google.protobuf.Descriptors.FileDescriptor[] {});
     internal_static_BaseRequest_descriptor = getDescriptor().getMessageTypes().get(0);

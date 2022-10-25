@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-option java_package = "com.cmcorg.engine.game.tcp.netty.protobuf.proto";
+option java_package = "com.cmcorg.engine.game.netty.tcp.protobuf.proto";
 
 message BaseRequest{
   string uri = 1; // 路径
