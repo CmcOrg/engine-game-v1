@@ -297,14 +297,10 @@ public final class BaseProto {
     }
 
     @java.lang.Override
-    public Builder newBuilderForType() {
-      return newBuilder();
-    }
-
+    public Builder newBuilderForType() { return newBuilder(); }
     public static Builder newBuilder() {
       return DEFAULT_INSTANCE.toBuilder();
     }
-
     public static Builder newBuilder(protobuf.proto.BaseProto.BaseRequest prototype) {
       return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
     }
@@ -671,7 +667,8 @@ public final class BaseProto {
             } catch (com.google.protobuf.UninitializedMessageException e) {
               throw e.asInvalidProtocolBufferException().setUnfinishedMessage(builder.buildPartial());
             } catch (java.io.IOException e) {
-              throw new com.google.protobuf.InvalidProtocolBufferException(e).setUnfinishedMessage(builder.buildPartial());
+              throw new com.google.protobuf.InvalidProtocolBufferException(e)
+              .setUnfinishedMessage(builder.buildPartial());
         }
         return builder.buildPartial();
       }
@@ -1097,7 +1094,8 @@ public final class BaseProto {
     }
 
     public static protobuf.proto.BaseProto.BaseResponse parseFrom(com.google.protobuf.CodedInputStream input,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry) throws java.io.IOException {
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input, extensionRegistry);
     }
@@ -1137,10 +1135,11 @@ public final class BaseProto {
       }
 
       @java.lang.Override
-      protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable internalGetFieldAccessorTable() {
+      protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+          internalGetFieldAccessorTable() {
         return protobuf.proto.BaseProto.internal_static_BaseResponse_fieldAccessorTable
-            .ensureFieldAccessorsInitialized(protobuf.proto.BaseProto.BaseResponse.class,
-                protobuf.proto.BaseProto.BaseResponse.Builder.class);
+            .ensureFieldAccessorsInitialized(
+                protobuf.proto.BaseProto.BaseResponse.class, protobuf.proto.BaseProto.BaseResponse.Builder.class);
       }
 
       // Construct using protobuf.proto.BaseProto.BaseResponse.newBuilder()
@@ -1334,7 +1333,8 @@ public final class BaseProto {
       public java.lang.String getUri() {
         java.lang.Object ref = uri_;
         if (!(ref instanceof java.lang.String)) {
-          com.google.protobuf.ByteString bs = (com.google.protobuf.ByteString)ref;
+          com.google.protobuf.ByteString bs =
+              (com.google.protobuf.ByteString) ref;
           java.lang.String s = bs.toStringUtf8();
           uri_ = s;
           return s;
@@ -1522,7 +1522,8 @@ public final class BaseProto {
       public java.lang.String getMsg() {
         java.lang.Object ref = msg_;
         if (!(ref instanceof java.lang.String)) {
-          com.google.protobuf.ByteString bs = (com.google.protobuf.ByteString)ref;
+          com.google.protobuf.ByteString bs =
+              (com.google.protobuf.ByteString) ref;
           java.lang.String s = bs.toStringUtf8();
           msg_ = s;
           return s;

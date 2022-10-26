@@ -24,7 +24,6 @@ public final class ConnectProto {
      * </pre>
      *
      * <code>string code = 1;</code>
-     *
      * @return The code.
      */
     java.lang.String getCode();
@@ -82,7 +81,6 @@ public final class ConnectProto {
 
     public static final int CODE_FIELD_NUMBER = 1;
     private volatile java.lang.Object code_;
-
     /**
      * <pre>
      * 用于校验：是否是合法的连接
@@ -121,7 +119,7 @@ public final class ConnectProto {
         code_ = b;
         return b;
       } else {
-        return (com.google.protobuf.ByteString)ref;
+        return (com.google.protobuf.ByteString) ref;
       }
     }
 
@@ -496,8 +494,8 @@ public final class ConnectProto {
        */
       public Builder setCode(java.lang.String value) {
         if (value == null) {
-          throw new NullPointerException();
-        }
+    throw new NullPointerException();
+  }
 
         code_ = value;
         onChanged();
@@ -510,7 +508,6 @@ public final class ConnectProto {
        * </pre>
        *
        * <code>string code = 1;</code>
-       *
        * @return This builder for chaining.
        */
       public Builder clearCode() {
@@ -619,8 +616,7 @@ public final class ConnectProto {
         .internalBuildGeneratedFileFrom(descriptorData, new com.google.protobuf.Descriptors.FileDescriptor[] {});
     internal_static_SecurityRequest_descriptor = getDescriptor().getMessageTypes().get(0);
     internal_static_SecurityRequest_fieldAccessorTable =
-        new com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(internal_static_SecurityRequest_descriptor,
-        new java.lang.String[] { "Code", });
+        new com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(internal_static_SecurityRequest_descriptor, new java.lang.String[] { "Code", });
   }
 
   // @@protoc_insertion_point(outer_class_scope)
