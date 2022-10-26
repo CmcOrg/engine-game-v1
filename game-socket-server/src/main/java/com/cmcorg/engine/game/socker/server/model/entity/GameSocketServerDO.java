@@ -16,10 +16,10 @@ import lombok.EqualsAndHashCode;
 @Schema(description = "主表：socket服务器")
 public class GameSocketServerDO extends BaseEntity {
 
-    @Schema(description = "ip")
-    private String ip;
+    @Schema(description = "host")
+    private String host;
 
-    @Schema(description = "端口，备注：ip + 端口，可以表示唯一标识")
+    @Schema(description = "端口，备注：host + 端口，可以表示唯一标识")
     private Integer port;
 
     @Schema(description = "最大连接数")

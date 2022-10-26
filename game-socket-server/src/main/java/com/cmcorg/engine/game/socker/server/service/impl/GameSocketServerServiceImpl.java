@@ -25,7 +25,7 @@ public class GameSocketServerServiceImpl extends ServiceImpl<GameSocketServerMap
     public Page<GameSocketServerDO> myPage(GameSocketServerPageDTO dto) {
 
         return lambdaQuery().eq(dto.getId() != null, BaseEntity::getId, dto.getId())
-            .like(StrUtil.isNotBlank(dto.getIp()), GameSocketServerDO::getIp, dto.getIp())
+            .like(StrUtil.isNotBlank(dto.getHost()), GameSocketServerDO::getHost, dto.getHost())
             .eq(dto.getPort() != null, GameSocketServerDO::getPort, dto.getPort())
             .like(StrUtil.isNotBlank(dto.getRemark()), BaseEntity::getRemark, dto.getRemark())
             .orderByDesc(BaseEntity::getUpdateTime).page(dto.getPage(true));
@@ -58,7 +58,7 @@ public class GameSocketServerServiceImpl extends ServiceImpl<GameSocketServerMap
     public void insertForStartSocketServer(GameSocketServerDO gameSocketServerDO) {
 
         // 先删除：ip + port 匹配的数据
-        lambdaUpdate().eq(GameSocketServerDO::getIp, gameSocketServerDO.getIp())
+        lambdaUpdate().eq(GameSocketServerDO::getHost, gameSocketServerDO.getHost())
             .eq(GameSocketServerDO::getPort, gameSocketServerDO.getPort()).remove();
 
         save(gameSocketServerDO);

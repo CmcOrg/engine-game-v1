@@ -91,7 +91,7 @@ public class NettyTcpProtoBufServer implements CommandLineRunner, DisposableBean
     private void insertForStartSocketServer(int port) {
 
         GameSocketServerDO gameSocketServerDO = new GameSocketServerDO();
-        gameSocketServerDO.setIp(commonProperties.getInternetAddress());
+        gameSocketServerDO.setHost(commonProperties.getInternetAddress());
         gameSocketServerDO.setPort(port);
         gameSocketServerDO.setMaxConnect(500); // 最大连接数
         gameSocketServerDO.setEnableFlag(true);

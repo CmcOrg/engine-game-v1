@@ -12,10 +12,10 @@ public class GameSocketServerPageDTO extends MyPageDTO {
     @Schema(description = "主键id")
     private Long id;
 
-    @Schema(description = "ip")
-    private String ip;
+    @Schema(description = "host")
+    private String host;
 
-    @Schema(description = "端口，备注：ip + 端口，可以表示唯一标识")
+    @Schema(description = "端口，备注：host + 端口，可以表示唯一标识")
     private Integer port;
 
     @Schema(description = "备注")
