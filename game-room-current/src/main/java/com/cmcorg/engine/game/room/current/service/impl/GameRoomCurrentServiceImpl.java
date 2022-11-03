@@ -3,6 +3,7 @@ package com.cmcorg.engine.game.room.current.service.impl;
 import cn.hutool.core.util.IdUtil;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.cmcorg.engine.game.auth.util.GameAuthUserUtil;
 import com.cmcorg.engine.game.room.config.model.entity.GameRoomConfigDO;
 import com.cmcorg.engine.game.room.config.model.enums.GameRoomConfigPlayTypeEnum;
 import com.cmcorg.engine.game.room.config.service.GameRoomConfigService;
@@ -391,11 +392,13 @@ public class GameRoomCurrentServiceImpl extends ServiceImpl<GameRoomCurrentMappe
     private GameRoomCurrentJoinRoomVO getGameRoomCurrentJoinRoomVO(Long currentUserId,
         GameSocketServerDO gameSocketServerDO) {
 
+        Long currentGameUserId = GameAuthUserUtil.getCurrentGameUserId();
+
         String uuid = IdUtil.simpleUUID();
 
         // 存储：连接码到 redis里
         redissonClient.getBucket(RedisKeyEnum.PRE_NETTY_TCP_PROTO_BUF_CONNECT_SECURITY_CODE + uuid)
-            .set(currentUserId, BaseConstant.SECOND_20_EXPIRE_TIME, TimeUnit.MILLISECONDS);
+            .set(currentUserId + "|" + currentGameUserId, BaseConstant.SECOND_20_EXPIRE_TIME, TimeUnit.MILLISECONDS);
 
         GameRoomCurrentJoinRoomVO gameRoomCurrentJoinRoomVO = new GameRoomCurrentJoinRoomVO();
         gameRoomCurrentJoinRoomVO.setHost(gameSocketServerDO.getHost());

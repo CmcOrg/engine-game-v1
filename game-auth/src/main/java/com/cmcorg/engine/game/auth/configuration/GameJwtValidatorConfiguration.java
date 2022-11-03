@@ -5,7 +5,6 @@ import cn.hutool.json.JSONObject;
 import cn.hutool.jwt.JWT;
 import com.cmcorg.engine.web.auth.configuration.security.IJwtValidatorConfiguration;
 import com.cmcorg.engine.web.auth.filter.JwtAuthorizationFilter;
-import com.cmcorg.engine.web.netty.boot.configuration.INettyPrincipalJsonConfiguration;
 import org.springframework.context.annotation.Configuration;
 
 import javax.servlet.http.HttpServletResponse;
@@ -13,7 +12,7 @@ import java.util.List;
 import java.util.Set;
 
 @Configuration
-public class GameJwtValidatorConfiguration implements IJwtValidatorConfiguration, INettyPrincipalJsonConfiguration {
+public class GameJwtValidatorConfiguration implements IJwtValidatorConfiguration {
 
     // 游戏用户 id
     public static final String PAYLOAD_MAP_GAME_USER_ID_KEY = "gameUserId";
@@ -73,14 +72,6 @@ public class GameJwtValidatorConfiguration implements IJwtValidatorConfiguration
         }
 
         return true;
-
-    }
-
-    /**
-     * 给 principalJson添加：额外的属性
-     */
-    @Override
-    public void handler(JSONObject principalJson) {
 
     }
 

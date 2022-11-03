@@ -8,7 +8,6 @@ import com.cmcorg.engine.web.auth.configuration.BaseConfiguration;
 import com.cmcorg.engine.web.auth.properties.CommonProperties;
 import com.cmcorg.engine.web.model.model.dto.NotEmptyIdSet;
 import com.cmcorg.engine.web.netty.boot.configuration.NettyBeanPostProcessor;
-import com.cmcorg.engine.web.netty.boot.handler.AbstractNettyServerHandler;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelInitializer;
@@ -35,7 +34,7 @@ import javax.annotation.Resource;
 public class NettyTcpProtoBufServer implements CommandLineRunner, DisposableBean {
 
     @Resource
-    AbstractNettyServerHandler nettyServerHandler;
+    AbstractNettyTcpProtoBufServerHandler nettyServerHandler;
     @Resource
     GameSocketServerService gameSocketServerService;
     @Resource

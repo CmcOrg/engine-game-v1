@@ -1,8 +1,11 @@
 package com.cmcorg.engine.game.netty.tcp.protobuf.server;
 
+import cn.hutool.core.convert.Convert;
+import cn.hutool.core.lang.func.VoidFunc;
 import cn.hutool.core.util.ArrayUtil;
 import cn.hutool.core.util.ClassUtil;
 import cn.hutool.core.util.ReflectUtil;
+import cn.hutool.core.util.StrUtil;
 import cn.hutool.json.JSONUtil;
 import com.cmcorg.engine.game.netty.tcp.protobuf.exception.BaseException;
 import com.cmcorg.engine.game.netty.tcp.protobuf.model.enums.NettyOtherPathEnum;
@@ -12,7 +15,6 @@ import com.cmcorg.engine.web.auth.util.AuthUserUtil;
 import com.cmcorg.engine.web.model.model.constant.LogTopicConstant;
 import com.cmcorg.engine.web.netty.boot.configuration.NettyBeanPostProcessor;
 import com.cmcorg.engine.web.netty.boot.exception.BizCodeEnum;
-import com.cmcorg.engine.web.netty.boot.handler.AbstractNettyServerHandler;
 import com.cmcorg.engine.web.redisson.enums.RedisKeyEnum;
 import com.google.protobuf.ByteString;
 import io.netty.channel.Channel;
@@ -27,11 +29,10 @@ import javax.annotation.Resource;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
 import java.util.Set;
-import java.util.function.Consumer;
 
 @Component
 @Slf4j(topic = LogTopicConstant.NETTY)
-public class NettyTcpProtoBufServerHandler extends AbstractNettyServerHandler {
+public class NettyTcpProtoBufServerHandler extends AbstractNettyTcpProtoBufServerHandler {
 
     @Resource
     RedissonClient redissonClient;
@@ -40,7 +41,7 @@ public class NettyTcpProtoBufServerHandler extends AbstractNettyServerHandler {
      * 处理：身份认证的消息
      */
     @Override
-    public void handlerSecurityMessage(Object msg, Channel channel, Consumer<Long> consumer) {
+    public void handlerSecurityMessage(Object msg, Channel channel, VoidFunc<Long> voidFunc) {
 
         try {
 
@@ -57,16 +58,21 @@ public class NettyTcpProtoBufServerHandler extends AbstractNettyServerHandler {
             ConnectProto.SecurityRequest securityRequest =
                 ConnectProto.SecurityRequest.parseFrom(baseRequest.getBody());
 
-            RBucket<Long> bucket = redissonClient
+            RBucket<String> bucket = redissonClient
                 .getBucket(RedisKeyEnum.PRE_NETTY_TCP_PROTO_BUF_CONNECT_SECURITY_CODE + securityRequest.getCode());
 
-            Long userId = bucket.get();
+            String redisValue = bucket.get();
 
-            if (userId == null) {
+            if (redisValue == null) {
                 throw new RuntimeException(); // 备注：会被下面捕捉该异常
             }
 
-            consumer.accept(userId); // 执行：回调
+            Long[] redisValueArr = Convert.convert(Long[].class, StrUtil.splitTrim(redisValue, "|"));
+            if (redisValueArr.length != 2) {
+                throw new RuntimeException(); // 备注：会被下面捕捉该异常
+            }
+
+            voidFunc.call(redisValueArr); // 执行：回调
 
             // 响应：身份认证成功
             sendToChannel(NettyTcpProtoBufVO.ok(BaseBizCodeEnum.OK).setUri(baseRequest.getUri()), channel);
@@ -186,7 +192,7 @@ public class NettyTcpProtoBufServerHandler extends AbstractNettyServerHandler {
     public static void sendToSelf(NettyTcpProtoBufVO nettyTcpProtoBufVO) {
         log.info("发送消息：sendToSelf，目标用户 id：{}，消息：{}", AuthUserUtil.getCurrentUserId(),
             JSONUtil.toJsonStr(nettyTcpProtoBufVO));
-        doSend(getUserIdChannelMap().get(AuthUserUtil.getCurrentUserId()),
+        doSend(getGameUserIdChannelMap().get(AuthUserUtil.getCurrentUserId()),
             handlerNettyTcpProtoBufVOToSend(nettyTcpProtoBufVO));
     }
 
@@ -197,7 +203,7 @@ public class NettyTcpProtoBufServerHandler extends AbstractNettyServerHandler {
         log.info("发送消息：sendByUserIdSet，userIdSet：{}，消息：{}", userIdSet, JSONUtil.toJsonStr(nettyTcpProtoBufVO));
         BaseProto.BaseResponse baseResponse = handlerNettyTcpProtoBufVOToSend(nettyTcpProtoBufVO);
         for (Long item : userIdSet) {
-            doSend(getUserIdChannelMap().get(item), baseResponse);
+            doSend(getGameUserIdChannelMap().get(item), baseResponse);
         }
     }
 
@@ -205,9 +211,10 @@ public class NettyTcpProtoBufServerHandler extends AbstractNettyServerHandler {
      * 给 所有人发送消息
      */
     public static void sendToAll(NettyTcpProtoBufVO nettyTcpProtoBufVO) {
-        log.info("发送消息：sendToAll，总数：{}，消息：{}", getUserIdChannelMap().size(), JSONUtil.toJsonStr(nettyTcpProtoBufVO));
+        log.info("发送消息：sendToAll，总数：{}，消息：{}", getGameUserIdChannelMap().size(),
+            JSONUtil.toJsonStr(nettyTcpProtoBufVO));
         BaseProto.BaseResponse baseResponse = handlerNettyTcpProtoBufVOToSend(nettyTcpProtoBufVO);
-        for (Channel item : getUserIdChannelMap().values()) {
+        for (Channel item : getGameUserIdChannelMap().values()) {
             doSend(item, baseResponse);
         }
     }
