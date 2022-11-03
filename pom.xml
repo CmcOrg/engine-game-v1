@@ -17,10 +17,67 @@
     <modules>
         <module>game-netty-tcp-protobuf</module>
         <module>game-socket-server</module>
+        <module>game-auth</module>
+        <module>game-start</module>
+        <module>game-area-service</module>
+        <module>game-room-config</module>
+        <module>game-room-current</module>
+        <module>game-user-connect</module>
+        <module>game-user-exp</module>
+        <module>game-user</module>
     </modules>
 
     <dependencyManagement>
         <dependencies>
+
+            <!-- game-auth -->
+            <dependency>
+                <groupId>${project.groupId}</groupId>
+                <artifactId>game-auth</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <!-- game-user -->
+            <dependency>
+                <groupId>${project.groupId}</groupId>
+                <artifactId>game-user</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <!-- game-user-exp -->
+            <dependency>
+                <groupId>${project.groupId}</groupId>
+                <artifactId>game-user-exp</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <!-- game-user-connect -->
+            <dependency>
+                <groupId>${project.groupId}</groupId>
+                <artifactId>game-user-connect</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <!-- game-room-current -->
+            <dependency>
+                <groupId>${project.groupId}</groupId>
+                <artifactId>game-room-current</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <!-- game-room-config -->
+            <dependency>
+                <groupId>${project.groupId}</groupId>
+                <artifactId>game-room-config</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <!-- game-area-service -->
+            <dependency>
+                <groupId>${project.groupId}</groupId>
+                <artifactId>game-area-service</artifactId>
+                <version>${project.version}</version>
+            </dependency>
 
             <!-- game-socket-server -->
             <dependency>
@@ -35,6 +92,78 @@
                 <artifactId>game-netty-tcp-protobuf</artifactId>
                 <version>${project.version}</version>
             </dependency>
+
+            <!-- 服务-基础引擎-web-v1 ↓ -->
+
+            <!-- web-user -->
+            <dependency>
+                <groupId>${project.groupId}</groupId>
+                <artifactId>web-user</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <!-- web-dict -->
+            <dependency>
+                <groupId>${project.groupId}</groupId>
+                <artifactId>web-dict</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <!-- web-param -->
+            <dependency>
+                <groupId>${project.groupId}</groupId>
+                <artifactId>web-param</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <!-- web-sign-email -->
+            <dependency>
+                <groupId>${project.groupId}</groupId>
+                <artifactId>web-sign-email</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <!-- web-sign-signinname -->
+            <dependency>
+                <groupId>${project.groupId}</groupId>
+                <artifactId>web-sign-signinname</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <!-- web-sign-helper -->
+            <dependency>
+                <groupId>${project.groupId}</groupId>
+                <artifactId>web-sign-helper</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <!-- web-role -->
+            <dependency>
+                <groupId>${project.groupId}</groupId>
+                <artifactId>web-role</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <!-- web-menu -->
+            <dependency>
+                <groupId>${project.groupId}</groupId>
+                <artifactId>web-menu</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <!-- 服务-基础引擎-web-v1 ↑ -->
+
+            <!-- 其他依赖 ↓ -->
+
+            <!-- generate-page-h5 -->
+            <dependency>
+                <groupId>${project.groupId}</groupId>
+                <artifactId>generate-page-h5</artifactId>
+                <version>${project.version}</version>
+                <scope>provided</scope>
+            </dependency>
+
+            <!-- 其他依赖 ↑ -->
 
         </dependencies>
     </dependencyManagement>

@@ -1,0 +1,19 @@
+server:
+  port: 20000
+
+spring:
+  application:
+    name: service-engine-game-v1
+  cloud:
+    nacos:
+      server-addr: 121.36.195.98:8848
+      config:
+        namespace: game
+        file-extension: yaml
+        extension-configs:
+          - data-id: service-engine-game-v1.yml
+          - data-id: mysql-service-engine-game-v1.yml
+          - data-id: refresh-service-engine-game-v1.yml
+            refresh: true
+      discovery:
+        namespace: ${spring.cloud.nacos.config.namespace}

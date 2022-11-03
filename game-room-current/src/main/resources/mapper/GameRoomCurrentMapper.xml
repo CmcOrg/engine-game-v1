@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.cmcorg.service.engine.game.room.current.mapper.GameRoomCurrentMapper">
+
+    <!-- 分页排序查询 -->
+    <select id="myPage"
+            resultType="com.cmcorg.engine.game.room.current.model.vo.GameRoomCurrentPageVO">
+        SELECT a.id AS id,
+        a.create_time AS createTime,
+        b.id AS roomConfigId,
+        b.`name` AS `name`,
+        b.play_type AS playType,
+        b.room_type AS roomType,
+        b.use_money_type AS useMoneyType,
+        b.got_money_type AS gotMoneyType,
+        b.limit_money_type AS limitMoneyType,
+        b.limit_exp_type AS limitExpType,
+        b.room_exp_type AS roomExpType,
+        c.id AS socketServerId
+        FROM game_room_current a
+        LEFT JOIN game_room_config b ON b.id = a.room_config_id
+        LEFT JOIN game_socket_server c ON c.id = a.socket_server_id
+        <where>
+            <if test="dto.id != null">
+                AND a.id = #{dto.id}
+            </if>
+            <if test="dto.roomConfigId != null">
+                AND a.room_config_id = #{dto.roomConfigId}
+            </if>
+            <if test="dto.name != null and dto.name != ''">
+                AND b.`name` LIKE CONCAT('%', #{dto.name}, '%')
+            </if>
+            <if test="dto.playType != null">
+                AND b.play_type = #{dto.playType}
+            </if>
+            <if test="dto.roomType != null">
+                AND b.room_type = #{dto.roomType}
+            </if>
+            <if test="dto.useMoneyType != null">
+                AND b.use_money_type = #{dto.useMoneyType}
+            </if>
+            <if test="dto.gotMoneyType != null">
+                AND b.got_money_type = #{dto.gotMoneyType}
+            </if>
+            <if test="dto.limitMoneyType != null">
+                AND b.limit_money_type = #{dto.limitMoneyType}
+            </if>
+            <if test="dto.limitExpType != null">
+                AND b.limit_exp_type = #{dto.limitExpType}
+            </if>
+            <if test="dto.roomExpType != null">
+                AND b.room_exp_type = #{dto.roomExpType}
+            </if>
+            <if test="dto.socketServerId != null">
+                AND a.socket_server_id = #{dto.socketServerId}
+            </if>
+        </where>
+    </select>
+
+</mapper>

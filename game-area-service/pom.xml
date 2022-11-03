@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <artifactId>engine-game-v1</artifactId>
+        <groupId>com.cmcorg</groupId>
+        <version>0.0.1-SNAPSHOT</version>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+
+    <artifactId>game-area-service</artifactId>
+    <description>game-area-service</description>
+
+    <dependencies>
+
+        <!-- game-auth -->
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>game-auth</artifactId>
+        </dependency>
+
+        <!-- game-user -->
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>game-user</artifactId>
+        </dependency>
+
+        <!-- web-auth-nacos -->
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>web-auth-nacos</artifactId>
+        </dependency>
+
+    </dependencies>
+
+</project>
