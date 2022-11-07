@@ -34,7 +34,7 @@ import javax.annotation.Resource;
 public class NettyTcpProtoBufServer implements CommandLineRunner, DisposableBean {
 
     @Resource
-    AbstractNettyTcpProtoBufServerHandler nettyServerHandler;
+    NettyTcpProtoBufServerHandler nettyServerHandler;
     @Resource
     GameSocketServerService gameSocketServerService;
     @Resource

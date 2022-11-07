@@ -1,247 +1,186 @@
 package com.cmcorg.engine.game.netty.tcp.protobuf.server;
 
-import cn.hutool.core.convert.Convert;
-import cn.hutool.core.lang.func.VoidFunc;
-import cn.hutool.core.util.ArrayUtil;
-import cn.hutool.core.util.ClassUtil;
-import cn.hutool.core.util.ReflectUtil;
-import cn.hutool.core.util.StrUtil;
+import cn.hutool.core.map.MapUtil;
+import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
-import com.cmcorg.engine.game.netty.tcp.protobuf.exception.BaseException;
-import com.cmcorg.engine.game.netty.tcp.protobuf.model.enums.NettyOtherPathEnum;
-import com.cmcorg.engine.game.netty.tcp.protobuf.model.vo.NettyTcpProtoBufVO;
-import com.cmcorg.engine.web.auth.exception.BaseBizCodeEnum;
-import com.cmcorg.engine.web.auth.util.AuthUserUtil;
+import com.cmcorg.engine.game.auth.configuration.GameJwtValidatorConfiguration;
+import com.cmcorg.engine.web.auth.util.MyJwtUtil;
+import com.cmcorg.engine.web.model.model.constant.BaseConstant;
 import com.cmcorg.engine.web.model.model.constant.LogTopicConstant;
-import com.cmcorg.engine.web.netty.boot.configuration.NettyBeanPostProcessor;
-import com.cmcorg.engine.web.netty.boot.exception.BizCodeEnum;
 import com.cmcorg.engine.web.redisson.enums.RedisKeyEnum;
-import com.google.protobuf.ByteString;
+import com.cmcorg.engine.web.redisson.util.RedissonUtil;
 import io.netty.channel.Channel;
+import io.netty.channel.ChannelHandler;
+import io.netty.channel.ChannelHandlerContext;
+import io.netty.channel.ChannelInboundHandlerAdapter;
+import io.netty.util.AttributeKey;
+import io.netty.util.ReferenceCountUtil;
 import lombok.extern.slf4j.Slf4j;
-import org.redisson.api.RBucket;
-import org.redisson.api.RedissonClient;
+import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
-import protobuf.proto.BaseProto;
-import protobuf.proto.ConnectProto;
 
-import javax.annotation.Resource;
-import java.lang.reflect.Method;
-import java.lang.reflect.Parameter;
-import java.util.Set;
+import java.util.Map;
 
 @Component
+@ChannelHandler.Sharable
 @Slf4j(topic = LogTopicConstant.NETTY)
-public class NettyTcpProtoBufServerHandler extends AbstractNettyTcpProtoBufServerHandler {
+public class NettyTcpProtoBufServerHandler extends ChannelInboundHandlerAdapter {
 
-    @Resource
-    RedissonClient redissonClient;
+    // 没有进行身份认证的通道，一般这种通道，业务可以忽略，备注：一定时间内，会关闭此类型通道
+    private static final Map<String, Channel> NOT_SECURITY_CHANNEL_MAP = MapUtil.newConcurrentHashMap();
+    // 通道，连接时间，时间戳
+    private static final AttributeKey<Long> CREATE_TIME = AttributeKey.valueOf("createTime");
+    // 移除规定时间内，没有身份认证成功的通道，中的【规定时间】
+    public static final long SECURITY_EXPIRE_TIME = BaseConstant.SECOND_20_EXPIRE_TIME;
+
+    // 进行了身份认证的通道
+    private static final Map<Long, Channel> GAME_USER_ID_CHANNEL_MAP = MapUtil.newConcurrentHashMap();
+    // userId key
+    private static final AttributeKey<Long> USER_ID_KEY = AttributeKey.valueOf("userId");
+    // gameUserId key
+    private static final AttributeKey<Long> GAME_USER_ID_KEY =
+        AttributeKey.valueOf(GameJwtValidatorConfiguration.PAYLOAD_MAP_GAME_USER_ID_KEY);
 
     /**
-     * 处理：身份认证的消息
+     * 获取：进行了身份认证的通道
      */
-    @Override
-    public void handlerSecurityMessage(Object msg, Channel channel, VoidFunc<Long> voidFunc) {
+    protected static Map<Long, Channel> getGameUserIdChannelMap() {
+        return GAME_USER_ID_CHANNEL_MAP;
+    }
 
-        try {
-
-            if (!(msg instanceof BaseProto.BaseRequest)) {
-                throw new RuntimeException(); // 备注：会被下面捕捉该异常
-            }
-
-            BaseProto.BaseRequest baseRequest = (BaseProto.BaseRequest)msg;
-
-            if (!NettyOtherPathEnum.CONNECT_SECURITY.getUri().equals(baseRequest.getUri())) {
-                throw new RuntimeException(); // 备注：会被下面捕捉该异常
-            }
-
-            ConnectProto.SecurityRequest securityRequest =
-                ConnectProto.SecurityRequest.parseFrom(baseRequest.getBody());
-
-            RBucket<String> bucket = redissonClient
-                .getBucket(RedisKeyEnum.PRE_NETTY_TCP_PROTO_BUF_CONNECT_SECURITY_CODE + securityRequest.getCode());
-
-            String redisValue = bucket.get();
-
-            if (redisValue == null) {
-                throw new RuntimeException(); // 备注：会被下面捕捉该异常
-            }
-
-            Long[] redisValueArr = Convert.convert(Long[].class, StrUtil.splitTrim(redisValue, "|"));
-            if (redisValueArr.length != 2) {
-                throw new RuntimeException(); // 备注：会被下面捕捉该异常
-            }
-
-            voidFunc.call(redisValueArr); // 执行：回调
-
-            // 响应：身份认证成功
-            sendToChannel(NettyTcpProtoBufVO.ok(BaseBizCodeEnum.OK).setUri(baseRequest.getUri()), channel);
-
-            bucket.delete(); // 移除：验证码
-
-        } catch (Exception e) {
-            e.printStackTrace();
-            try {
-                NettyTcpProtoBufVO.error(BaseBizCodeEnum.ILLEGAL_REQUEST);
-            } catch (BaseException baseException) {
-                handlerAndSendBaseException(
-                    BaseProto.BaseRequest.newBuilder().setUri(NettyOtherPathEnum.CONNECT_SECURITY.getUri()).build(),
-                    baseException, channel);
+    /**
+     * 定时：移除规定时间内，没有身份认证成功的通道
+     * 备注：就算子类加了 @Component注解，本方法，规定时间内也只会被执行一次
+     */
+    @Scheduled(fixedRate = 10 * 1000)
+    private void removeNotSecurityChannelMap() {
+        for (Map.Entry<String, Channel> item : NOT_SECURITY_CHANNEL_MAP.entrySet()) {
+            if ((System.currentTimeMillis() - item.getValue().attr(CREATE_TIME).get()) > SECURITY_EXPIRE_TIME) {
+                item.getValue().close(); // 关闭通道
             }
         }
+    }
+
+    /**
+     * 连接成功时
+     */
+    @Override
+    public void channelActive(ChannelHandlerContext ctx) throws Exception {
+
+        ctx.channel().attr(CREATE_TIME).set(System.currentTimeMillis());
+
+        NOT_SECURITY_CHANNEL_MAP.put(ctx.channel().id().asLongText(), ctx.channel());
+
+        log.info("通道连接成功，通道 id：{}，当前没有进行身份认证的通道总数：{}", ctx.channel().id().asLongText(),
+            NOT_SECURITY_CHANNEL_MAP.size());
+
+        super.channelActive(ctx);
+    }
+
+    /**
+     * 调用 close等操作，连接断开时
+     */
+    @Override
+    public void channelInactive(ChannelHandlerContext ctx) throws Exception {
+
+        Long gameUserId = ctx.channel().attr(GAME_USER_ID_KEY).get();
+
+        if (gameUserId != null) {
+
+            Channel channel = GAME_USER_ID_CHANNEL_MAP.get(gameUserId);
+
+            if (channel != null && channel.id().asLongText().equals(ctx.channel().id().asLongText())) {
+                GAME_USER_ID_CHANNEL_MAP.remove(gameUserId);
+            }
+
+        } else {
+            NOT_SECURITY_CHANNEL_MAP.remove(ctx.channel().id().asLongText());
+        }
+
+        log.info("通道断开连接，游戏用户 id：{}，通道 id：{}，当前没有进行身份认证的通道总数：{}，当前进行了身份认证的通道总数：{}",
+            ctx.channel().attr(GAME_USER_ID_KEY).get(), ctx.channel().id().asLongText(),
+            NOT_SECURITY_CHANNEL_MAP.size(), GAME_USER_ID_CHANNEL_MAP.size());
+
+        super.channelInactive(ctx);
 
     }
 
     /**
-     * 处理：进行了身份认证的通道的消息
+     * 发生异常时，比如：远程主机强迫关闭了一个现有的连接
      */
     @Override
-    public void handlerMessage(Object msg) {
+    public void exceptionCaught(ChannelHandlerContext ctx, Throwable e) throws Exception {
+        super.exceptionCaught(ctx, e);
+        ctx.close(); // 会执行：channelInactive 方法
+    }
 
-        if (!(msg instanceof BaseProto.BaseRequest)) {
-            try {
-                NettyTcpProtoBufVO.error(BaseBizCodeEnum.PARAMETER_CHECK_ERROR);
-            } catch (BaseException baseException) {
-                handlerAndSendBaseException(
-                    BaseProto.BaseRequest.newBuilder().setUri(NettyOtherPathEnum.COMMON_ERROR.getUri()).build(),
-                    baseException, null);
-                return;
-            }
-        }
-
-        BaseProto.BaseRequest baseRequest = (BaseProto.BaseRequest)msg;
-
-        // 获取：uri映射的方法
-        NettyBeanPostProcessor.MappingValue mappingValue =
-            NettyBeanPostProcessor.getMappingValueByKey(baseRequest.getUri());
-
-        if (mappingValue == null) {
-            try {
-                NettyTcpProtoBufVO.error(BizCodeEnum.PATH_NOT_FOUND.getMsg(), baseRequest.getUri());
-            } catch (BaseException baseException) {
-                handlerAndSendBaseException(baseRequest, baseException, null);
-                return;
-            }
-        }
-
-        Parameter[] parameterArr = mappingValue.getMethod().getParameters();
-
-        Object[] args = null;
-        if (ArrayUtil.isNotEmpty(parameterArr)) {
-            Parameter parameter = parameterArr[0]; // 获取：方法的第一个参数
-            Method parseFromMethod = ClassUtil.getPublicMethod(parameter.getType(), "parseFrom", ByteString.class);
-            if (parseFromMethod != null) {
-                args = new Object[] {ReflectUtil.invokeStatic(parseFromMethod, baseRequest.getBody())}; // 执行：反序列化
-            }
-        }
-
-        log.info("处理用户消息，用户 id：{}，uri：{}，body：{}", AuthUserUtil.getCurrentUserId(), baseRequest.getUri(),
-            baseRequest.getBody());
+    /**
+     * 收到消息时
+     */
+    @Override
+    public void channelRead(ChannelHandlerContext ctx, Object msg) {
 
         try {
 
-            // 执行方法，备注：方法必须返回【NettyTcpProtoBufVO】类型
-            Object invoke = ReflectUtil.invoke(mappingValue.getBean(), mappingValue.getMethod(), args);
+            if (ctx.channel().attr(GAME_USER_ID_KEY).get() == null) {
 
-            // 发送：返回值
-            sendToSelf(((NettyTcpProtoBufVO)invoke).setUri(baseRequest.getUri()));
+                String channelIdStr = ctx.channel().id().asLongText();
+
+                log.info("处理身份认证的消息，通道 id：{}", channelIdStr);
+
+                // 处理：身份认证的消息，成功之后调用：consumer 即可
+                NettyTcpProtoBufServerHandlerHelper.handlerSecurityMessage(msg, ctx.channel(), longArr -> {
+
+                    Long tempUserId = longArr[0];
+                    Long tempGameUserId = longArr[1];
+
+                    // 身份认证成功，之后的处理
+                    RedissonUtil.doLock(RedisKeyEnum.PRE_SOCKET_AUTH_USER_ID.name() + tempUserId, () -> {
+
+                        Channel channel = GAME_USER_ID_CHANNEL_MAP.get(tempUserId);
+
+                        if (channel != null) {
+                            channel.close(); // 移除之前的通道，备注：这里是异步的
+                        }
+
+                        ctx.channel().attr(USER_ID_KEY).set(tempUserId);
+                        ctx.channel().attr(GAME_USER_ID_KEY).set(tempGameUserId);
+
+                        GAME_USER_ID_CHANNEL_MAP.put(tempGameUserId, ctx.channel());
+
+                        NOT_SECURITY_CHANNEL_MAP.remove(channelIdStr);
+
+                        log.info("处理身份认证的消息成功，游戏用户 id：{}，通道 id：{}，当前没有进行身份认证的通道总数：{}，当前进行了身份认证的通道总数：{}",
+                            ctx.channel().attr(GAME_USER_ID_KEY).get(), channelIdStr, NOT_SECURITY_CHANNEL_MAP.size(),
+                            GAME_USER_ID_CHANNEL_MAP.size());
+
+                        return null;
+
+                    });
+
+                });
+
+                return;
+            }
+
+            JSONObject principalJson =
+                JSONUtil.createObj().set(MyJwtUtil.PAYLOAD_MAP_USER_ID_KEY, ctx.channel().attr(USER_ID_KEY).get())
+                    .set(GameJwtValidatorConfiguration.PAYLOAD_MAP_GAME_USER_ID_KEY,
+                        ctx.channel().attr(GAME_USER_ID_KEY).get());
+
+            // 把 principalJson 设置到：security的上下文里面
+            SecurityContextHolder.getContext()
+                .setAuthentication(new UsernamePasswordAuthenticationToken(principalJson, null, null));
+
+            NettyTcpProtoBufServerHandlerHelper.handlerMessage(msg);// 处理：进行了身份认证的通道的消息
 
         } catch (Throwable e) {
-            log.info("处理业务异常");
-            e.printStackTrace();
-            if (e instanceof BaseException) {
-                handlerAndSendBaseException(baseRequest, (BaseException)e, null);
-            } else {
-                sendToSelf(NettyTcpProtoBufVO.sysError().setUri(baseRequest.getUri()));
-            }
+            NettyTcpProtoBufServerHandlerHelper.exceptionAdvice(e); // 处理业务异常
+        } finally {
+            ReferenceCountUtil.release(msg); // 释放资源
         }
-    }
-
-    /**
-     * 处理并发送：BaseException，注意：这个方法不开放给其他类使用
-     */
-    private void handlerAndSendBaseException(BaseProto.BaseRequest baseRequest, BaseException baseException,
-        Channel channel) {
-        if (channel == null) {
-            sendToSelf(baseException.getNettyTcpProtoBufVO().setUri(baseRequest.getUri()));
-        } else {
-            sendToChannel(baseException.getNettyTcpProtoBufVO().setUri(baseRequest.getUri()), channel);
-        }
-    }
-
-    /**
-     * 处理业务异常
-     */
-    @Override
-    public void exceptionAdvice(Throwable e) {
-        e.printStackTrace(); // 只打印错误信息，因为：handlerMessage 方法已经处理了
-    }
-
-    /**
-     * 给通道发送消息，注意：这个方法不开放给其他类使用
-     */
-    private static void sendToChannel(NettyTcpProtoBufVO nettyTcpProtoBufVO, Channel channel) {
-        log.info("发送消息：sendToChannel，通道 id：{}，消息：{}", channel.id().asLongText(),
-            JSONUtil.toJsonStr(nettyTcpProtoBufVO));
-        doSend(channel, handlerNettyTcpProtoBufVOToSend(nettyTcpProtoBufVO));
-    }
-
-    /**
-     * 给自己发送消息，备注：必须进行了身份认证的通道才行，不然无法发送
-     */
-    public static void sendToSelf(NettyTcpProtoBufVO nettyTcpProtoBufVO) {
-        log.info("发送消息：sendToSelf，目标用户 id：{}，消息：{}", AuthUserUtil.getCurrentUserId(),
-            JSONUtil.toJsonStr(nettyTcpProtoBufVO));
-        doSend(getGameUserIdChannelMap().get(AuthUserUtil.getCurrentUserId()),
-            handlerNettyTcpProtoBufVOToSend(nettyTcpProtoBufVO));
-    }
-
-    /**
-     * 给 userIdSet发送消息
-     */
-    public static void sendByUserIdSet(Set<Long> userIdSet, NettyTcpProtoBufVO nettyTcpProtoBufVO) {
-        log.info("发送消息：sendByUserIdSet，userIdSet：{}，消息：{}", userIdSet, JSONUtil.toJsonStr(nettyTcpProtoBufVO));
-        BaseProto.BaseResponse baseResponse = handlerNettyTcpProtoBufVOToSend(nettyTcpProtoBufVO);
-        for (Long item : userIdSet) {
-            doSend(getGameUserIdChannelMap().get(item), baseResponse);
-        }
-    }
-
-    /**
-     * 给 所有人发送消息
-     */
-    public static void sendToAll(NettyTcpProtoBufVO nettyTcpProtoBufVO) {
-        log.info("发送消息：sendToAll，总数：{}，消息：{}", getGameUserIdChannelMap().size(),
-            JSONUtil.toJsonStr(nettyTcpProtoBufVO));
-        BaseProto.BaseResponse baseResponse = handlerNettyTcpProtoBufVOToSend(nettyTcpProtoBufVO);
-        for (Channel item : getGameUserIdChannelMap().values()) {
-            doSend(item, baseResponse);
-        }
-    }
-
-    /**
-     * 执行：消息的发送
-     */
-    private static void doSend(Channel channel, BaseProto.BaseResponse baseResponse) {
-        if (channel != null) {
-            channel.writeAndFlush(baseResponse);
-        }
-    }
-
-    /**
-     * 统一处理：NettyTcpProtoBufVO，然后发送消息
-     */
-    private static BaseProto.BaseResponse handlerNettyTcpProtoBufVOToSend(NettyTcpProtoBufVO nettyTcpProtoBufVO) {
-
-        BaseProto.BaseResponse.Builder builder =
-            BaseProto.BaseResponse.newBuilder().setCode(nettyTcpProtoBufVO.getCode())
-                .setMsg(nettyTcpProtoBufVO.getMsg()).setUri(nettyTcpProtoBufVO.getUri()); // 备注：这里 uri为 null则会报错
-
-        if (nettyTcpProtoBufVO.getData() != null) {
-            builder.setData(nettyTcpProtoBufVO.getData());
-        }
-
-        return builder.build();
     }
 
 }

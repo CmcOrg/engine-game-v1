@@ -1,10 +1,10 @@
 package com.cmcorg.engine.game.auth.util;
 
 import cn.hutool.core.convert.Convert;
+import com.cmcorg.engine.game.auth.configuration.GameJwtValidatorConfiguration;
 import com.cmcorg.engine.web.auth.exception.BaseBizCodeEnum;
 import com.cmcorg.engine.web.auth.model.vo.ApiResultVO;
 import com.cmcorg.engine.web.auth.util.AuthUserUtil;
-import com.cmcorg.engine.web.auth.util.MyJwtUtil;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.springframework.stereotype.Component;
@@ -36,7 +36,7 @@ public class GameAuthUserUtil {
     private static Long getCurrentGameUserIdWillNull() {
 
         return Convert.toLong(AuthUserUtil.getSecurityContextHolderContextAuthenticationPrincipalJsonObjectValueByKey(
-            MyJwtUtil.PAYLOAD_MAP_USER_ID_KEY));
+            GameJwtValidatorConfiguration.PAYLOAD_MAP_GAME_USER_ID_KEY));
     }
 
 }
