@@ -292,8 +292,7 @@ public class GameRoomCurrentServiceImpl extends ServiceImpl<GameRoomCurrentMappe
 
         log.info("连接数最少的 socket服务器：{}", gameSocketServerDO);
 
-        if (gameSocketServerDO.getConnectTotal() != null && gameSocketServerDO.getConnectTotal() >= gameSocketServerDO
-            .getMaxConnect()) {
+        if (gameSocketServerDO.getConnectTotal() >= gameSocketServerDO.getMaxConnect()) {
             ApiResultVO.error("操作失败：socket服务器连接数已满，请稍后重试");
         }
 
@@ -367,7 +366,7 @@ public class GameRoomCurrentServiceImpl extends ServiceImpl<GameRoomCurrentMappe
 
         // 组装：每个 socket服务器的连接数
         for (GameSocketServerDO item : gameSocketServerDOList) {
-            item.setConnectTotal(socketServerConnectMap.get(item.getId()));
+            item.setConnectTotal(socketServerConnectMap.getOrDefault(item.getId(), 0L));
         }
 
         // 设置：房间配置的，连接数，当前房间数
@@ -391,7 +390,7 @@ public class GameRoomCurrentServiceImpl extends ServiceImpl<GameRoomCurrentMappe
             gameUserConnectDOList = new ArrayList<>();
         } else {
             gameUserConnectDOList =
-                gameUserConnectService.query().select(" room_current_id, count(*) as roomConnectTotal ")
+                gameUserConnectService.query().select(" room_current_id, count(*) as roomCurrentConnectTotal ")
                     .in("room_current_id", roomCurrentIdSet).groupBy("room_current_id").list();
         }
 
@@ -402,7 +401,6 @@ public class GameRoomCurrentServiceImpl extends ServiceImpl<GameRoomCurrentMappe
             boolean contains = roomCurrentIdSet.contains(it.getRoomCurrentId());
             if (!contains) {
                 removeUserConnectIdSet.add(it.getId());
-                it.setRoomCurrentConnectTotal(it.getRoomCurrentConnectTotal() - 1); // 当前房间的连接数 -1
             }
             return contains;
         }).collect(Collectors.toList());
