@@ -29,7 +29,7 @@ public class GameRoomCurrentDO {
     private Long socketServerId;
 
     @TableField(exist = false)
-    @Schema(description = "连接数")
-    private Long connectTotal;
+    @Schema(description = "当前连接数")
+    private Long currentConnectTotal;
 
 }

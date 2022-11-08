@@ -1,5 +1,6 @@
 package com.cmcorg.engine.game.room.current.service.impl;
 
+import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.IdUtil;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -61,7 +62,25 @@ public class GameRoomCurrentServiceImpl extends ServiceImpl<GameRoomCurrentMappe
     @Override
     public Page<GameRoomCurrentPageVO> myPage(GameRoomCurrentPageDTO dto) {
 
-        return baseMapper.myPage(dto.getCreateTimeDescDefaultOrderPage(), dto);
+        Page<GameRoomCurrentPageVO> gameRoomCurrentPageVOPage =
+            baseMapper.myPage(dto.getCreateTimeDescDefaultOrderPage(), dto);
+
+        if (CollUtil.isNotEmpty(gameRoomCurrentPageVOPage.getRecords())) {
+
+            Set<Long> roomCurrentIdSet =
+                gameRoomCurrentPageVOPage.getRecords().stream().map(GameRoomCurrentPageVO::getId)
+                    .collect(Collectors.toSet());
+
+            // 获取：每个：当前房间的连接数
+            Map<Long, Long> roomCurrentConnectMap = getRoomCurrentConnectMapByRoomCurrentIdSet(roomCurrentIdSet);
+
+            for (GameRoomCurrentPageVO item : gameRoomCurrentPageVOPage.getRecords()) {
+                item.setRoomCurrentConnectTotal(roomCurrentConnectMap.getOrDefault(item.getId(), 0L));
+            }
+
+        }
+
+        return gameRoomCurrentPageVOPage;
     }
 
     /**
@@ -174,13 +193,13 @@ public class GameRoomCurrentServiceImpl extends ServiceImpl<GameRoomCurrentMappe
             // 找到：人数最少的 房间
             AtomicReference<GameRoomCurrentDO> atomicGameRoomCurrentDO = new AtomicReference<>();
 
-            configRoomCurrentList.stream().min(Comparator.comparing(GameRoomCurrentDO::getConnectTotal))
+            configRoomCurrentList.stream().min(Comparator.comparing(GameRoomCurrentDO::getCurrentConnectTotal))
                 .ifPresent(atomicGameRoomCurrentDO::set);
 
             // 备注：这里不会为 null，因为：configRoomCurrentList 已经进行过 size() == 0 的判断了
             GameRoomCurrentDO gameRoomCurrentDO = atomicGameRoomCurrentDO.get();
 
-            if (gameRoomCurrentDO.getConnectTotal() < gameRoomConfigDO.getMaxUserTotal()) {
+            if (gameRoomCurrentDO.getCurrentConnectTotal() < gameRoomConfigDO.getMaxUserTotal()) {
                 // 直接加入该 房间
                 return joinGameRoomCurrent(currentUserId, gameSocketServerDOList, gameRoomCurrentDO);
             } else {
@@ -324,33 +343,8 @@ public class GameRoomCurrentServiceImpl extends ServiceImpl<GameRoomCurrentMappe
         Set<Long> roomCurrentIdSet =
             gameRoomCurrentDOList.stream().map(GameRoomCurrentDO::getId).collect(Collectors.toSet());
 
-        // 每个：房间的连接数
-        List<GameUserConnectDO> gameUserConnectDOList;
-        if (roomCurrentIdSet.size() == 0) {
-            gameUserConnectDOList = new ArrayList<>();
-        } else {
-            gameUserConnectDOList = gameUserConnectService.query().select(" room_current_id, count(*) as connectTotal ")
-                .in("room_current_id", roomCurrentIdSet).groupBy("room_current_id").list();
-        }
-
-        // 移除：不存在房间的连接
-        Set<Long> removeUserConnectIdSet = new HashSet<>();
-
-        gameUserConnectDOList = gameUserConnectDOList.stream().filter(it -> {
-            boolean contains = roomCurrentIdSet.contains(it.getRoomCurrentId());
-            if (!contains) {
-                removeUserConnectIdSet.add(it.getId());
-            }
-            return contains;
-        }).collect(Collectors.toList());
-
-        if (removeUserConnectIdSet.size() != 0) {
-            log.info("移除：没有对应的 当前房间的 用户连接 idSet：{}", removeUserConnectIdSet);
-            gameUserConnectService.removeByIds(removeUserConnectIdSet);
-        }
-
-        Map<Long, Long> roomConnectMap = gameUserConnectDOList.stream()
-            .collect(Collectors.toMap(GameUserConnectDO::getRoomCurrentId, GameUserConnectDO::getConnectTotal));
+        // 获取：每个：当前房间的连接数
+        Map<Long, Long> roomCurrentConnectMap = getRoomCurrentConnectMapByRoomCurrentIdSet(roomCurrentIdSet);
 
         long roomCurrentTotal = 0; // 房间配置的 连接数
         long connectTotal = 0; // 房间配置的 当前房间数
@@ -359,17 +353,17 @@ public class GameRoomCurrentServiceImpl extends ServiceImpl<GameRoomCurrentMappe
 
         // 组装到：每个房间对象里面
         for (GameRoomCurrentDO item : gameRoomCurrentDOList) {
-            item.setConnectTotal(roomConnectMap.getOrDefault(item.getId(), 0L));
+            item.setCurrentConnectTotal(roomCurrentConnectMap.getOrDefault(item.getId(), 0L));
             if (item.getRoomConfigId().equals(gameRoomConfigDO.getId())) {
                 roomCurrentTotal = roomCurrentTotal + 1; // 累加：房间数
-                connectTotal = connectTotal + item.getConnectTotal(); // 累加：连接数
+                connectTotal = connectTotal + item.getCurrentConnectTotal(); // 累加：连接数
                 configRoomCurrentList.add(item);
             }
         }
 
         Map<Long, Long> socketServerConnectMap = gameRoomCurrentDOList.stream().collect(Collectors
             .groupingBy(GameRoomCurrentDO::getSocketServerId,
-                Collectors.summingLong(GameRoomCurrentDO::getConnectTotal)));
+                Collectors.summingLong(GameRoomCurrentDO::getCurrentConnectTotal)));
 
         // 组装：每个 socket服务器的连接数
         for (GameSocketServerDO item : gameSocketServerDOList) {
@@ -383,6 +377,43 @@ public class GameRoomCurrentServiceImpl extends ServiceImpl<GameRoomCurrentMappe
         log.info("房间配置的，当前连接数：{}，当前房间数：{}", connectTotal, roomCurrentTotal);
 
         return configRoomCurrentList;
+    }
+
+    /**
+     * 获取：每个：当前房间的连接数
+     */
+    @NotNull
+    private Map<Long, Long> getRoomCurrentConnectMapByRoomCurrentIdSet(Set<Long> roomCurrentIdSet) {
+
+        // 每个：房间的连接数
+        List<GameUserConnectDO> gameUserConnectDOList;
+        if (roomCurrentIdSet.size() == 0) {
+            gameUserConnectDOList = new ArrayList<>();
+        } else {
+            gameUserConnectDOList =
+                gameUserConnectService.query().select(" room_current_id, count(*) as roomConnectTotal ")
+                    .in("room_current_id", roomCurrentIdSet).groupBy("room_current_id").list();
+        }
+
+        // 移除：不存在当前房间的连接
+        Set<Long> removeUserConnectIdSet = new HashSet<>();
+
+        gameUserConnectDOList = gameUserConnectDOList.stream().filter(it -> {
+            boolean contains = roomCurrentIdSet.contains(it.getRoomCurrentId());
+            if (!contains) {
+                removeUserConnectIdSet.add(it.getId());
+                it.setRoomCurrentConnectTotal(it.getRoomCurrentConnectTotal() - 1); // 当前房间的连接数 -1
+            }
+            return contains;
+        }).collect(Collectors.toList());
+
+        if (removeUserConnectIdSet.size() != 0) {
+            log.info("移除：没有对应的 当前房间的 用户连接 idSet：{}", removeUserConnectIdSet);
+            gameUserConnectService.removeByIds(removeUserConnectIdSet);
+        }
+
+        return gameUserConnectDOList.stream().collect(
+            Collectors.toMap(GameUserConnectDO::getRoomCurrentId, GameUserConnectDO::getRoomCurrentConnectTotal));
     }
 
     /**

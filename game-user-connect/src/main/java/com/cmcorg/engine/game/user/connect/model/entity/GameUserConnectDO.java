@@ -33,7 +33,7 @@ public class GameUserConnectDO {
     private Date updateTime;
 
     @TableField(exist = false)
-    @Schema(description = "按照房间分组之后，每个房间的连接数")
-    private Long connectTotal;
+    @Schema(description = "按照房间分组之后，每个当前房间的连接数")
+    private Long roomCurrentConnectTotal;
 
 }

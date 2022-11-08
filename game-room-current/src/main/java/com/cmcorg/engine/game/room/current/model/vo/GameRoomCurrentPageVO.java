@@ -7,6 +7,8 @@ import com.cmcorg.engine.game.room.config.model.enums.GameUserExpTypeEnum;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
+import java.util.Date;
+
 @Data
 public class GameRoomCurrentPageVO {
 
@@ -42,5 +44,11 @@ public class GameRoomCurrentPageVO {
 
     @Schema(description = "socket服务器主键 id")
     private Long socketServerId;
+
+    @Schema(description = "创建时间")
+    private Date createTime;
+
+    @Schema(description = "当前连接数")
+    private Long roomCurrentConnectTotal;
 
 }
