@@ -139,7 +139,7 @@ public class NettyTcpProtoBufServerHandler extends ChannelInboundHandlerAdapter 
                     // 身份认证成功，之后的处理
                     RedissonUtil.doLock(RedisKeyEnum.PRE_SOCKET_AUTH_USER_ID.name() + tempUserId, () -> {
 
-                        Channel channel = GAME_USER_ID_CHANNEL_MAP.get(tempUserId);
+                        Channel channel = GAME_USER_ID_CHANNEL_MAP.get(tempGameUserId);
 
                         if (channel != null) {
                             channel.close(); // 移除之前的通道，备注：这里是异步的
