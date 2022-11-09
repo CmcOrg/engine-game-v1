@@ -2,8 +2,8 @@ package com.cmcorg.engine.game.netty.tcp.protobuf.server;
 
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.thread.ThreadUtil;
-import com.cmcorg.engine.game.socker.server.model.entity.GameSocketServerDO;
-import com.cmcorg.engine.game.socker.server.service.GameSocketServerService;
+import com.cmcorg.engine.game.socket.server.model.entity.GameSocketServerDO;
+import com.cmcorg.engine.game.socket.server.service.GameSocketServerService;
 import com.cmcorg.engine.web.auth.configuration.BaseConfiguration;
 import com.cmcorg.engine.web.auth.properties.CommonProperties;
 import com.cmcorg.engine.web.model.model.dto.NotEmptyIdSet;

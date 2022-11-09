@@ -1,4 +1,4 @@
-package com.cmcorg.engine.game.socker.server.model.entity;
+package com.cmcorg.engine.game.socket.server.model.entity;
 
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
@@ -26,7 +26,7 @@ public class GameSocketServerDO extends BaseEntity {
     private Integer maxConnect;
 
     @TableField(exist = false)
-    @Schema(description = "连接数")
-    private Long connectTotal;
+    @Schema(description = "当前：连接数")
+    private Long socketServerCurrentConnectTotal;
 
 }

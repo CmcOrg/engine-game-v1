@@ -15,8 +15,8 @@ import com.cmcorg.engine.game.room.current.model.entity.GameRoomCurrentDO;
 import com.cmcorg.engine.game.room.current.model.vo.GameRoomCurrentJoinRoomVO;
 import com.cmcorg.engine.game.room.current.model.vo.GameRoomCurrentPageVO;
 import com.cmcorg.engine.game.room.current.service.GameRoomCurrentService;
-import com.cmcorg.engine.game.socker.server.model.entity.GameSocketServerDO;
-import com.cmcorg.engine.game.socker.server.service.GameSocketServerService;
+import com.cmcorg.engine.game.socket.server.model.entity.GameSocketServerDO;
+import com.cmcorg.engine.game.socket.server.service.GameSocketServerService;
 import com.cmcorg.engine.game.user.connect.model.entity.GameUserConnectDO;
 import com.cmcorg.engine.game.user.connect.service.GameUserConnectService;
 import com.cmcorg.engine.web.auth.exception.BaseBizCodeEnum;
@@ -281,7 +281,8 @@ public class GameRoomCurrentServiceImpl extends ServiceImpl<GameRoomCurrentMappe
 
         AtomicReference<GameSocketServerDO> atomicGameSocketServerDO = new AtomicReference<>();
 
-        gameSocketServerDOList.stream().min(Comparator.comparing(GameSocketServerDO::getConnectTotal))
+        gameSocketServerDOList.stream()
+            .min(Comparator.comparing(GameSocketServerDO::getSocketServerCurrentConnectTotal))
             .ifPresent(atomicGameSocketServerDO::set);
 
         GameSocketServerDO gameSocketServerDO = atomicGameSocketServerDO.get();
@@ -292,7 +293,7 @@ public class GameRoomCurrentServiceImpl extends ServiceImpl<GameRoomCurrentMappe
 
         log.info("连接数最少的 socket服务器：{}", gameSocketServerDO);
 
-        if (gameSocketServerDO.getConnectTotal() >= gameSocketServerDO.getMaxConnect()) {
+        if (gameSocketServerDO.getSocketServerCurrentConnectTotal() >= gameSocketServerDO.getMaxConnect()) {
             ApiResultVO.error("操作失败：socket服务器连接数已满，请稍后重试");
         }
 
@@ -366,7 +367,7 @@ public class GameRoomCurrentServiceImpl extends ServiceImpl<GameRoomCurrentMappe
 
         // 组装：每个 socket服务器的连接数
         for (GameSocketServerDO item : gameSocketServerDOList) {
-            item.setConnectTotal(socketServerConnectMap.getOrDefault(item.getId(), 0L));
+            item.setSocketServerCurrentConnectTotal(socketServerConnectMap.getOrDefault(item.getId(), 0L));
         }
 
         // 设置：房间配置的，连接数，当前房间数

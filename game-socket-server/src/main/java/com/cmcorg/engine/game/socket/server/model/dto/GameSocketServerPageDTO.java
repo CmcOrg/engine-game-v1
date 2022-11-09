@@ -1,4 +1,4 @@
-package com.cmcorg.engine.game.socker.server.model.dto;
+package com.cmcorg.engine.game.socket.server.model.dto;
 
 import com.cmcorg.engine.web.auth.model.dto.MyPageDTO;
 import io.swagger.v3.oas.annotations.media.Schema;

@@ -1,9 +1,9 @@
-package com.cmcorg.engine.game.socker.server.service;
+package com.cmcorg.engine.game.socket.server.service;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.cmcorg.engine.game.socker.server.model.dto.GameSocketServerPageDTO;
-import com.cmcorg.engine.game.socker.server.model.entity.GameSocketServerDO;
+import com.cmcorg.engine.game.socket.server.model.dto.GameSocketServerPageDTO;
+import com.cmcorg.engine.game.socket.server.model.entity.GameSocketServerDO;
 import com.cmcorg.engine.web.model.model.dto.NotEmptyIdSet;
 import com.cmcorg.engine.web.model.model.dto.NotNullId;
 

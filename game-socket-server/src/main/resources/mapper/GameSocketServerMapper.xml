@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.cmcorg.engine.game.socket.server.mapper.GameSocketServerMapper">
+
+    <!-- 获取：每个：socketServer的连接数 -->
+    <select id="socketServerCurrentConnectTotalList"
+            resultType="com.cmcorg.engine.game.socket.server.model.entity.GameSocketServerDO">
+
+        SELECT (SELECT COUNT(*)
+        FROM game_user_connect b
+        WHERE b.room_current_id = a.id) AS socketServerCurrentConnectTotal,
+        a.socket_server_id as id
+        FROM game_room_current a
+        WHERE a.socket_server_id IN
+        <foreach collection="socketServerIdSet" separator="," open="(" close=")" item="item">
+            #{item}
+        </foreach>
+
+    </select>
+
+</mapper>
