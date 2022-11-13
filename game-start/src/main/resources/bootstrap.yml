@@ -3,7 +3,7 @@ server:
 
 spring:
   application:
-    name: service-engine-game-v1
+    name: engine-game-v1
   cloud:
     nacos:
       server-addr: 121.36.195.98:8848
@@ -11,9 +11,9 @@ spring:
         namespace: game
         file-extension: yaml
         extension-configs:
-          - data-id: service-engine-game-v1.yml
-          - data-id: mysql-service-engine-game-v1.yml
-          - data-id: refresh-service-engine-game-v1.yml
+          - data-id: engine-game-v1.yml
+          - data-id: mysql-engine-game-v1.yml
+          - data-id: refresh-engine-game-v1.yml
             refresh: true
       discovery:
         namespace: ${spring.cloud.nacos.config.namespace}
