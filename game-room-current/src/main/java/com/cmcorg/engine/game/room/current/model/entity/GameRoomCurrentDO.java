@@ -11,10 +11,7 @@ import java.util.Date;
 @Schema(description = "主表：当前房间")
 public class GameRoomCurrentDO {
 
-    /**
-     * 这里是自定义的主键 id
-     */
-    @TableId(type = IdType.ASSIGN_ID)
+    @TableId(type = IdType.AUTO)
     @Schema(description = "主键id")
     private Long id;
 
