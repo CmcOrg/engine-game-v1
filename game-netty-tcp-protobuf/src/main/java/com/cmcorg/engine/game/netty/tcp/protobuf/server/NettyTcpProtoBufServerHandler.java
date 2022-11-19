@@ -131,36 +131,34 @@ public class NettyTcpProtoBufServerHandler extends ChannelInboundHandlerAdapter 
                 log.info("处理身份认证的消息，通道 id：{}", channelIdStr);
 
                 // 处理：身份认证的消息，成功之后调用：consumer 即可
-                NettyTcpProtoBufServerHandlerHelper.handlerSecurityMessage(msg, ctx.channel(), longArr -> {
+                NettyTcpProtoBufServerHandlerHelper
+                    .handlerSecurityMessage(msg, ctx.channel(), (tempUserId, tempGameUserId) -> {
 
-                    Long tempUserId = longArr[0];
-                    Long tempGameUserId = longArr[1];
+                        // 身份认证成功，之后的处理
+                        RedissonUtil.doLock(RedisKeyEnum.PRE_SOCKET_AUTH_USER_ID.name() + tempUserId, () -> {
 
-                    // 身份认证成功，之后的处理
-                    RedissonUtil.doLock(RedisKeyEnum.PRE_SOCKET_AUTH_USER_ID.name() + tempUserId, () -> {
+                            Channel channel = GAME_USER_ID_CHANNEL_MAP.get(tempGameUserId);
 
-                        Channel channel = GAME_USER_ID_CHANNEL_MAP.get(tempGameUserId);
+                            if (channel != null) {
+                                channel.close(); // 移除之前的通道，备注：这里是异步的
+                            }
 
-                        if (channel != null) {
-                            channel.close(); // 移除之前的通道，备注：这里是异步的
-                        }
+                            ctx.channel().attr(USER_ID_KEY).set(tempUserId);
+                            ctx.channel().attr(GAME_USER_ID_KEY).set(tempGameUserId);
 
-                        ctx.channel().attr(USER_ID_KEY).set(tempUserId);
-                        ctx.channel().attr(GAME_USER_ID_KEY).set(tempGameUserId);
+                            GAME_USER_ID_CHANNEL_MAP.put(tempGameUserId, ctx.channel());
 
-                        GAME_USER_ID_CHANNEL_MAP.put(tempGameUserId, ctx.channel());
+                            NOT_SECURITY_CHANNEL_MAP.remove(channelIdStr);
 
-                        NOT_SECURITY_CHANNEL_MAP.remove(channelIdStr);
+                            log.info("处理身份认证的消息成功，游戏用户 id：{}，通道 id：{}，当前没有进行身份认证的通道总数：{}，当前进行了身份认证的通道总数：{}",
+                                ctx.channel().attr(GAME_USER_ID_KEY).get(), channelIdStr,
+                                NOT_SECURITY_CHANNEL_MAP.size(), GAME_USER_ID_CHANNEL_MAP.size());
 
-                        log.info("处理身份认证的消息成功，游戏用户 id：{}，通道 id：{}，当前没有进行身份认证的通道总数：{}，当前进行了身份认证的通道总数：{}",
-                            ctx.channel().attr(GAME_USER_ID_KEY).get(), channelIdStr, NOT_SECURITY_CHANNEL_MAP.size(),
-                            GAME_USER_ID_CHANNEL_MAP.size());
+                            return null;
 
-                        return null;
+                        });
 
                     });
-
-                });
 
                 return;
             }

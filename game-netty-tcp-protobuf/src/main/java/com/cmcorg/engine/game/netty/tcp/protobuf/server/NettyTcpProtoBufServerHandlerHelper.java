@@ -1,7 +1,6 @@
 package com.cmcorg.engine.game.netty.tcp.protobuf.server;
 
 import cn.hutool.core.convert.Convert;
-import cn.hutool.core.lang.func.VoidFunc;
 import cn.hutool.core.util.ArrayUtil;
 import cn.hutool.core.util.ClassUtil;
 import cn.hutool.core.util.ReflectUtil;
@@ -17,6 +16,7 @@ import com.cmcorg.engine.web.model.model.constant.LogTopicConstant;
 import com.cmcorg.engine.web.netty.boot.configuration.NettyBeanPostProcessor;
 import com.cmcorg.engine.web.netty.boot.exception.BizCodeEnum;
 import com.cmcorg.engine.web.redisson.enums.RedisKeyEnum;
+import com.cmcorg.engine.web.util.util.VoidFunc2;
 import com.google.protobuf.ByteString;
 import io.netty.channel.Channel;
 import lombok.extern.slf4j.Slf4j;
@@ -43,7 +43,7 @@ public class NettyTcpProtoBufServerHandlerHelper {
     /**
      * 处理：身份认证的消息
      */
-    public static void handlerSecurityMessage(Object msg, Channel channel, VoidFunc<Long> voidFunc) {
+    public static void handlerSecurityMessage(Object msg, Channel channel, VoidFunc2<Long, Long> voidFunc2) {
 
         try {
 
@@ -74,7 +74,7 @@ public class NettyTcpProtoBufServerHandlerHelper {
                 throw new RuntimeException(); // 备注：会被下面捕捉该异常
             }
 
-            voidFunc.call(redisValueArr); // 执行：回调
+            voidFunc2.call(redisValueArr[0], redisValueArr[1]); // 执行：回调
 
             // 响应：身份认证成功
             sendToChannel(NettyTcpProtoBufVO.ok(BaseBizCodeEnum.OK).setUri(baseRequest.getUri()), channel);
