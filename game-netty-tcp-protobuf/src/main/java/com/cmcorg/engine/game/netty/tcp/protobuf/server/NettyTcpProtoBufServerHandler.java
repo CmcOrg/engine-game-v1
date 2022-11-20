@@ -33,7 +33,7 @@ public class NettyTcpProtoBufServerHandler extends ChannelInboundHandlerAdapter 
     // 通道，连接时间，时间戳
     private static final AttributeKey<Long> CREATE_TIME = AttributeKey.valueOf("createTime");
     // 移除规定时间内，没有身份认证成功的通道，中的【规定时间】
-    public static final long SECURITY_EXPIRE_TIME = BaseConstant.SECOND_20_EXPIRE_TIME;
+    public static final long SECURITY_EXPIRE_TIME = BaseConstant.SHORT_CODE_EXPIRE_TIME;
 
     // 进行了身份认证的通道
     private static final Map<Long, Channel> GAME_USER_ID_CHANNEL_MAP = MapUtil.newConcurrentHashMap();

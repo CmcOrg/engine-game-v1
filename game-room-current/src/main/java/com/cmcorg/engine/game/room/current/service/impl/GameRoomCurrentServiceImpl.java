@@ -428,7 +428,7 @@ public class GameRoomCurrentServiceImpl extends ServiceImpl<GameRoomCurrentMappe
 
         // 存储：连接码到 redis里
         redissonClient.getBucket(RedisKeyEnum.PRE_NETTY_TCP_PROTO_BUF_CONNECT_SECURITY_CODE + uuid)
-            .set(currentUserId + "|" + currentGameUserId, BaseConstant.SECOND_20_EXPIRE_TIME, TimeUnit.MILLISECONDS);
+            .set(currentUserId + "|" + currentGameUserId, BaseConstant.SHORT_CODE_EXPIRE_TIME, TimeUnit.MILLISECONDS);
 
         GameRoomCurrentJoinRoomVO gameRoomCurrentJoinRoomVO = new GameRoomCurrentJoinRoomVO();
         gameRoomCurrentJoinRoomVO.setHost(gameSocketServerDO.getHost());
