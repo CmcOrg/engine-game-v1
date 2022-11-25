@@ -77,6 +77,7 @@ public class NettyTcpProtoBufServerHandler extends ChannelInboundHandlerAdapter 
             NOT_SECURITY_CHANNEL_MAP.size());
 
         super.channelActive(ctx);
+
     }
 
     /**
