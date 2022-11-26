@@ -37,6 +37,7 @@ public class GameAuthUserUtil {
 
         return Convert.toLong(AuthUserUtil.getSecurityContextHolderContextAuthenticationPrincipalJsonObjectValueByKey(
             GameJwtValidatorConfiguration.PAYLOAD_MAP_GAME_USER_ID_KEY));
+
     }
 
 }

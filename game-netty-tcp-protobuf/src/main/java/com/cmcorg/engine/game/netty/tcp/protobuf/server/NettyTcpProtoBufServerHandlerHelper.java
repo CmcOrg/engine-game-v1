@@ -6,6 +6,7 @@ import cn.hutool.core.util.ClassUtil;
 import cn.hutool.core.util.ReflectUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.json.JSONUtil;
+import com.cmcorg.engine.game.auth.model.constant.GameAuthConstant;
 import com.cmcorg.engine.game.auth.util.GameAuthUserUtil;
 import com.cmcorg.engine.game.netty.tcp.protobuf.exception.BaseException;
 import com.cmcorg.engine.game.netty.tcp.protobuf.model.enums.NettyOtherPathEnum;
@@ -74,7 +75,8 @@ public class NettyTcpProtoBufServerHandlerHelper {
                 throw new RuntimeException(); // 备注：会被下面捕捉该异常
             }
 
-            Long[] redisValueArr = Convert.convert(Long[].class, StrUtil.splitTrim(redisValue, "|"));
+            Long[] redisValueArr =
+                Convert.convert(Long[].class, StrUtil.splitTrim(redisValue, GameAuthConstant.AUTH_SEPARATOR));
             if (redisValueArr.length != 2) {
                 throw new RuntimeException(); // 备注：会被下面捕捉该异常
             }

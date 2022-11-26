@@ -4,6 +4,7 @@ import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.IdUtil;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.cmcorg.engine.game.auth.model.constant.GameAuthConstant;
 import com.cmcorg.engine.game.auth.util.GameAuthUserUtil;
 import com.cmcorg.engine.game.room.config.model.entity.GameRoomConfigDO;
 import com.cmcorg.engine.game.room.config.model.enums.GameRoomConfigPlayTypeEnum;
@@ -428,7 +429,8 @@ public class GameRoomCurrentServiceImpl extends ServiceImpl<GameRoomCurrentMappe
 
         // 存储：连接码到 redis里
         redissonClient.getBucket(RedisKeyEnum.PRE_NETTY_TCP_PROTO_BUF_CONNECT_SECURITY_CODE + uuid)
-            .set(currentUserId + "|" + currentGameUserId, BaseConstant.SHORT_CODE_EXPIRE_TIME, TimeUnit.MILLISECONDS);
+            .set(currentUserId + GameAuthConstant.AUTH_SEPARATOR + currentGameUserId,
+                BaseConstant.SHORT_CODE_EXPIRE_TIME, TimeUnit.MILLISECONDS);
 
         GameRoomCurrentJoinRoomVO gameRoomCurrentJoinRoomVO = new GameRoomCurrentJoinRoomVO();
         gameRoomCurrentJoinRoomVO.setHost(gameSocketServerDO.getHost());
