@@ -159,6 +159,8 @@ public class NettyTcpProtoBufServerHandlerHelper {
             if (l2 - l1 >= WARING_HANDLER_MESSAGE_MS) {
                 log.info("处理用户消息时间过长，游戏用户 id：{}，uri：{}，bodySize：{}", GameAuthUserUtil.getCurrentGameUserId(),
                     baseRequest.getUri(), baseRequest.getBody().size());
+                //            } else {
+                //                log.info("处理耗时：{}", l2 - l1);
             }
 
         } catch (Throwable e) {
