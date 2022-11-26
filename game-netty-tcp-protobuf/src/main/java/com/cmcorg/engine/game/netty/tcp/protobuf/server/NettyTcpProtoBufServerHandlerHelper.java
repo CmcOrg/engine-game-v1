@@ -96,6 +96,7 @@ public class NettyTcpProtoBufServerHandlerHelper {
 
     /**
      * 处理：进行了身份认证的通道的消息
+     * 返回：是否是非法访问：true 是 false 否
      */
     public static boolean handlerMessage(Object msg) {
 
