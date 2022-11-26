@@ -70,6 +70,7 @@ public class NettyTcpProtoBufServer implements CommandLineRunner, DisposableBean
                         ch.pipeline().addLast(nettyServerHandler);
                     }
                 });
+
             ChannelFuture channelFuture = serverBootstrap.bind().sync(); // 服务器创建
 
             insertForStartSocketServer(port); // 添加：启动数据到数据库

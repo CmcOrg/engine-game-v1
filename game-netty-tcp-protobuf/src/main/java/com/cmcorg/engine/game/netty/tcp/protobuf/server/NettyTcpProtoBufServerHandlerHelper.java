@@ -11,7 +11,6 @@ import com.cmcorg.engine.game.netty.tcp.protobuf.exception.BaseException;
 import com.cmcorg.engine.game.netty.tcp.protobuf.model.enums.NettyOtherPathEnum;
 import com.cmcorg.engine.game.netty.tcp.protobuf.model.vo.NettyTcpProtoBufVO;
 import com.cmcorg.engine.web.auth.exception.BaseBizCodeEnum;
-import com.cmcorg.engine.web.auth.util.AuthUserUtil;
 import com.cmcorg.engine.web.model.model.constant.LogTopicConstant;
 import com.cmcorg.engine.web.netty.boot.configuration.NettyBeanPostProcessor;
 import com.cmcorg.engine.web.netty.boot.exception.BizCodeEnum;
@@ -33,6 +32,12 @@ import java.util.Set;
 @Component
 @Slf4j(topic = LogTopicConstant.NETTY)
 public class NettyTcpProtoBufServerHandlerHelper {
+
+    // 当处理消息的时间超过这个值时，会进行警告，单位：毫秒
+    private static final int WARING_HANDLER_MESSAGE_MS = 100;
+
+    // 当要发送的消息长度超过这个值时，会进行警告，单位：byte
+    private static final int WARING_SEND_MESSAGE_DATA_SIZE = 10 * 10000;
 
     private static RedissonClient redissonClient;
 
@@ -100,6 +105,8 @@ public class NettyTcpProtoBufServerHandlerHelper {
      */
     public static boolean handlerMessage(Object msg) {
 
+        long l1 = System.currentTimeMillis();
+
         if (!(msg instanceof BaseProto.BaseRequest)) {
             try {
                 NettyTcpProtoBufVO.error(BaseBizCodeEnum.PARAMETER_CHECK_ERROR);
@@ -137,9 +144,6 @@ public class NettyTcpProtoBufServerHandlerHelper {
             }
         }
 
-        log.info("处理用户消息，用户 id：{}，uri：{}，body：{}", AuthUserUtil.getCurrentUserId(), baseRequest.getUri(),
-            baseRequest.getBody());
-
         try {
 
             // 执行方法，备注：方法必须返回【NettyTcpProtoBufVO】类型
@@ -147,6 +151,13 @@ public class NettyTcpProtoBufServerHandlerHelper {
 
             // 发送：返回值
             sendToSelf(((NettyTcpProtoBufVO)invoke).setUri(baseRequest.getUri()));
+
+            long l2 = System.currentTimeMillis();
+
+            if (l2 - l1 >= WARING_HANDLER_MESSAGE_MS) {
+                log.info("处理用户消息时间过长，游戏用户 id：{}，uri：{}，bodySize：{}", GameAuthUserUtil.getCurrentGameUserId(),
+                    baseRequest.getUri(), baseRequest.getBody().size());
+            }
 
         } catch (Throwable e) {
             log.info("处理业务异常");
@@ -195,7 +206,7 @@ public class NettyTcpProtoBufServerHandlerHelper {
     public static void sendToSelf(NettyTcpProtoBufVO nettyTcpProtoBufVO) {
         log.info("发送消息：sendToSelf，目标游戏用户 id：{}，消息：{}", GameAuthUserUtil.getCurrentGameUserId(),
             JSONUtil.toJsonStr(nettyTcpProtoBufVO));
-        doSend(NettyTcpProtoBufServerHandler.getGameUserIdChannelMap().get(AuthUserUtil.getCurrentUserId()),
+        doSend(NettyTcpProtoBufServerHandler.getGameUserIdChannelMap().get(GameAuthUserUtil.getCurrentGameUserId()),
             handlerNettyTcpProtoBufVOToSend(nettyTcpProtoBufVO));
     }
 
@@ -243,6 +254,10 @@ public class NettyTcpProtoBufServerHandlerHelper {
 
         if (nettyTcpProtoBufVO.getData() != null) {
             builder.setData(nettyTcpProtoBufVO.getData());
+            if (nettyTcpProtoBufVO.getData().size() >= WARING_SEND_MESSAGE_DATA_SIZE) {
+                log.info("发送消息 data过长：uri：{}，dataSize：{}，消息：{}", nettyTcpProtoBufVO.getUri(),
+                    nettyTcpProtoBufVO.getData().size(), JSONUtil.toJsonStr(nettyTcpProtoBufVO));
+            }
         }
 
         return builder.build();

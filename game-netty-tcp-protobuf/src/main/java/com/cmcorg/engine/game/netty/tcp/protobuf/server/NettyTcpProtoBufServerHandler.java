@@ -187,7 +187,7 @@ public class NettyTcpProtoBufServerHandler extends ChannelInboundHandlerAdapter 
             SecurityContextHolder.getContext()
                 .setAuthentication(new UsernamePasswordAuthenticationToken(principalJson, null, null));
 
-            boolean illegalFlag = NettyTcpProtoBufServerHandlerHelper.handlerMessage(msg);// 处理：进行了身份认证的通道的消息
+            boolean illegalFlag = NettyTcpProtoBufServerHandlerHelper.handlerMessage(msg); // 处理：进行了身份认证的通道的消息
 
             if (BooleanUtil.isFalse(illegalFlag)) {
                 ctx.channel().attr(ACTIVE_TIME).set(System.currentTimeMillis()); // 不是非法请求，才记录活跃时间
