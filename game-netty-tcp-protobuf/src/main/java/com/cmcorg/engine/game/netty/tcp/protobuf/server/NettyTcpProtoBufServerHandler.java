@@ -1,6 +1,7 @@
 package com.cmcorg.engine.game.netty.tcp.protobuf.server;
 
 import cn.hutool.core.map.MapUtil;
+import cn.hutool.core.util.BooleanUtil;
 import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
 import com.cmcorg.engine.game.auth.configuration.GameJwtValidatorConfiguration;
@@ -35,13 +36,17 @@ public class NettyTcpProtoBufServerHandler extends ChannelInboundHandlerAdapter 
     // 移除规定时间内，没有身份认证成功的通道，中的【规定时间】
     public static final long SECURITY_EXPIRE_TIME = BaseConstant.SHORT_CODE_EXPIRE_TIME;
 
-    // 进行了身份认证的通道
+    // 进行了身份认证的通道，备注：一个【角色】，只能有一个通道，用户可以拥有多个通道
     private static final Map<Long, Channel> GAME_USER_ID_CHANNEL_MAP = MapUtil.newConcurrentHashMap();
     // userId key
     private static final AttributeKey<Long> USER_ID_KEY = AttributeKey.valueOf("userId");
     // gameUserId key
     private static final AttributeKey<Long> GAME_USER_ID_KEY =
         AttributeKey.valueOf(GameJwtValidatorConfiguration.PAYLOAD_MAP_GAME_USER_ID_KEY);
+    // 进行了身份认证通道的最后活跃时间，时间戳
+    private static final AttributeKey<Long> ACTIVE_TIME = AttributeKey.valueOf("activeTime");
+    // 移除规定时间内，没有进行发送任意消息的，进行了身份认证成功通道，中的【规定时间】
+    public static final long HEARTBEAT_EXPIRE_TIME = BaseConstant.SECOND_30_EXPIRE_TIME;
 
     /**
      * 获取：进行了身份认证的通道
@@ -55,9 +60,21 @@ public class NettyTcpProtoBufServerHandler extends ChannelInboundHandlerAdapter 
      * 备注：就算子类加了 @Component注解，本方法，规定时间内也只会被执行一次
      */
     @Scheduled(fixedRate = 10 * 1000)
-    private void removeNotSecurityChannelMap() {
+    private void removeNotSecurityChannel() {
         for (Map.Entry<String, Channel> item : NOT_SECURITY_CHANNEL_MAP.entrySet()) {
             if ((System.currentTimeMillis() - item.getValue().attr(CREATE_TIME).get()) > SECURITY_EXPIRE_TIME) {
+                item.getValue().close(); // 关闭通道
+            }
+        }
+    }
+
+    /**
+     * 移除规定时间内，没有进行发送任意消息的，进行了身份认证成功通道
+     */
+    @Scheduled(fixedRate = 10 * 1000)
+    private void removeNotHeartbeatChannel() {
+        for (Map.Entry<Long, Channel> item : GAME_USER_ID_CHANNEL_MAP.entrySet()) {
+            if ((System.currentTimeMillis() - item.getValue().attr(ACTIVE_TIME).get()) > HEARTBEAT_EXPIRE_TIME) {
                 item.getValue().close(); // 关闭通道
             }
         }
@@ -89,13 +106,10 @@ public class NettyTcpProtoBufServerHandler extends ChannelInboundHandlerAdapter 
         Long gameUserId = ctx.channel().attr(GAME_USER_ID_KEY).get();
 
         if (gameUserId != null) {
-
             Channel channel = GAME_USER_ID_CHANNEL_MAP.get(gameUserId);
-
             if (channel != null && channel.id().asLongText().equals(ctx.channel().id().asLongText())) {
                 GAME_USER_ID_CHANNEL_MAP.remove(gameUserId);
             }
-
         } else {
             NOT_SECURITY_CHANNEL_MAP.remove(ctx.channel().id().asLongText());
         }
@@ -136,7 +150,7 @@ public class NettyTcpProtoBufServerHandler extends ChannelInboundHandlerAdapter 
                     .handlerSecurityMessage(msg, ctx.channel(), (tempUserId, tempGameUserId) -> {
 
                         // 身份认证成功，之后的处理
-                        RedissonUtil.doLock(RedisKeyEnum.PRE_SOCKET_AUTH_USER_ID.name() + tempUserId, () -> {
+                        RedissonUtil.doLock(RedisKeyEnum.PRE_SOCKET_AUTH_GAME_USER_ID.name() + tempGameUserId, () -> {
 
                             Channel channel = GAME_USER_ID_CHANNEL_MAP.get(tempGameUserId);
 
@@ -146,9 +160,9 @@ public class NettyTcpProtoBufServerHandler extends ChannelInboundHandlerAdapter 
 
                             ctx.channel().attr(USER_ID_KEY).set(tempUserId);
                             ctx.channel().attr(GAME_USER_ID_KEY).set(tempGameUserId);
+                            ctx.channel().attr(ACTIVE_TIME).set(System.currentTimeMillis());
 
                             GAME_USER_ID_CHANNEL_MAP.put(tempGameUserId, ctx.channel());
-
                             NOT_SECURITY_CHANNEL_MAP.remove(channelIdStr);
 
                             log.info("处理身份认证的消息成功，游戏用户 id：{}，通道 id：{}，当前没有进行身份认证的通道总数：{}，当前进行了身份认证的通道总数：{}",
@@ -173,7 +187,11 @@ public class NettyTcpProtoBufServerHandler extends ChannelInboundHandlerAdapter 
             SecurityContextHolder.getContext()
                 .setAuthentication(new UsernamePasswordAuthenticationToken(principalJson, null, null));
 
-            NettyTcpProtoBufServerHandlerHelper.handlerMessage(msg);// 处理：进行了身份认证的通道的消息
+            boolean illegalFlag = NettyTcpProtoBufServerHandlerHelper.handlerMessage(msg);// 处理：进行了身份认证的通道的消息
+
+            if (BooleanUtil.isFalse(illegalFlag)) {
+                ctx.channel().attr(ACTIVE_TIME).set(System.currentTimeMillis()); // 不是非法请求，才记录活跃时间
+            }
 
         } catch (Throwable e) {
             NettyTcpProtoBufServerHandlerHelper.exceptionAdvice(e); // 处理业务异常

@@ -97,7 +97,7 @@ public class NettyTcpProtoBufServerHandlerHelper {
     /**
      * 处理：进行了身份认证的通道的消息
      */
-    public static void handlerMessage(Object msg) {
+    public static boolean handlerMessage(Object msg) {
 
         if (!(msg instanceof BaseProto.BaseRequest)) {
             try {
@@ -106,7 +106,7 @@ public class NettyTcpProtoBufServerHandlerHelper {
                 handlerAndSendBaseException(
                     BaseProto.BaseRequest.newBuilder().setUri(NettyOtherPathEnum.COMMON_ERROR.getUri()).build(),
                     baseException, null);
-                return;
+                return true;
             }
         }
 
@@ -121,7 +121,7 @@ public class NettyTcpProtoBufServerHandlerHelper {
                 NettyTcpProtoBufVO.error(BizCodeEnum.PATH_NOT_FOUND.getMsg(), baseRequest.getUri());
             } catch (BaseException baseException) {
                 handlerAndSendBaseException(baseRequest, baseException, null);
-                return;
+                return true;
             }
         }
 
@@ -156,6 +156,8 @@ public class NettyTcpProtoBufServerHandlerHelper {
                 sendToSelf(NettyTcpProtoBufVO.sysError().setUri(baseRequest.getUri()));
             }
         }
+
+        return false;
     }
 
     /**
