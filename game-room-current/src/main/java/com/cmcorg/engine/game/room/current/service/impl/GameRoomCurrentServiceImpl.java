@@ -17,6 +17,7 @@ import com.cmcorg.engine.game.room.current.model.vo.GameRoomCurrentJoinRoomVO;
 import com.cmcorg.engine.game.room.current.model.vo.GameRoomCurrentPageVO;
 import com.cmcorg.engine.game.room.current.service.GameRoomCurrentService;
 import com.cmcorg.engine.game.socket.server.model.entity.GameSocketServerDO;
+import com.cmcorg.engine.game.socket.server.model.enums.SocketServerRedisKeyEnum;
 import com.cmcorg.engine.game.socket.server.service.GameSocketServerService;
 import com.cmcorg.engine.game.user.connect.model.entity.GameUserConnectDO;
 import com.cmcorg.engine.game.user.connect.service.GameUserConnectService;
@@ -29,7 +30,6 @@ import com.cmcorg.engine.web.model.model.constant.BaseConstant;
 import com.cmcorg.engine.web.model.model.constant.LogTopicConstant;
 import com.cmcorg.engine.web.model.model.dto.NotEmptyIdSet;
 import com.cmcorg.engine.web.model.model.dto.NotNullId;
-import com.cmcorg.engine.web.redisson.enums.RedisKeyEnum;
 import com.cmcorg.engine.web.redisson.util.RedissonUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
@@ -158,7 +158,7 @@ public class GameRoomCurrentServiceImpl extends ServiceImpl<GameRoomCurrentMappe
         }
 
         // 上锁：防止重复创建房间
-        return RedissonUtil.doLock(RedisKeyEnum.PRE_ROOM_CONFIG_ID.name() + dto.getRoomConfigId(), () -> {
+        return RedissonUtil.doLock(SocketServerRedisKeyEnum.PRE_ROOM_CONFIG_ID.name() + dto.getRoomConfigId(), () -> {
 
             // 获取：所有的 当前房间
             List<GameRoomCurrentDO> gameRoomCurrentDOList = lambdaQuery()
@@ -428,7 +428,7 @@ public class GameRoomCurrentServiceImpl extends ServiceImpl<GameRoomCurrentMappe
         String uuid = IdUtil.simpleUUID();
 
         // 存储：连接码到 redis里
-        redissonClient.getBucket(RedisKeyEnum.PRE_NETTY_TCP_PROTO_BUF_CONNECT_SECURITY_CODE + uuid)
+        redissonClient.getBucket(SocketServerRedisKeyEnum.PRE_NETTY_TCP_PROTO_BUF_CONNECT_SECURITY_CODE + uuid)
             .set(currentUserId + GameAuthConstant.AUTH_SEPARATOR + currentGameUserId,
                 BaseConstant.SHORT_CODE_EXPIRE_TIME, TimeUnit.MILLISECONDS);
 

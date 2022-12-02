@@ -11,11 +11,11 @@ import com.cmcorg.engine.game.auth.util.GameAuthUserUtil;
 import com.cmcorg.engine.game.netty.tcp.protobuf.exception.BaseException;
 import com.cmcorg.engine.game.netty.tcp.protobuf.model.enums.NettyOtherPathEnum;
 import com.cmcorg.engine.game.netty.tcp.protobuf.model.vo.NettyTcpProtoBufVO;
+import com.cmcorg.engine.game.socket.server.model.enums.SocketServerRedisKeyEnum;
 import com.cmcorg.engine.web.auth.exception.BaseBizCodeEnum;
 import com.cmcorg.engine.web.model.model.constant.LogTopicConstant;
 import com.cmcorg.engine.web.netty.boot.configuration.NettyBeanPostProcessor;
 import com.cmcorg.engine.web.netty.boot.exception.BizCodeEnum;
-import com.cmcorg.engine.web.redisson.enums.RedisKeyEnum;
 import com.cmcorg.engine.web.util.util.VoidFunc2;
 import com.google.protobuf.ByteString;
 import io.netty.channel.Channel;
@@ -66,8 +66,8 @@ public class NettyTcpProtoBufServerHandlerHelper {
             ConnectProto.SecurityRequest securityRequest =
                 ConnectProto.SecurityRequest.parseFrom(baseRequest.getBody());
 
-            RBucket<String> bucket = redissonClient
-                .getBucket(RedisKeyEnum.PRE_NETTY_TCP_PROTO_BUF_CONNECT_SECURITY_CODE + securityRequest.getCode());
+            RBucket<String> bucket = redissonClient.getBucket(
+                SocketServerRedisKeyEnum.PRE_NETTY_TCP_PROTO_BUF_CONNECT_SECURITY_CODE + securityRequest.getCode());
 
             String redisValue = bucket.get();
 

@@ -79,6 +79,7 @@ public class NettyTcpProtoBufServer implements CommandLineRunner, DisposableBean
                 NettyBeanPostProcessor.getMappingMapSize());
 
             channelFuture.channel().closeFuture().sync(); // 阻塞线程，监听关闭事件
+
         } finally {
             parentGroup.shutdownGracefully(); // 释放线程池资源
             childGroup.shutdownGracefully();
