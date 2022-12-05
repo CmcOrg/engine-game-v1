@@ -297,10 +297,14 @@ public final class BaseProto {
     }
 
     @java.lang.Override
-    public Builder newBuilderForType() { return newBuilder(); }
+    public Builder newBuilderForType() {
+      return newBuilder();
+    }
+
     public static Builder newBuilder() {
       return DEFAULT_INSTANCE.toBuilder();
     }
+
     public static Builder newBuilder(protobuf.proto.BaseProto.BaseRequest prototype) {
       return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
     }
@@ -667,7 +671,7 @@ public final class BaseProto {
             } catch (com.google.protobuf.UninitializedMessageException e) {
               throw e.asInvalidProtocolBufferException().setUnfinishedMessage(builder.buildPartial());
             } catch (java.io.IOException e) {
-              throw new com.google.protobuf.InvalidProtocolBufferException(e)
+          throw new com.google.protobuf.InvalidProtocolBufferException(e)
               .setUnfinishedMessage(builder.buildPartial());
         }
         return builder.buildPartial();
@@ -1320,7 +1324,6 @@ public final class BaseProto {
       }
 
       private java.lang.Object uri_ = "";
-
       /**
        * <pre>
        * 路径
@@ -1509,7 +1512,6 @@ public final class BaseProto {
       }
 
       private java.lang.Object msg_ = "";
-
       /**
        * <pre>
        * 响应描述
