@@ -473,9 +473,10 @@ public class GameRoomCurrentServiceImpl extends ServiceImpl<GameRoomCurrentMappe
                         // 找到：连接数最少的 socket服务器
                         atomicGameSocketServerDO.set(getMinConnectSocketServerDO(gameSocketServerDOList));
 
-                        log.info("用户重连：原来的 socket服务器不存在，重新获取一个，socket服务器信息：{}", atomicGameSocketServerDO);
+                        log.info("用户重连：原来的 socket服务器不存在，重新获取一个，socket服务器信息：{}", atomicGameSocketServerDO.get());
 
                         gameRoomCurrentDO.setSocketServerId(atomicGameSocketServerDO.get().getId());
+                        updateById(gameRoomCurrentDO); // 更新数据库：新的 socket服务器 id
 
                         return null;
 
