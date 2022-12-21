@@ -446,14 +446,15 @@ public class GameRoomCurrentServiceImpl extends ServiceImpl<GameRoomCurrentMappe
             }
 
             // 上锁：防止重复指定 socket服务器
-            RedissonUtil
+            return RedissonUtil
                 .doLock(SocketServerRedisKeyEnum.PRE_RECONNECT_CURRENT_ROOM_ID.name() + gameRoomCurrentDO.getId(),
                     () -> {
 
                         // 再获取一次，是否已经存在 socket服务器
                         GameRoomCurrentDO newRoomCurrentDO =
                             lambdaQuery().eq(GameRoomCurrentDO::getId, gameUserConnectDO.getRoomCurrentId())
-                                .select(GameRoomCurrentDO::getSocketServerId, GameRoomCurrentDO::getRoomConfigId).one();
+                                .select(GameRoomCurrentDO::getSocketServerId, GameRoomCurrentDO::getRoomConfigId,
+                                    GameRoomCurrentDO::getId).one();
 
                         GameSocketServerDO newSocketServerDO = gameSocketServerService.lambdaQuery()
                             .eq(BaseEntity::getId, newRoomCurrentDO.getSocketServerId())
