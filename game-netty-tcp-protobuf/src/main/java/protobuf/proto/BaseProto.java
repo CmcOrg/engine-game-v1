@@ -87,11 +87,14 @@ public final class BaseProto {
     @java.lang.Override
     protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable internalGetFieldAccessorTable() {
       return protobuf.proto.BaseProto.internal_static_BaseRequest_fieldAccessorTable
-          .ensureFieldAccessorsInitialized(protobuf.proto.BaseProto.BaseRequest.class, protobuf.proto.BaseProto.BaseRequest.Builder.class);
+          .ensureFieldAccessorsInitialized(protobuf.proto.BaseProto.BaseRequest.class,
+              protobuf.proto.BaseProto.BaseRequest.Builder.class);
     }
 
     public static final int URI_FIELD_NUMBER = 1;
-    private volatile java.lang.Object uri_;
+    @SuppressWarnings("serial")
+    private volatile java.lang.Object uri_ = "";
+
     /**
      * <pre>
      * 路径
@@ -130,12 +133,12 @@ public final class BaseProto {
         uri_ = b;
         return b;
       } else {
-        return (com.google.protobuf.ByteString) ref;
+        return (com.google.protobuf.ByteString)ref;
       }
     }
 
     public static final int BODY_FIELD_NUMBER = 2;
-    private com.google.protobuf.ByteString body_;
+    private com.google.protobuf.ByteString body_ = com.google.protobuf.ByteString.EMPTY;
     /**
      * <pre>
      * body
@@ -297,14 +300,10 @@ public final class BaseProto {
     }
 
     @java.lang.Override
-    public Builder newBuilderForType() {
-      return newBuilder();
-    }
-
+    public Builder newBuilderForType() { return newBuilder(); }
     public static Builder newBuilder() {
       return DEFAULT_INSTANCE.toBuilder();
     }
-
     public static Builder newBuilder(protobuf.proto.BaseProto.BaseRequest prototype) {
       return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
     }
@@ -350,10 +349,9 @@ public final class BaseProto {
       @java.lang.Override
       public Builder clear() {
         super.clear();
+        bitField0_ = 0;
         uri_ = "";
-
         body_ = com.google.protobuf.ByteString.EMPTY;
-
         return this;
       }
 
@@ -380,10 +378,21 @@ public final class BaseProto {
       @java.lang.Override
       public protobuf.proto.BaseProto.BaseRequest buildPartial() {
         protobuf.proto.BaseProto.BaseRequest result = new protobuf.proto.BaseProto.BaseRequest(this);
-        result.uri_ = uri_;
-        result.body_ = body_;
+        if (bitField0_ != 0) {
+          buildPartial0(result);
+        }
         onBuilt();
         return result;
+      }
+
+      private void buildPartial0(protobuf.proto.BaseProto.BaseRequest result) {
+        int from_bitField0_ = bitField0_;
+        if (((from_bitField0_ & 0x00000001) != 0)) {
+          result.uri_ = uri_;
+        }
+        if (((from_bitField0_ & 0x00000002) != 0)) {
+          result.body_ = body_;
+        }
       }
 
       @java.lang.Override
@@ -433,6 +442,7 @@ public final class BaseProto {
         }
         if (!other.getUri().isEmpty()) {
           uri_ = other.uri_;
+          bitField0_ |= 0x00000001;
           onChanged();
         }
         if (other.getBody() != com.google.protobuf.ByteString.EMPTY) {
@@ -464,12 +474,12 @@ public final class BaseProto {
                 break;
               case 10: {
                 uri_ = input.readStringRequireUtf8();
-
+                bitField0_ |= 0x00000001;
                 break;
               } // case 10
               case 18: {
                 body_ = input.readBytes();
-
+                bitField0_ |= 0x00000002;
                 break;
               } // case 18
               default: {
@@ -487,6 +497,7 @@ public final class BaseProto {
         } // finally
         return this;
       }
+      private int bitField0_;
 
       private java.lang.Object uri_ = "";
       /**
@@ -543,13 +554,13 @@ public final class BaseProto {
        */
       public Builder setUri(java.lang.String value) {
         if (value == null) {
-    throw new NullPointerException();
-  }
-
+          throw new NullPointerException(); }
         uri_ = value;
+        bitField0_ |= 0x00000001;
         onChanged();
         return this;
       }
+
       /**
        * <pre>
        * 路径
@@ -559,8 +570,8 @@ public final class BaseProto {
        * @return This builder for chaining.
        */
       public Builder clearUri() {
-
         uri_ = getDefaultInstance().getUri();
+        bitField0_ = (bitField0_ & ~0x00000001);
         onChanged();
         return this;
       }
@@ -573,14 +584,11 @@ public final class BaseProto {
        * @param value The bytes for uri to set.
        * @return This builder for chaining.
        */
-      public Builder setUriBytes(
-          com.google.protobuf.ByteString value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  checkByteStringIsUtf8(value);
-
+      public Builder setUriBytes(com.google.protobuf.ByteString value) {
+        if (value == null) { throw new NullPointerException(); }
+        checkByteStringIsUtf8(value);
         uri_ = value;
+        bitField0_ |= 0x00000001;
         onChanged();
         return this;
       }
@@ -611,8 +619,8 @@ public final class BaseProto {
         if (value == null) {
           throw new NullPointerException();
         }
-
         body_ = value;
+        bitField0_ |= 0x00000002;
         onChanged();
         return this;
       }
@@ -627,7 +635,7 @@ public final class BaseProto {
        * @return This builder for chaining.
        */
       public Builder clearBody() {
-
+        bitField0_ = (bitField0_ & ~0x00000002);
         body_ = getDefaultInstance().getBody();
         onChanged();
         return this;
@@ -797,15 +805,14 @@ public final class BaseProto {
     }
 
     @java.lang.Override
-    protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
-        internalGetFieldAccessorTable() {
+    protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable internalGetFieldAccessorTable() {
       return protobuf.proto.BaseProto.internal_static_BaseResponse_fieldAccessorTable
-          .ensureFieldAccessorsInitialized(
-              protobuf.proto.BaseProto.BaseResponse.class, protobuf.proto.BaseProto.BaseResponse.Builder.class);
+          .ensureFieldAccessorsInitialized(protobuf.proto.BaseProto.BaseResponse.class, protobuf.proto.BaseProto.BaseResponse.Builder.class);
     }
 
     public static final int URI_FIELD_NUMBER = 1;
-    private volatile java.lang.Object uri_;
+    @SuppressWarnings("serial")
+    private volatile java.lang.Object uri_ = "";
 
     /**
      * <pre>
@@ -838,8 +845,7 @@ public final class BaseProto {
      * @return The bytes for uri.
      */
     @java.lang.Override
-    public com.google.protobuf.ByteString
-        getUriBytes() {
+    public com.google.protobuf.ByteString getUriBytes() {
       java.lang.Object ref = uri_;
       if (ref instanceof java.lang.String) {
         com.google.protobuf.ByteString b =
@@ -848,18 +854,20 @@ public final class BaseProto {
         uri_ = b;
         return b;
       } else {
-        return (com.google.protobuf.ByteString) ref;
+        return (com.google.protobuf.ByteString)ref;
       }
     }
 
     public static final int DATA_FIELD_NUMBER = 2;
-    private com.google.protobuf.ByteString data_;
+    private com.google.protobuf.ByteString data_ = com.google.protobuf.ByteString.EMPTY;
+
     /**
      * <pre>
      * 数据
      * </pre>
      *
      * <code>bytes data = 2;</code>
+     *
      * @return The data.
      */
     @java.lang.Override
@@ -868,7 +876,8 @@ public final class BaseProto {
     }
 
     public static final int CODE_FIELD_NUMBER = 3;
-    private int code_;
+    private int code_ = 0;
+
     /**
      * <pre>
      * 响应代码，成功返回：200
@@ -883,7 +892,8 @@ public final class BaseProto {
     }
 
     public static final int MSG_FIELD_NUMBER = 4;
-    private volatile java.lang.Object msg_;
+    @SuppressWarnings("serial")
+    private volatile java.lang.Object msg_ = "";
 
     /**
      * <pre>
@@ -899,8 +909,7 @@ public final class BaseProto {
       if (ref instanceof java.lang.String) {
         return (java.lang.String) ref;
       } else {
-        com.google.protobuf.ByteString bs =
-            (com.google.protobuf.ByteString)ref;
+        com.google.protobuf.ByteString bs = (com.google.protobuf.ByteString)ref;
         java.lang.String s = bs.toStringUtf8();
         msg_ = s;
         return s;
@@ -920,7 +929,7 @@ public final class BaseProto {
         getMsgBytes() {
       java.lang.Object ref = msg_;
       if (ref instanceof java.lang.String) {
-        com.google.protobuf.ByteString b = com.google.protobuf.ByteString.copyFromUtf8((java.lang.String)ref);
+        com.google.protobuf.ByteString b = com.google.protobuf.ByteString.copyFromUtf8((java.lang.String) ref);
         msg_ = b;
         return b;
       } else {
@@ -977,7 +986,8 @@ public final class BaseProto {
           .computeBytesSize(2, data_);
       }
       if (code_ != 0) {
-        size += com.google.protobuf.CodedOutputStream.computeInt32Size(3, code_);
+        size += com.google.protobuf.CodedOutputStream
+          .computeInt32Size(3, code_);
       }
       if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(msg_)) {
         size += com.google.protobuf.GeneratedMessageV3.computeStringSize(4, msg_);
@@ -1097,11 +1107,11 @@ public final class BaseProto {
       return com.google.protobuf.GeneratedMessageV3.parseWithIOException(PARSER, input);
     }
 
-    public static protobuf.proto.BaseProto.BaseResponse parseFrom(com.google.protobuf.CodedInputStream input,
+    public static protobuf.proto.BaseProto.BaseResponse parseFrom(
+        com.google.protobuf.CodedInputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
-      return com.google.protobuf.GeneratedMessageV3
-          .parseWithIOException(PARSER, input, extensionRegistry);
+      return com.google.protobuf.GeneratedMessageV3.parseWithIOException(PARSER, input, extensionRegistry);
     }
 
     @java.lang.Override
@@ -1142,8 +1152,7 @@ public final class BaseProto {
       protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
           internalGetFieldAccessorTable() {
         return protobuf.proto.BaseProto.internal_static_BaseResponse_fieldAccessorTable
-            .ensureFieldAccessorsInitialized(
-                protobuf.proto.BaseProto.BaseResponse.class, protobuf.proto.BaseProto.BaseResponse.Builder.class);
+            .ensureFieldAccessorsInitialized(protobuf.proto.BaseProto.BaseResponse.class, protobuf.proto.BaseProto.BaseResponse.Builder.class);
       }
 
       // Construct using protobuf.proto.BaseProto.BaseResponse.newBuilder()
@@ -1159,20 +1168,16 @@ public final class BaseProto {
       @java.lang.Override
       public Builder clear() {
         super.clear();
+        bitField0_ = 0;
         uri_ = "";
-
         data_ = com.google.protobuf.ByteString.EMPTY;
-
         code_ = 0;
-
         msg_ = "";
-
         return this;
       }
 
       @java.lang.Override
-      public com.google.protobuf.Descriptors.Descriptor
-          getDescriptorForType() {
+      public com.google.protobuf.Descriptors.Descriptor getDescriptorForType() {
         return protobuf.proto.BaseProto.internal_static_BaseResponse_descriptor;
       }
 
@@ -1193,12 +1198,27 @@ public final class BaseProto {
       @java.lang.Override
       public protobuf.proto.BaseProto.BaseResponse buildPartial() {
         protobuf.proto.BaseProto.BaseResponse result = new protobuf.proto.BaseProto.BaseResponse(this);
-        result.uri_ = uri_;
-        result.data_ = data_;
-        result.code_ = code_;
-        result.msg_ = msg_;
+        if (bitField0_ != 0) {
+          buildPartial0(result);
+        }
         onBuilt();
         return result;
+      }
+
+      private void buildPartial0(protobuf.proto.BaseProto.BaseResponse result) {
+        int from_bitField0_ = bitField0_;
+        if (((from_bitField0_ & 0x00000001) != 0)) {
+          result.uri_ = uri_;
+        }
+        if (((from_bitField0_ & 0x00000002) != 0)) {
+          result.data_ = data_;
+        }
+        if (((from_bitField0_ & 0x00000004) != 0)) {
+          result.code_ = code_;
+        }
+        if (((from_bitField0_ & 0x00000008) != 0)) {
+          result.msg_ = msg_;
+        }
       }
 
       @java.lang.Override
@@ -1228,7 +1248,8 @@ public final class BaseProto {
       }
 
       @java.lang.Override
-      public Builder addRepeatedField(com.google.protobuf.Descriptors.FieldDescriptor field,
+      public Builder addRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
           java.lang.Object value) {
         return super.addRepeatedField(field, value);
       }
@@ -1249,6 +1270,7 @@ public final class BaseProto {
         }
         if (!other.getUri().isEmpty()) {
           uri_ = other.uri_;
+          bitField0_ |= 0x00000001;
           onChanged();
         }
         if (other.getData() != com.google.protobuf.ByteString.EMPTY) {
@@ -1259,6 +1281,7 @@ public final class BaseProto {
         }
         if (!other.getMsg().isEmpty()) {
           msg_ = other.msg_;
+          bitField0_ |= 0x00000008;
           onChanged();
         }
         this.mergeUnknownFields(other.getUnknownFields());
@@ -1273,9 +1296,8 @@ public final class BaseProto {
 
       @java.lang.Override
       public Builder mergeFrom(
-          com.google.protobuf.CodedInputStream input,
-          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-          throws java.io.IOException {
+          com.google.protobuf.CodedInputStream input, com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+      throws java.io.IOException {
         if (extensionRegistry == null) {
           throw new java.lang.NullPointerException();
         }
@@ -1289,22 +1311,22 @@ public final class BaseProto {
                 break;
               case 10: {
                 uri_ = input.readStringRequireUtf8();
-
+                bitField0_ |= 0x00000001;
                 break;
               } // case 10
               case 18: {
                 data_ = input.readBytes();
-
+                bitField0_ |= 0x00000002;
                 break;
               } // case 18
               case 24: {
                 code_ = input.readInt32();
-
+                bitField0_ |= 0x00000004;
                 break;
               } // case 24
               case 34: {
                 msg_ = input.readStringRequireUtf8();
-
+                bitField0_ |= 0x00000008;
                 break;
               } // case 34
               default: {
@@ -1322,8 +1344,10 @@ public final class BaseProto {
         } // finally
         return this;
       }
+      private int bitField0_;
 
       private java.lang.Object uri_ = "";
+
       /**
        * <pre>
        * 路径
@@ -1337,15 +1361,14 @@ public final class BaseProto {
         java.lang.Object ref = uri_;
         if (!(ref instanceof java.lang.String)) {
           com.google.protobuf.ByteString bs =
-              (com.google.protobuf.ByteString) ref;
+              (com.google.protobuf.ByteString)ref;
           java.lang.String s = bs.toStringUtf8();
           uri_ = s;
           return s;
         } else {
-          return (java.lang.String)ref;
+          return (java.lang.String) ref;
         }
       }
-
       /**
        * <pre>
        * 路径
@@ -1360,8 +1383,7 @@ public final class BaseProto {
         java.lang.Object ref = uri_;
         if (ref instanceof String) {
           com.google.protobuf.ByteString b =
-              com.google.protobuf.ByteString.copyFromUtf8(
-                  (java.lang.String) ref);
+              com.google.protobuf.ByteString.copyFromUtf8((java.lang.String)ref);
           uri_ = b;
           return b;
         } else {
@@ -1377,13 +1399,10 @@ public final class BaseProto {
        * @param value The uri to set.
        * @return This builder for chaining.
        */
-      public Builder setUri(
-          java.lang.String value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-
+      public Builder setUri(java.lang.String value) {
+        if (value == null) { throw new NullPointerException(); }
         uri_ = value;
+        bitField0_ |= 0x00000001;
         onChanged();
         return this;
       }
@@ -1396,11 +1415,12 @@ public final class BaseProto {
        * @return This builder for chaining.
        */
       public Builder clearUri() {
-
         uri_ = getDefaultInstance().getUri();
+        bitField0_ = (bitField0_ & ~0x00000001);
         onChanged();
         return this;
       }
+
       /**
        * <pre>
        * 路径
@@ -1412,12 +1432,10 @@ public final class BaseProto {
        */
       public Builder setUriBytes(
           com.google.protobuf.ByteString value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  checkByteStringIsUtf8(value);
-
+        if (value == null) { throw new NullPointerException(); }
+        checkByteStringIsUtf8(value);
         uri_ = value;
+        bitField0_ |= 0x00000001;
         onChanged();
         return this;
       }
@@ -1445,11 +1463,9 @@ public final class BaseProto {
        * @return This builder for chaining.
        */
       public Builder setData(com.google.protobuf.ByteString value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-
+        if (value == null) { throw new NullPointerException(); }
         data_ = value;
+        bitField0_ |= 0x00000002;
         onChanged();
         return this;
       }
@@ -1462,13 +1478,14 @@ public final class BaseProto {
        * @return This builder for chaining.
        */
       public Builder clearData() {
-
+        bitField0_ = (bitField0_ & ~0x00000002);
         data_ = getDefaultInstance().getData();
         onChanged();
         return this;
       }
 
       private int code_ ;
+
       /**
        * <pre>
        * 响应代码，成功返回：200
@@ -1493,6 +1510,7 @@ public final class BaseProto {
       public Builder setCode(int value) {
 
         code_ = value;
+        bitField0_ |= 0x00000004;
         onChanged();
         return this;
       }
@@ -1505,7 +1523,7 @@ public final class BaseProto {
        * @return This builder for chaining.
        */
       public Builder clearCode() {
-
+        bitField0_ = (bitField0_ & ~0x00000004);
         code_ = 0;
         onChanged();
         return this;
@@ -1525,7 +1543,7 @@ public final class BaseProto {
         java.lang.Object ref = msg_;
         if (!(ref instanceof java.lang.String)) {
           com.google.protobuf.ByteString bs =
-              (com.google.protobuf.ByteString) ref;
+              (com.google.protobuf.ByteString)ref;
           java.lang.String s = bs.toStringUtf8();
           msg_ = s;
           return s;
@@ -1564,13 +1582,12 @@ public final class BaseProto {
        * @param value The msg to set.
        * @return This builder for chaining.
        */
-      public Builder setMsg(
-          java.lang.String value) {
+      public Builder setMsg(java.lang.String value) {
         if (value == null) {
           throw new NullPointerException();
         }
-
         msg_ = value;
+        bitField0_ |= 0x00000008;
         onChanged();
         return this;
       }
@@ -1585,8 +1602,8 @@ public final class BaseProto {
        * @return This builder for chaining.
        */
       public Builder clearMsg() {
-
         msg_ = getDefaultInstance().getMsg();
+        bitField0_ = (bitField0_ & ~0x00000008);
         onChanged();
         return this;
       }
@@ -1602,12 +1619,10 @@ public final class BaseProto {
        * @return This builder for chaining.
        */
       public Builder setMsgBytes(com.google.protobuf.ByteString value) {
-        if (value == null) {
-          throw new NullPointerException();
-  }
-  checkByteStringIsUtf8(value);
-
+        if (value == null) { throw new NullPointerException(); }
+        checkByteStringIsUtf8(value);
         msg_ = value;
+        bitField0_ |= 0x00000008;
         onChanged();
         return this;
       }
