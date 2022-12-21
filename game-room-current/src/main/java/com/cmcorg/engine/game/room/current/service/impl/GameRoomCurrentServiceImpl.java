@@ -407,7 +407,8 @@ public class GameRoomCurrentServiceImpl extends ServiceImpl<GameRoomCurrentMappe
 
         GameRoomCurrentDO gameRoomCurrentDO =
             lambdaQuery().eq(GameRoomCurrentDO::getId, gameUserConnectDO.getRoomCurrentId())
-                .select(GameRoomCurrentDO::getSocketServerId, GameRoomCurrentDO::getRoomConfigId).one();
+                .select(GameRoomCurrentDO::getSocketServerId, GameRoomCurrentDO::getRoomConfigId,
+                    GameRoomCurrentDO::getId).one();
         if (gameRoomCurrentDO == null) {
             reconnectRoomRemoveInvalidData(currentUserId, null, 1); // 移除：不可用的数据
             log.info("操作失败：没有找到 当前房间信息，无法重连");
