@@ -25,6 +25,7 @@ import com.cmcorg.engine.web.auth.exception.BaseBizCodeEnum;
 import com.cmcorg.engine.web.auth.model.entity.BaseEntity;
 import com.cmcorg.engine.web.auth.model.vo.ApiResultVO;
 import com.cmcorg.engine.web.auth.util.AuthUserUtil;
+import com.cmcorg.engine.web.auth.util.TransactionUtil;
 import com.cmcorg.engine.web.model.model.constant.BaseConstant;
 import com.cmcorg.engine.web.model.model.constant.LogTopicConstant;
 import com.cmcorg.engine.web.model.model.dto.NotEmptyIdSet;
@@ -35,7 +36,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.redisson.api.RedissonClient;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.util.*;
@@ -107,7 +107,6 @@ public class GameRoomCurrentServiceImpl extends ServiceImpl<GameRoomCurrentMappe
      * 加入房间
      */
     @Override
-    @Transactional
     public GameRoomCurrentJoinRoomVO joinRoom(GameRoomCurrentJoinRoomDTO dto) {
 
         // 先执行：重连房间
@@ -119,12 +118,17 @@ public class GameRoomCurrentServiceImpl extends ServiceImpl<GameRoomCurrentMappe
 
         Long currentUserId = AuthUserUtil.getCurrentUserId();
 
-        // 获取：socket服务器
-        GameSocketServerDO gameSocketServerDO = getGameSocketServerDO(dto, currentUserId);
-        log.info("找到的 socket服务器信息：{}", gameSocketServerDO);
+        // 携带事务，执行
+        return TransactionUtil.transactionExec(() -> {
 
-        // 拿到：返回值
-        return getGameRoomCurrentJoinRoomVO(currentUserId, gameSocketServerDO);
+            // 获取：socket服务器
+            GameSocketServerDO gameSocketServerDO = getGameSocketServerDO(dto, currentUserId);
+            log.info("找到的 socket服务器信息：{}", gameSocketServerDO);
+
+            // 拿到：返回值
+            return getGameRoomCurrentJoinRoomVO(currentUserId, gameSocketServerDO);
+
+        })
 
     }
 
@@ -385,6 +389,7 @@ public class GameRoomCurrentServiceImpl extends ServiceImpl<GameRoomCurrentMappe
         gameRoomCurrentJoinRoomVO.setSecurityCode(uuid);
 
         return gameRoomCurrentJoinRoomVO;
+
     }
 
     /**
@@ -398,14 +403,17 @@ public class GameRoomCurrentServiceImpl extends ServiceImpl<GameRoomCurrentMappe
         Long currentUserId = AuthUserUtil.getCurrentUserId();
 
         GameUserConnectDO gameUserConnectDO =
-            gameUserConnectService.lambdaQuery().select(GameUserConnectDO::getRoomCurrentId).eq(GameUserConnectDO::getId, currentUserId).one();
+            gameUserConnectService.lambdaQuery().select(GameUserConnectDO::getRoomCurrentId)
+                .eq(GameUserConnectDO::getId, currentUserId).one();
         if (gameUserConnectDO == null) {
             log.info("操作失败：没有连接信息，无法重连");
             return null;
         }
 
-        GameRoomCurrentDO gameRoomCurrentDO = lambdaQuery().eq(GameRoomCurrentDO::getId, gameUserConnectDO.getRoomCurrentId())
-            .select(GameRoomCurrentDO::getSocketServerId, GameRoomCurrentDO::getRoomConfigId, GameRoomCurrentDO::getId).one();
+        GameRoomCurrentDO gameRoomCurrentDO =
+            lambdaQuery().eq(GameRoomCurrentDO::getId, gameUserConnectDO.getRoomCurrentId())
+                .select(GameRoomCurrentDO::getSocketServerId, GameRoomCurrentDO::getRoomConfigId,
+                    GameRoomCurrentDO::getId).one();
         if (gameRoomCurrentDO == null) {
             reconnectRoomRemoveInvalidData(currentUserId, null, 1); // 移除：不可用的数据
             log.info("操作失败：没有找到 当前房间信息，无法重连");
