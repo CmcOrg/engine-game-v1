@@ -486,6 +486,7 @@ public class GameRoomCurrentServiceImpl extends ServiceImpl<GameRoomCurrentMappe
 
         log.info("用户重连成功，用户主键 id：{}", currentUserId);
         return getGameRoomCurrentJoinRoomVO(currentUserId, gameSocketServerDO);
+
     }
 
     /**
