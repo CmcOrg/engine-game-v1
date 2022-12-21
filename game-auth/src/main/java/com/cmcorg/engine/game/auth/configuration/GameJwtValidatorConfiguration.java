@@ -5,6 +5,7 @@ import cn.hutool.json.JSONObject;
 import cn.hutool.jwt.JWT;
 import com.cmcorg.engine.web.auth.configuration.security.IJwtValidatorConfiguration;
 import com.cmcorg.engine.web.auth.filter.JwtAuthorizationFilter;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Configuration;
 
 import javax.servlet.http.HttpServletResponse;
@@ -12,6 +13,7 @@ import java.util.List;
 import java.util.Set;
 
 @Configuration
+@Slf4j
 public class GameJwtValidatorConfiguration implements IJwtValidatorConfiguration {
 
     // 游戏用户 id
@@ -43,6 +45,9 @@ public class GameJwtValidatorConfiguration implements IJwtValidatorConfiguration
                 "/user/gameUser/jwt")) {
             WHITE_SET.add("/game/areaService" + subItem);
         }
+
+        log.info("不进行校验的白名单 uri开头集合：{}", WHITE_START_LIST);
+        log.info("不进行校验的白名单 uriSet：{}", WHITE_SET);
 
     }
 
