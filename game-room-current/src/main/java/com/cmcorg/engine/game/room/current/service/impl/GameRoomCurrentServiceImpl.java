@@ -433,8 +433,7 @@ public class GameRoomCurrentServiceImpl extends ServiceImpl<GameRoomCurrentMappe
             gameSocketServerService.lambdaQuery().eq(BaseEntity::getId, gameRoomCurrentDO.getSocketServerId())
                 .select(GameSocketServerDO::getHost, GameSocketServerDO::getPort).one();
 
-        AtomicReference<GameSocketServerDO> atomicGameSocketServerDO = new AtomicReference<>(gameSocketServerDO);
-        if (atomicGameSocketServerDO.get() == null) {
+        if (gameSocketServerDO == null) {
 
             // 获取：所有的 socket服务器
             List<GameSocketServerDO> gameSocketServerDOList = gameSocketServerService.lambdaQuery()
@@ -473,21 +472,22 @@ public class GameRoomCurrentServiceImpl extends ServiceImpl<GameRoomCurrentMappe
                             gameRoomConfigDO);
 
                         // 找到：连接数最少的 socket服务器
-                        atomicGameSocketServerDO.set(getMinConnectSocketServerDO(gameSocketServerDOList));
+                        GameSocketServerDO minConnectSocketServerDO =
+                            getMinConnectSocketServerDO(gameSocketServerDOList);
 
-                        log.info("用户重连：原来的 socket服务器不存在，重新获取一个，socket服务器信息：{}", atomicGameSocketServerDO.get());
+                        log.info("用户重连：原来的 socket服务器不存在，重新获取一个，socket服务器信息：{}", minConnectSocketServerDO);
 
-                        gameRoomCurrentDO.setSocketServerId(atomicGameSocketServerDO.get().getId());
+                        gameRoomCurrentDO.setSocketServerId(minConnectSocketServerDO.getId());
                         updateById(gameRoomCurrentDO); // 更新数据库：新的 socket服务器 id
 
-                        return null;
+                        return getGameRoomCurrentJoinRoomVO(currentUserId, minConnectSocketServerDO);
 
                     });
 
         }
 
         log.info("用户重连成功，用户主键 id：{}", currentUserId);
-        return getGameRoomCurrentJoinRoomVO(currentUserId, atomicGameSocketServerDO.get());
+        return getGameRoomCurrentJoinRoomVO(currentUserId, gameSocketServerDO);
 
     }
 
