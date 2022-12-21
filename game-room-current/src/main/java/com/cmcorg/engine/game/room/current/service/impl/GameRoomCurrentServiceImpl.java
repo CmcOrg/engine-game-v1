@@ -126,6 +126,7 @@ public class GameRoomCurrentServiceImpl extends ServiceImpl<GameRoomCurrentMappe
 
             // 拿到：返回值
             return getGameRoomCurrentJoinRoomVO(currentUserId, gameSocketServerDO);
+
         }
     }
 
