@@ -113,6 +113,7 @@ public class GameRoomCurrentServiceImpl extends ServiceImpl<GameRoomCurrentMappe
 
         Long currentGameUserId = GameAuthUserUtil.getCurrentGameUserId();
 
+        // 加锁进行，防止：产生多个连接
         return RedissonUtil
             .doLock(SocketServerRedisKeyEnum.PRE_JOIN_ROOM_GAME_USER_ID.name() + currentGameUserId, () -> {
 
@@ -408,9 +409,8 @@ public class GameRoomCurrentServiceImpl extends ServiceImpl<GameRoomCurrentMappe
      * 重连房间
      * 备注：不要加事务，因为：无法重连时要：移除 不可用的数据
      */
-    @Override
     @Nullable
-    public GameRoomCurrentJoinRoomVO reconnectRoom(Long currentUserId, Long currentGameUserId) {
+    private GameRoomCurrentJoinRoomVO reconnectRoom(Long currentUserId, Long currentGameUserId) {
 
         GameUserConnectDO gameUserConnectDO =
             gameUserConnectService.lambdaQuery().select(GameUserConnectDO::getRoomCurrentId)

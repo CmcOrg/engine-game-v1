@@ -20,8 +20,6 @@ public interface GameRoomCurrentService extends IService<GameRoomCurrentDO> {
 
     GameRoomCurrentJoinRoomVO joinRoom(GameRoomCurrentJoinRoomDTO dto);
 
-    GameRoomCurrentJoinRoomVO reconnectRoom(Long currentUserId, Long currentGameUserId);
-
     String exitRoom();
 
 }
