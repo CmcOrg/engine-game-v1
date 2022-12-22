@@ -17,7 +17,7 @@ import com.cmcorg.engine.game.room.current.model.vo.GameRoomCurrentJoinRoomVO;
 import com.cmcorg.engine.game.room.current.model.vo.GameRoomCurrentPageVO;
 import com.cmcorg.engine.game.room.current.service.GameRoomCurrentService;
 import com.cmcorg.engine.game.socket.server.model.entity.GameSocketServerDO;
-import com.cmcorg.engine.game.socket.server.model.enums.SocketServerRedisKeyEnum;
+import com.cmcorg.engine.game.socket.server.model.enums.GameRedisKeyEnum;
 import com.cmcorg.engine.game.socket.server.service.GameSocketServerService;
 import com.cmcorg.engine.game.user.connect.model.entity.GameUserConnectDO;
 import com.cmcorg.engine.game.user.connect.service.GameUserConnectService;
@@ -114,30 +114,28 @@ public class GameRoomCurrentServiceImpl extends ServiceImpl<GameRoomCurrentMappe
         Long currentGameUserId = GameAuthUserUtil.getCurrentGameUserId();
 
         // 加锁进行，防止：产生多个连接
-        return RedissonUtil
-            .doLock(SocketServerRedisKeyEnum.PRE_JOIN_ROOM_GAME_USER_ID.name() + currentGameUserId, () -> {
+        return RedissonUtil.doLock(GameRedisKeyEnum.PRE_JOIN_ROOM_GAME_USER_ID.name() + currentGameUserId, () -> {
 
-                // 先执行：重连房间
-                GameRoomCurrentJoinRoomVO gameRoomCurrentJoinRoomVO = reconnectRoom(currentUserId, currentGameUserId);
+            // 先执行：重连房间
+            GameRoomCurrentJoinRoomVO gameRoomCurrentJoinRoomVO = reconnectRoom(currentUserId, currentGameUserId);
 
-                if (gameRoomCurrentJoinRoomVO != null) {
-                    return gameRoomCurrentJoinRoomVO;
-                }
+            if (gameRoomCurrentJoinRoomVO != null) {
+                return gameRoomCurrentJoinRoomVO;
+            }
 
-                // 携带事务，执行
-                return TransactionUtil.transactionExec(() -> {
+            // 携带事务，执行
+            return TransactionUtil.transactionExec(() -> {
 
-                    // 获取：socket服务器
-                    GameSocketServerDO gameSocketServerDO =
-                        getGameSocketServerDO(dto, currentUserId, currentGameUserId);
-                    log.info("找到的 socket服务器信息：{}", gameSocketServerDO);
+                // 获取：socket服务器
+                GameSocketServerDO gameSocketServerDO = getGameSocketServerDO(dto, currentUserId, currentGameUserId);
+                log.info("找到的 socket服务器信息：{}", gameSocketServerDO);
 
-                    // 拿到：返回值
-                    return getGameRoomCurrentJoinRoomVO(currentUserId, gameSocketServerDO, currentGameUserId);
-
-                });
+                // 拿到：返回值
+                return getGameRoomCurrentJoinRoomVO(currentUserId, gameSocketServerDO, currentGameUserId);
 
             });
+
+        });
 
     }
 
@@ -171,7 +169,7 @@ public class GameRoomCurrentServiceImpl extends ServiceImpl<GameRoomCurrentMappe
         }
 
         // 上锁：防止重复创建房间
-        return RedissonUtil.doLock(SocketServerRedisKeyEnum.PRE_ROOM_CONFIG_ID.name() + dto.getRoomConfigId(), () -> {
+        return RedissonUtil.doLock(GameRedisKeyEnum.PRE_ROOM_CONFIG_ID.name() + dto.getRoomConfigId(), () -> {
 
             // 获取：所有的 当前房间
             List<GameRoomCurrentDO> gameRoomCurrentDOList = getAllGameRoomCurrentDOList();
@@ -392,7 +390,7 @@ public class GameRoomCurrentServiceImpl extends ServiceImpl<GameRoomCurrentMappe
         String uuid = IdUtil.simpleUUID();
 
         // 存储：连接码到 redis里
-        redissonClient.getBucket(SocketServerRedisKeyEnum.PRE_NETTY_TCP_PROTO_BUF_CONNECT_SECURITY_CODE + uuid)
+        redissonClient.getBucket(GameRedisKeyEnum.PRE_NETTY_TCP_PROTO_BUF_CONNECT_SECURITY_CODE + uuid)
             .set(currentUserId + GameAuthConstant.AUTH_SEPARATOR + currentGameUserId,
                 BaseConstant.SHORT_CODE_EXPIRE_TIME, TimeUnit.MILLISECONDS);
 
@@ -481,7 +479,7 @@ public class GameRoomCurrentServiceImpl extends ServiceImpl<GameRoomCurrentMappe
 
         // 上锁：防止重复指定 socket服务器
         return RedissonUtil
-            .doLock(SocketServerRedisKeyEnum.PRE_RECONNECT_CURRENT_ROOM_ID.name() + gameRoomCurrentDO.getId(), () -> {
+            .doLock(GameRedisKeyEnum.PRE_RECONNECT_CURRENT_ROOM_ID.name() + gameRoomCurrentDO.getId(), () -> {
 
                 // 再获取一次，是否已经存在 socket服务器
                 GameRoomCurrentDO newRoomCurrentDO =
@@ -596,6 +594,7 @@ public class GameRoomCurrentServiceImpl extends ServiceImpl<GameRoomCurrentMappe
         reconnectRoomRemoveInvalidData(GameAuthUserUtil.getCurrentGameUserId(), null, 1);
 
         return BaseBizCodeEnum.OK;
+
     }
 
 }

@@ -5,7 +5,7 @@ import cn.hutool.core.util.BooleanUtil;
 import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
 import com.cmcorg.engine.game.auth.configuration.GameJwtValidatorConfiguration;
-import com.cmcorg.engine.game.socket.server.model.enums.SocketServerRedisKeyEnum;
+import com.cmcorg.engine.game.socket.server.model.enums.GameRedisKeyEnum;
 import com.cmcorg.engine.web.auth.util.MyJwtUtil;
 import com.cmcorg.engine.web.model.model.constant.BaseConstant;
 import com.cmcorg.engine.web.model.model.constant.LogTopicConstant;
@@ -151,17 +151,16 @@ public class NettyTcpProtoBufServerHandler extends ChannelInboundHandlerAdapter 
 
                         // 身份认证成功，之后的处理
                         RedissonUtil
-                            .doLock(SocketServerRedisKeyEnum.PRE_SOCKET_AUTH_GAME_USER_ID.name() + tempGameUserId,
-                                () -> {
+                            .doLock(GameRedisKeyEnum.PRE_SOCKET_AUTH_GAME_USER_ID.name() + tempGameUserId, () -> {
 
-                                    Channel channel = GAME_USER_ID_CHANNEL_MAP.get(tempGameUserId);
+                                Channel channel = GAME_USER_ID_CHANNEL_MAP.get(tempGameUserId);
 
-                                    if (channel != null) {
-                                        channel.close(); // 移除之前的通道，备注：这里是异步的
-                                    }
+                                if (channel != null) {
+                                    channel.close(); // 移除之前的通道，备注：这里是异步的
+                                }
 
-                                    ctx.channel().attr(USER_ID_KEY).set(tempUserId);
-                                    ctx.channel().attr(GAME_USER_ID_KEY).set(tempGameUserId);
+                                ctx.channel().attr(USER_ID_KEY).set(tempUserId);
+                                ctx.channel().attr(GAME_USER_ID_KEY).set(tempGameUserId);
                                     ctx.channel().attr(ACTIVE_TIME).set(System.currentTimeMillis());
 
                             GAME_USER_ID_CHANNEL_MAP.put(tempGameUserId, ctx.channel());
