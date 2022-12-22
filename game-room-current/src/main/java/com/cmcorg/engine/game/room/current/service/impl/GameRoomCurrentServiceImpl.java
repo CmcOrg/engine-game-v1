@@ -113,24 +113,30 @@ public class GameRoomCurrentServiceImpl extends ServiceImpl<GameRoomCurrentMappe
 
         Long currentGameUserId = GameAuthUserUtil.getCurrentGameUserId();
 
-        // 先执行：重连房间
-        GameRoomCurrentJoinRoomVO gameRoomCurrentJoinRoomVO = reconnectRoom(currentUserId, currentGameUserId);
+        return RedissonUtil
+            .doLock(SocketServerRedisKeyEnum.PRE_JOIN_ROOM_GAME_USER_ID.name() + currentGameUserId, () -> {
 
-        if (gameRoomCurrentJoinRoomVO != null) {
-            return gameRoomCurrentJoinRoomVO;
-        }
+                // 先执行：重连房间
+                GameRoomCurrentJoinRoomVO gameRoomCurrentJoinRoomVO = reconnectRoom(currentUserId, currentGameUserId);
 
-        // 携带事务，执行
-        return TransactionUtil.transactionExec(() -> {
+                if (gameRoomCurrentJoinRoomVO != null) {
+                    return gameRoomCurrentJoinRoomVO;
+                }
 
-            // 获取：socket服务器
-            GameSocketServerDO gameSocketServerDO = getGameSocketServerDO(dto, currentUserId, currentGameUserId);
-            log.info("找到的 socket服务器信息：{}", gameSocketServerDO);
+                // 携带事务，执行
+                return TransactionUtil.transactionExec(() -> {
 
-            // 拿到：返回值
-            return getGameRoomCurrentJoinRoomVO(currentUserId, gameSocketServerDO, currentGameUserId);
+                    // 获取：socket服务器
+                    GameSocketServerDO gameSocketServerDO =
+                        getGameSocketServerDO(dto, currentUserId, currentGameUserId);
+                    log.info("找到的 socket服务器信息：{}", gameSocketServerDO);
 
-        });
+                    // 拿到：返回值
+                    return getGameRoomCurrentJoinRoomVO(currentUserId, gameSocketServerDO, currentGameUserId);
+
+                });
+
+            });
 
     }
 

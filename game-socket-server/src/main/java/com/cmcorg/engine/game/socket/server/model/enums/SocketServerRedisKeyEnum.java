@@ -11,6 +11,8 @@ import com.cmcorg.engine.web.redisson.model.interfaces.IRedisKey;
 public enum SocketServerRedisKeyEnum implements IRedisKey {
 
     // 【PRE_】开头 ↓
+    PRE_JOIN_ROOM_GAME_USER_ID, // 加入房间时，锁【游戏用户主键 id】
+
     PRE_RECONNECT_CURRENT_ROOM_ID, // 重连时，当前房间主键 id锁，锁【主键 id】
 
     PRE_SOCKET_AUTH_GAME_USER_ID, // socket 认证时的 gameUserId锁，锁【gameUserId】
