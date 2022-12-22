@@ -104,9 +104,8 @@ public class GameRoomConfigServiceImpl extends ServiceImpl<GameRoomConfigMapper,
     public Page<GameRoomConfigDO> userPage() {
 
         return lambdaQuery().select(BaseEntity::getId, GameRoomConfigDO::getName, GameRoomConfigDO::getPlayType,
-            GameRoomConfigDO::getRoomType, GameRoomConfigDO::getRoomType, GameRoomConfigDO::getGotMoneyType,
-            GameRoomConfigDO::getRoomExpType).eq(BaseEntityNoId::getEnableFlag, true)
-            .orderByDesc(GameRoomConfigDO::getOrderNo).page(new Page<>(1, -1));
+            GameRoomConfigDO::getRoomType, GameRoomConfigDO::getGotMoneyType, GameRoomConfigDO::getRoomExpType)
+            .eq(BaseEntityNoId::getEnableFlag, true).orderByDesc(GameRoomConfigDO::getOrderNo).page(new Page<>(1, -1));
 
     }
 
