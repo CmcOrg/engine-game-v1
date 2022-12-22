@@ -201,7 +201,8 @@ public class GameRoomCurrentServiceImpl extends ServiceImpl<GameRoomCurrentMappe
 
             if (gameRoomCurrentDO.getCurrentConnectTotal() < gameRoomConfigDO.getMaxUserTotal()) {
                 // 直接加入该 房间
-                return joinGameRoomCurrent(currentUserId, gameSocketServerDOList, gameRoomCurrentDO, currentGameUserId);
+                return joinGameRoomCurrent(currentUserId, gameSocketServerDOList, gameRoomCurrentDO, currentGameUserId,
+                    gameRoomConfigDO);
             } else {
                 // 这里是人数超过房间人数上限的情况，则判断是否可以创建新的房间，如果可以，则创建
                 if (gameRoomConfigDO.getMaxRoomTotal() > roomCurrentDOList.size()) {
@@ -224,7 +225,7 @@ public class GameRoomCurrentServiceImpl extends ServiceImpl<GameRoomCurrentMappe
      */
     @NotNull
     private GameSocketServerDO joinGameRoomCurrent(Long currentUserId, List<GameSocketServerDO> gameSocketServerDOList,
-        GameRoomCurrentDO gameRoomCurrentDO, Long currentGameUserId) {
+        GameRoomCurrentDO gameRoomCurrentDO, Long currentGameUserId, GameRoomConfigDO gameRoomConfigDO) {
 
         GameUserConnectDO gameUserConnectDO = new GameUserConnectDO();
         gameUserConnectDO.setGameUserId(currentGameUserId);
@@ -246,11 +247,12 @@ public class GameRoomCurrentServiceImpl extends ServiceImpl<GameRoomCurrentMappe
 
         } else {
 
-            ApiResultVO.error("操作失败：房间没有 socket服务器，请联系管理员");
+            // 获取一个新的 socket服务器
+            return reconnectRoomGetNewSocketServer(gameRoomCurrentDO, gameRoomConfigDO, currentGameUserId,
+                gameSocketServerDOList);
 
         }
 
-        return null; // 备注：这里不会执行，只是为了语法检查
     }
 
     /**
@@ -442,8 +444,9 @@ public class GameRoomCurrentServiceImpl extends ServiceImpl<GameRoomCurrentMappe
                 .select(GameSocketServerDO::getHost, GameSocketServerDO::getPort).one();
 
         if (gameSocketServerDO == null) {
-            return reconnectRoomByNewSocketServer(currentUserId, gameUserConnectDO, gameRoomCurrentDO, gameRoomConfigDO,
-                currentGameUserId);
+            // 获取一个新的 socket服务器
+            gameSocketServerDO =
+                reconnectRoomGetNewSocketServer(gameRoomCurrentDO, gameRoomConfigDO, currentGameUserId, null);
         }
 
         log.info("用户重连成功，游戏用户主键 id：{}", currentGameUserId);
@@ -452,21 +455,24 @@ public class GameRoomCurrentServiceImpl extends ServiceImpl<GameRoomCurrentMappe
     }
 
     /**
-     * 重连房间，通过一个新的 socket服务器
+     * 重连房间，获取一个新的 socket服务器
      */
     @NotNull
-    private GameRoomCurrentJoinRoomVO reconnectRoomByNewSocketServer(Long currentUserId,
-        GameUserConnectDO gameUserConnectDO, GameRoomCurrentDO gameRoomCurrentDO, GameRoomConfigDO gameRoomConfigDO,
-        Long currentGameUserId) {
+    private GameSocketServerDO reconnectRoomGetNewSocketServer(GameRoomCurrentDO gameRoomCurrentDO,
+        GameRoomConfigDO gameRoomConfigDO, Long currentGameUserId, List<GameSocketServerDO> gameSocketServerDOList) {
 
-        // 获取：所有的 socket服务器
-        List<GameSocketServerDO> gameSocketServerDOList = gameSocketServerService.lambdaQuery()
-            .select(GameSocketServerDO::getId, GameSocketServerDO::getHost, GameSocketServerDO::getPort,
-                GameSocketServerDO::getMaxConnect).list();
+        if (gameSocketServerDOList == null) {
+            // 获取：所有的 socket服务器
+            gameSocketServerDOList = gameSocketServerService.lambdaQuery()
+                .select(GameSocketServerDO::getId, GameSocketServerDO::getHost, GameSocketServerDO::getPort,
+                    GameSocketServerDO::getMaxConnect).list();
+        }
 
         if (gameSocketServerDOList.size() == 0) {
             ApiResultVO.error("操作失败：找不到 socket服务器，请联系管理员");
         }
+
+        List<GameSocketServerDO> finalGameSocketServerDOList = gameSocketServerDOList;
 
         // 上锁：防止重复指定 socket服务器
         return RedissonUtil
@@ -474,7 +480,7 @@ public class GameRoomCurrentServiceImpl extends ServiceImpl<GameRoomCurrentMappe
 
                 // 再获取一次，是否已经存在 socket服务器
                 GameRoomCurrentDO newRoomCurrentDO =
-                    lambdaQuery().eq(GameRoomCurrentDO::getId, gameUserConnectDO.getRoomCurrentId())
+                    lambdaQuery().eq(GameRoomCurrentDO::getId, gameRoomCurrentDO.getId())
                         .select(GameRoomCurrentDO::getSocketServerId, GameRoomCurrentDO::getRoomConfigId,
                             GameRoomCurrentDO::getId).one();
 
@@ -484,25 +490,25 @@ public class GameRoomCurrentServiceImpl extends ServiceImpl<GameRoomCurrentMappe
 
                 if (newSocketServerDO != null) {
                     log.info("用户重连成功，获取到 socket服务器，游戏用户主键 id：{}", currentGameUserId);
-                    return getGameRoomCurrentJoinRoomVO(currentUserId, newSocketServerDO, currentGameUserId);
+                    return newSocketServerDO;
                 }
 
                 // 获取：所有的 当前房间
                 List<GameRoomCurrentDO> gameRoomCurrentDOList = getAllGameRoomCurrentDOList();
 
                 // 组装：连接数
-                setConnectTotalAndGetConfigRoomCurrentList(gameRoomCurrentDOList, gameSocketServerDOList,
+                setConnectTotalAndGetConfigRoomCurrentList(gameRoomCurrentDOList, finalGameSocketServerDOList,
                     gameRoomConfigDO);
 
                 // 找到：连接数最少的 socket服务器
-                GameSocketServerDO minConnectSocketServerDO = getMinConnectSocketServerDO(gameSocketServerDOList);
+                GameSocketServerDO minConnectSocketServerDO = getMinConnectSocketServerDO(finalGameSocketServerDOList);
 
                 log.info("用户重连：原来的 socket服务器不存在，重新获取一个，socket服务器信息：{}", minConnectSocketServerDO);
 
                 gameRoomCurrentDO.setSocketServerId(minConnectSocketServerDO.getId());
                 updateById(gameRoomCurrentDO); // 更新数据库：新的 socket服务器 id
 
-                return getGameRoomCurrentJoinRoomVO(currentUserId, minConnectSocketServerDO, currentGameUserId);
+                return minConnectSocketServerDO;
 
             });
 
