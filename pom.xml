@@ -18,7 +18,6 @@
         <module>game-netty-tcp-protobuf</module>
         <module>game-socket-server</module>
         <module>game-auth</module>
-        <module>game-start</module>
         <module>game-area-service</module>
         <module>game-room-config</module>
         <module>game-room-current</module>
