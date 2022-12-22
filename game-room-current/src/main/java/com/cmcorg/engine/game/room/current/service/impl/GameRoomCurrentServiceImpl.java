@@ -454,7 +454,7 @@ public class GameRoomCurrentServiceImpl extends ServiceImpl<GameRoomCurrentMappe
                 reconnectRoomGetNewSocketServer(gameRoomCurrentDO, gameRoomConfigDO, currentGameUserId, null);
         }
 
-        log.info("用户重连成功，游戏用户主键 id：{}", currentGameUserId);
+        log.info("用户重连成功，游戏用户主键 id：{}，socket服务器信息：{}", currentGameUserId, gameSocketServerDO);
         return getGameRoomCurrentJoinRoomVO(currentUserId, gameSocketServerDO, currentGameUserId);
 
     }
