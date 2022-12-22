@@ -14,6 +14,12 @@
 
     <dependencies>
 
+        <!-- game-netty-tcp-protobuf -->
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>game-netty-tcp-protobuf</artifactId>
+        </dependency>
+
         <!-- game-auth -->
         <dependency>
             <groupId>${project.groupId}</groupId>
@@ -107,12 +113,6 @@
         </dependency>
 
         <!-- 服务-基础引擎-web-v1 ↑ -->
-
-        <!-- game-netty-tcp-protobuf -->
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>game-netty-tcp-protobuf</artifactId>
-        </dependency>
 
         <!-- 其他依赖 ↓ -->
 
