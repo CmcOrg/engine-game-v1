@@ -240,8 +240,7 @@ public class GameRoomCurrentServiceImpl extends ServiceImpl<GameRoomCurrentMappe
         if (findFirstOptional.isPresent()) {
 
             GameSocketServerDO gameSocketServerDO = findFirstOptional.get();
-            log.info("直接加入该 房间，房间 id：{}，host：{}，port：{}", gameRoomCurrentDO.getId(), gameSocketServerDO.getHost(),
-                gameSocketServerDO.getPort());
+            log.info("直接加入该 房间，房间 id：{}，socket服务器信息：{}", gameRoomCurrentDO.getId(), gameSocketServerDO);
 
             return gameSocketServerDO;
 
@@ -411,7 +410,7 @@ public class GameRoomCurrentServiceImpl extends ServiceImpl<GameRoomCurrentMappe
             gameUserConnectService.lambdaQuery().select(GameUserConnectDO::getRoomCurrentId)
                 .eq(GameUserConnectDO::getGameUserId, currentGameUserId).one();
         if (gameUserConnectDO == null) {
-            log.info("操作失败：没有连接信息，无法重连");
+            log.info("没有连接信息，无法重连");
             return null;
         }
 
@@ -421,7 +420,7 @@ public class GameRoomCurrentServiceImpl extends ServiceImpl<GameRoomCurrentMappe
                     GameRoomCurrentDO::getId).one();
         if (gameRoomCurrentDO == null) {
             reconnectRoomRemoveInvalidData(currentGameUserId, null, 1); // 移除：不可用的数据
-            log.info("操作失败：没有找到 当前房间信息，无法重连");
+            log.info("没有找到 当前房间信息，无法重连");
             return null;
         }
 
@@ -429,13 +428,13 @@ public class GameRoomCurrentServiceImpl extends ServiceImpl<GameRoomCurrentMappe
             .eq(BaseEntity::getId, gameRoomCurrentDO.getRoomConfigId()).one();
         if (gameRoomConfigDO == null) {
             reconnectRoomRemoveInvalidData(currentGameUserId, gameRoomCurrentDO, 2); // 移除：不可用的数据
-            log.info("操作失败：没有找到 房间配置信息，无法重连");
+            log.info("没有找到 房间配置信息，无法重连");
             return null;
         }
 
         if (gameRoomConfigDO.getPlayType().equals(GameRoomConfigPlayTypeEnum.HALL)) {
             reconnectRoomRemoveInvalidData(currentGameUserId, gameRoomCurrentDO, 1); // 移除：不可用的数据
-            log.info("操作失败：大厅类型房间，无法重连");
+            log.info("大厅类型房间，无法重连");
             return null;
         }
 
