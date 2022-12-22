@@ -1,9 +1,6 @@
 package com.cmcorg.engine.game.user.connect.model.entity;
 
-import com.baomidou.mybatisplus.annotation.FieldFill;
-import com.baomidou.mybatisplus.annotation.TableField;
-import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.annotation.TableName;
+import com.baomidou.mybatisplus.annotation.*;
 import com.cmcorg.engine.web.model.generate.model.annotation.RequestClass;
 import com.cmcorg.engine.web.model.generate.model.constant.WebModelConstant;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -17,12 +14,15 @@ import java.util.Date;
 @Schema(description = "子表：用户连接，主表：用户")
 public class GameUserConnectDO {
 
-    @TableId
-    @Schema(description = "用户主键 id")
-    private Long id;
+    @TableId(type = IdType.INPUT)
+    @Schema(description = "游戏用户主键 id")
+    private Long gameUserId;
 
     @Schema(description = "当前房间主键 id")
     private Long roomCurrentId;
+
+    @Schema(description = "用户主键 id")
+    private Long userId;
 
     @TableField(fill = FieldFill.INSERT)
     @Schema(description = "创建时间")

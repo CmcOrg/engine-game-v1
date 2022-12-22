@@ -23,9 +23,13 @@ public class GameUserConnectServiceImpl extends ServiceImpl<GameUserConnectMappe
     @Override
     public Page<GameUserConnectDO> myPage(GameUserConnectPageDTO dto) {
 
-        return lambdaQuery().like(StrUtil.isNotBlank(Convert.toStr(dto.getId())), GameUserConnectDO::getId, dto.getId())
+        return lambdaQuery()
+            .like(StrUtil.isNotBlank(Convert.toStr(dto.getGameUserId())), GameUserConnectDO::getGameUserId,
+                dto.getGameUserId())
+            .like(StrUtil.isNotBlank(Convert.toStr(dto.getUserId())), GameUserConnectDO::getUserId, dto.getUserId())
             .like(StrUtil.isNotBlank(Convert.toStr(dto.getRoomCurrentId())), GameUserConnectDO::getRoomCurrentId,
                 dto.getRoomCurrentId()).orderByDesc(GameUserConnectDO::getUpdateTime).page(dto.getPage(true));
+
     }
 
     /**
@@ -33,7 +37,9 @@ public class GameUserConnectServiceImpl extends ServiceImpl<GameUserConnectMappe
      */
     @Override
     public GameUserConnectDO infoById(NotNullId notNullId) {
+
         return getById(notNullId.getId());
+
     }
 
     /**
@@ -45,6 +51,7 @@ public class GameUserConnectServiceImpl extends ServiceImpl<GameUserConnectMappe
         removeByIds(notEmptyIdSet.getIdSet());
 
         return BaseBizCodeEnum.OK;
+
     }
 
 }

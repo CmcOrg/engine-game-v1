@@ -109,24 +109,26 @@ public class GameRoomCurrentServiceImpl extends ServiceImpl<GameRoomCurrentMappe
     @Override
     public GameRoomCurrentJoinRoomVO joinRoom(GameRoomCurrentJoinRoomDTO dto) {
 
+        Long currentUserId = AuthUserUtil.getCurrentUserId();
+
+        Long currentGameUserId = GameAuthUserUtil.getCurrentGameUserId();
+
         // 先执行：重连房间
-        GameRoomCurrentJoinRoomVO gameRoomCurrentJoinRoomVO = reconnectRoom();
+        GameRoomCurrentJoinRoomVO gameRoomCurrentJoinRoomVO = reconnectRoom(currentUserId, currentGameUserId);
 
         if (gameRoomCurrentJoinRoomVO != null) {
             return gameRoomCurrentJoinRoomVO;
         }
 
-        Long currentUserId = AuthUserUtil.getCurrentUserId();
-
         // 携带事务，执行
         return TransactionUtil.transactionExec(() -> {
 
             // 获取：socket服务器
-            GameSocketServerDO gameSocketServerDO = getGameSocketServerDO(dto, currentUserId);
+            GameSocketServerDO gameSocketServerDO = getGameSocketServerDO(dto, currentUserId, currentGameUserId);
             log.info("找到的 socket服务器信息：{}", gameSocketServerDO);
 
             // 拿到：返回值
-            return getGameRoomCurrentJoinRoomVO(currentUserId, gameSocketServerDO);
+            return getGameRoomCurrentJoinRoomVO(currentUserId, gameSocketServerDO, currentGameUserId);
 
         });
 
@@ -140,7 +142,8 @@ public class GameRoomCurrentServiceImpl extends ServiceImpl<GameRoomCurrentMappe
      * 3. 当前房间，可能没有对应的用户连接，但是用户连接不能没有不对应的 当前房间
      */
     @NotNull
-    private GameSocketServerDO getGameSocketServerDO(GameRoomCurrentJoinRoomDTO dto, Long currentUserId) {
+    private GameSocketServerDO getGameSocketServerDO(GameRoomCurrentJoinRoomDTO dto, Long currentUserId,
+        Long currentGameUserId) {
 
         // 找到：房间配置
         GameRoomConfigDO gameRoomConfigDO =
@@ -177,7 +180,8 @@ public class GameRoomCurrentServiceImpl extends ServiceImpl<GameRoomCurrentMappe
                     if (gameRoomConfigDO.getMaxUserTotal() != 0) {
                         log.info("没有房间，或者 当前房间配置下，没有房间，创建新的房间");
                         // 创建所有，通过：连接数最少的 socket服务器
-                        return createAllByMinConnectSocketServer(dto, currentUserId, gameSocketServerDOList);
+                        return createAllByMinConnectSocketServer(dto, currentUserId, gameSocketServerDOList,
+                            currentGameUserId);
                     } else {
                         ApiResultVO.error("操作失败：房间人数已满，请稍后再试");
                     }
@@ -197,13 +201,14 @@ public class GameRoomCurrentServiceImpl extends ServiceImpl<GameRoomCurrentMappe
 
             if (gameRoomCurrentDO.getCurrentConnectTotal() < gameRoomConfigDO.getMaxUserTotal()) {
                 // 直接加入该 房间
-                return joinGameRoomCurrent(currentUserId, gameSocketServerDOList, gameRoomCurrentDO);
+                return joinGameRoomCurrent(currentUserId, gameSocketServerDOList, gameRoomCurrentDO, currentGameUserId);
             } else {
                 // 这里是人数超过房间人数上限的情况，则判断是否可以创建新的房间，如果可以，则创建
                 if (gameRoomConfigDO.getMaxRoomTotal() > roomCurrentDOList.size()) {
                     log.info("人数超过房间人数上限，创建新的房间");
                     // 创建所有，通过：连接数最少的 socket服务器
-                    return createAllByMinConnectSocketServer(dto, currentUserId, gameSocketServerDOList);
+                    return createAllByMinConnectSocketServer(dto, currentUserId, gameSocketServerDOList,
+                        currentGameUserId);
                 } else {
                     ApiResultVO.error("操作失败：房间人数已满，请稍后再试");
                 }
@@ -219,11 +224,12 @@ public class GameRoomCurrentServiceImpl extends ServiceImpl<GameRoomCurrentMappe
      */
     @NotNull
     private GameSocketServerDO joinGameRoomCurrent(Long currentUserId, List<GameSocketServerDO> gameSocketServerDOList,
-        GameRoomCurrentDO gameRoomCurrentDO) {
+        GameRoomCurrentDO gameRoomCurrentDO, Long currentGameUserId) {
 
         GameUserConnectDO gameUserConnectDO = new GameUserConnectDO();
-        gameUserConnectDO.setId(currentUserId);
+        gameUserConnectDO.setGameUserId(currentGameUserId);
         gameUserConnectDO.setRoomCurrentId(gameRoomCurrentDO.getId());
+        gameUserConnectDO.setUserId(currentUserId);
         gameUserConnectService.save(gameUserConnectDO); // 保存到：数据库
 
         Optional<GameSocketServerDO> findFirstOptional =
@@ -252,7 +258,7 @@ public class GameRoomCurrentServiceImpl extends ServiceImpl<GameRoomCurrentMappe
      */
     @NotNull
     private GameSocketServerDO createAllByMinConnectSocketServer(GameRoomCurrentJoinRoomDTO dto, Long currentUserId,
-        List<GameSocketServerDO> gameSocketServerDOList) {
+        List<GameSocketServerDO> gameSocketServerDOList, Long currentGameUserId) {
 
         // 找到：连接数最少的 socket服务器
         GameSocketServerDO minConnectSocketServerDO = getMinConnectSocketServerDO(gameSocketServerDOList);
@@ -264,8 +270,9 @@ public class GameRoomCurrentServiceImpl extends ServiceImpl<GameRoomCurrentMappe
         save(gameRoomCurrentDO); // 保存到：数据库
 
         GameUserConnectDO gameUserConnectDO = new GameUserConnectDO();
-        gameUserConnectDO.setId(currentUserId);
+        gameUserConnectDO.setGameUserId(currentGameUserId);
         gameUserConnectDO.setRoomCurrentId(gameRoomCurrentDO.getId());
+        gameUserConnectDO.setUserId(currentUserId);
 
         gameUserConnectService.save(gameUserConnectDO); // 保存到：数据库
 
@@ -372,9 +379,7 @@ public class GameRoomCurrentServiceImpl extends ServiceImpl<GameRoomCurrentMappe
      */
     @NotNull
     private GameRoomCurrentJoinRoomVO getGameRoomCurrentJoinRoomVO(Long currentUserId,
-        GameSocketServerDO gameSocketServerDO) {
-
-        Long currentGameUserId = GameAuthUserUtil.getCurrentGameUserId();
+        GameSocketServerDO gameSocketServerDO, Long currentGameUserId) {
 
         String uuid = IdUtil.simpleUUID();
 
@@ -398,13 +403,11 @@ public class GameRoomCurrentServiceImpl extends ServiceImpl<GameRoomCurrentMappe
      */
     @Override
     @Nullable
-    public GameRoomCurrentJoinRoomVO reconnectRoom() {
-
-        Long currentUserId = AuthUserUtil.getCurrentUserId();
+    public GameRoomCurrentJoinRoomVO reconnectRoom(Long currentUserId, Long currentGameUserId) {
 
         GameUserConnectDO gameUserConnectDO =
             gameUserConnectService.lambdaQuery().select(GameUserConnectDO::getRoomCurrentId)
-                .eq(GameUserConnectDO::getId, currentUserId).one();
+                .eq(GameUserConnectDO::getGameUserId, currentGameUserId).one();
         if (gameUserConnectDO == null) {
             log.info("操作失败：没有连接信息，无法重连");
             return null;
@@ -415,7 +418,7 @@ public class GameRoomCurrentServiceImpl extends ServiceImpl<GameRoomCurrentMappe
                 .select(GameRoomCurrentDO::getSocketServerId, GameRoomCurrentDO::getRoomConfigId,
                     GameRoomCurrentDO::getId).one();
         if (gameRoomCurrentDO == null) {
-            reconnectRoomRemoveInvalidData(currentUserId, null, 1); // 移除：不可用的数据
+            reconnectRoomRemoveInvalidData(currentGameUserId, null, 1); // 移除：不可用的数据
             log.info("操作失败：没有找到 当前房间信息，无法重连");
             return null;
         }
@@ -423,13 +426,13 @@ public class GameRoomCurrentServiceImpl extends ServiceImpl<GameRoomCurrentMappe
         GameRoomConfigDO gameRoomConfigDO = gameRoomConfigService.lambdaQuery().select(GameRoomConfigDO::getPlayType)
             .eq(BaseEntity::getId, gameRoomCurrentDO.getRoomConfigId()).one();
         if (gameRoomConfigDO == null) {
-            reconnectRoomRemoveInvalidData(currentUserId, gameRoomCurrentDO, 2); // 移除：不可用的数据
+            reconnectRoomRemoveInvalidData(currentGameUserId, gameRoomCurrentDO, 2); // 移除：不可用的数据
             log.info("操作失败：没有找到 房间配置信息，无法重连");
             return null;
         }
 
         if (gameRoomConfigDO.getPlayType().equals(GameRoomConfigPlayTypeEnum.HALL)) {
-            reconnectRoomRemoveInvalidData(currentUserId, gameRoomCurrentDO, 1); // 移除：不可用的数据
+            reconnectRoomRemoveInvalidData(currentGameUserId, gameRoomCurrentDO, 1); // 移除：不可用的数据
             log.info("操作失败：大厅类型房间，无法重连");
             return null;
         }
@@ -439,12 +442,12 @@ public class GameRoomCurrentServiceImpl extends ServiceImpl<GameRoomCurrentMappe
                 .select(GameSocketServerDO::getHost, GameSocketServerDO::getPort).one();
 
         if (gameSocketServerDO == null) {
-            return reconnectRoomByNewSocketServer(currentUserId, gameUserConnectDO, gameRoomCurrentDO,
-                gameRoomConfigDO);
+            return reconnectRoomByNewSocketServer(currentUserId, gameUserConnectDO, gameRoomCurrentDO, gameRoomConfigDO,
+                currentGameUserId);
         }
 
-        log.info("用户重连成功，用户主键 id：{}", currentUserId);
-        return getGameRoomCurrentJoinRoomVO(currentUserId, gameSocketServerDO);
+        log.info("用户重连成功，游戏用户主键 id：{}", currentGameUserId);
+        return getGameRoomCurrentJoinRoomVO(currentUserId, gameSocketServerDO, currentGameUserId);
 
     }
 
@@ -453,7 +456,8 @@ public class GameRoomCurrentServiceImpl extends ServiceImpl<GameRoomCurrentMappe
      */
     @NotNull
     private GameRoomCurrentJoinRoomVO reconnectRoomByNewSocketServer(Long currentUserId,
-        GameUserConnectDO gameUserConnectDO, GameRoomCurrentDO gameRoomCurrentDO, GameRoomConfigDO gameRoomConfigDO) {
+        GameUserConnectDO gameUserConnectDO, GameRoomCurrentDO gameRoomCurrentDO, GameRoomConfigDO gameRoomConfigDO,
+        Long currentGameUserId) {
 
         // 获取：所有的 socket服务器
         List<GameSocketServerDO> gameSocketServerDOList = gameSocketServerService.lambdaQuery()
@@ -479,8 +483,8 @@ public class GameRoomCurrentServiceImpl extends ServiceImpl<GameRoomCurrentMappe
                         .select(GameSocketServerDO::getHost, GameSocketServerDO::getPort).one();
 
                 if (newSocketServerDO != null) {
-                    log.info("用户重连成功，获取到 socket服务器，用户主键 id：{}", currentUserId);
-                    return getGameRoomCurrentJoinRoomVO(currentUserId, newSocketServerDO);
+                    log.info("用户重连成功，获取到 socket服务器，游戏用户主键 id：{}", currentGameUserId);
+                    return getGameRoomCurrentJoinRoomVO(currentUserId, newSocketServerDO, currentGameUserId);
                 }
 
                 // 获取：所有的 当前房间
@@ -498,7 +502,7 @@ public class GameRoomCurrentServiceImpl extends ServiceImpl<GameRoomCurrentMappe
                 gameRoomCurrentDO.setSocketServerId(minConnectSocketServerDO.getId());
                 updateById(gameRoomCurrentDO); // 更新数据库：新的 socket服务器 id
 
-                return getGameRoomCurrentJoinRoomVO(currentUserId, minConnectSocketServerDO);
+                return getGameRoomCurrentJoinRoomVO(currentUserId, minConnectSocketServerDO, currentGameUserId);
 
             });
 
@@ -557,11 +561,11 @@ public class GameRoomCurrentServiceImpl extends ServiceImpl<GameRoomCurrentMappe
     /**
      * 重连房间：移除 不可用的数据
      */
-    private void reconnectRoomRemoveInvalidData(Long currentUserId, GameRoomCurrentDO gameRoomCurrentDO, int type) {
+    private void reconnectRoomRemoveInvalidData(Long currentGameUserId, GameRoomCurrentDO gameRoomCurrentDO, int type) {
 
         if (type >= 1) {
             // 移除：不可用的数据
-            gameUserConnectService.lambdaUpdate().eq(GameUserConnectDO::getId, currentUserId).remove();
+            gameUserConnectService.lambdaUpdate().eq(GameUserConnectDO::getGameUserId, currentGameUserId).remove();
         }
 
         if (type >= 2) {
@@ -578,7 +582,7 @@ public class GameRoomCurrentServiceImpl extends ServiceImpl<GameRoomCurrentMappe
     public String exitRoom() {
 
         // 移除：不可用的数据
-        reconnectRoomRemoveInvalidData(AuthUserUtil.getCurrentUserId(), null, 1);
+        reconnectRoomRemoveInvalidData(GameAuthUserUtil.getCurrentGameUserId(), null, 1);
 
         return BaseBizCodeEnum.OK;
     }

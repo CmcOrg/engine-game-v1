@@ -9,10 +9,13 @@ import lombok.EqualsAndHashCode;
 @Data
 public class GameUserConnectPageDTO extends MyPageDTO {
 
-    @Schema(description = "用户主键 id")
-    private Long id;
+    @Schema(description = "游戏用户主键 id")
+    private Long gameUserId;
 
     @Schema(description = "当前房间主键 id")
     private Long roomCurrentId;
+
+    @Schema(description = "用户主键 id")
+    private Long userId;
 
 }
