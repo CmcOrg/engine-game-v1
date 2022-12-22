@@ -31,6 +31,7 @@ import com.cmcorg.engine.web.model.model.constant.LogTopicConstant;
 import com.cmcorg.engine.web.model.model.dto.NotEmptyIdSet;
 import com.cmcorg.engine.web.model.model.dto.NotNullId;
 import com.cmcorg.engine.web.redisson.util.RedissonUtil;
+import com.cmcorg.engine.web.util.util.CallBack;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -126,12 +127,16 @@ public class GameRoomCurrentServiceImpl extends ServiceImpl<GameRoomCurrentMappe
             // 携带事务，执行
             return TransactionUtil.transactionExec(() -> {
 
+                CallBack<GameRoomConfigDO> gameRoomConfigDOCallBack = new CallBack<>();
+
                 // 获取：socket服务器
-                GameSocketServerDO gameSocketServerDO = getGameSocketServerDO(dto, currentUserId, currentGameUserId);
+                GameSocketServerDO gameSocketServerDO =
+                    getGameSocketServerDO(dto, currentUserId, currentGameUserId, gameRoomConfigDOCallBack);
                 log.info("找到的 socket服务器信息：{}", gameSocketServerDO);
 
                 // 拿到：返回值
-                return getGameRoomCurrentJoinRoomVO(currentUserId, gameSocketServerDO, currentGameUserId);
+                return getGameRoomCurrentJoinRoomVO(currentUserId, gameSocketServerDO, currentGameUserId,
+                    gameRoomConfigDOCallBack.getValue());
 
             });
 
@@ -148,16 +153,19 @@ public class GameRoomCurrentServiceImpl extends ServiceImpl<GameRoomCurrentMappe
      */
     @NotNull
     private GameSocketServerDO getGameSocketServerDO(GameRoomCurrentJoinRoomDTO dto, Long currentUserId,
-        Long currentGameUserId) {
+        Long currentGameUserId, CallBack<GameRoomConfigDO> gameRoomConfigDOCallBack) {
 
         // 找到：房间配置
         GameRoomConfigDO gameRoomConfigDO =
             gameRoomConfigService.lambdaQuery().eq(BaseEntity::getId, dto.getRoomConfigId())
-                .select(BaseEntity::getId, GameRoomConfigDO::getMaxRoomTotal, GameRoomConfigDO::getMaxUserTotal).one();
+                .select(BaseEntity::getId, GameRoomConfigDO::getMaxRoomTotal, GameRoomConfigDO::getMaxUserTotal,
+                    GameRoomConfigDO::getRoomType).one();
 
         if (gameRoomConfigDO == null) {
             ApiResultVO.error("操作失败：找不到房间配置信息，请联系管理员");
         }
+
+        gameRoomConfigDOCallBack.setValue(gameRoomConfigDO);
 
         // 获取：所有的 socket服务器
         List<GameSocketServerDO> gameSocketServerDOList = gameSocketServerService.lambdaQuery()
@@ -385,7 +393,7 @@ public class GameRoomCurrentServiceImpl extends ServiceImpl<GameRoomCurrentMappe
      */
     @NotNull
     private GameRoomCurrentJoinRoomVO getGameRoomCurrentJoinRoomVO(Long currentUserId,
-        GameSocketServerDO gameSocketServerDO, Long currentGameUserId) {
+        GameSocketServerDO gameSocketServerDO, Long currentGameUserId, GameRoomConfigDO gameRoomConfigDO) {
 
         String uuid = IdUtil.simpleUUID();
 
@@ -398,6 +406,7 @@ public class GameRoomCurrentServiceImpl extends ServiceImpl<GameRoomCurrentMappe
         gameRoomCurrentJoinRoomVO.setHost(gameSocketServerDO.getHost());
         gameRoomCurrentJoinRoomVO.setPort(gameSocketServerDO.getPort());
         gameRoomCurrentJoinRoomVO.setSecurityCode(uuid);
+        gameRoomCurrentJoinRoomVO.setCurrentRoomType(gameRoomConfigDO.getRoomType());
 
         return gameRoomCurrentJoinRoomVO;
 
@@ -428,8 +437,9 @@ public class GameRoomCurrentServiceImpl extends ServiceImpl<GameRoomCurrentMappe
             return null;
         }
 
-        GameRoomConfigDO gameRoomConfigDO = gameRoomConfigService.lambdaQuery().select(GameRoomConfigDO::getPlayType)
-            .eq(BaseEntity::getId, gameRoomCurrentDO.getRoomConfigId()).one();
+        GameRoomConfigDO gameRoomConfigDO =
+            gameRoomConfigService.lambdaQuery().select(GameRoomConfigDO::getPlayType, GameRoomConfigDO::getRoomType)
+                .eq(BaseEntity::getId, gameRoomCurrentDO.getRoomConfigId()).one();
         if (gameRoomConfigDO == null) {
             reconnectRoomRemoveInvalidData(currentGameUserId, gameRoomCurrentDO, 2); // 移除：不可用的数据
             log.info("没有找到 房间配置信息，无法重连");
@@ -453,7 +463,7 @@ public class GameRoomCurrentServiceImpl extends ServiceImpl<GameRoomCurrentMappe
         }
 
         log.info("用户重连成功，游戏用户主键 id：{}，socket服务器信息：{}", currentGameUserId, gameSocketServerDO);
-        return getGameRoomCurrentJoinRoomVO(currentUserId, gameSocketServerDO, currentGameUserId);
+        return getGameRoomCurrentJoinRoomVO(currentUserId, gameSocketServerDO, currentGameUserId, gameRoomConfigDO);
 
     }
 

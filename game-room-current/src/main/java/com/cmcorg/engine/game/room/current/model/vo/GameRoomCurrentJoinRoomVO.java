@@ -1,5 +1,6 @@
 package com.cmcorg.engine.game.room.current.model.vo;
 
+import com.cmcorg.engine.game.room.config.model.enums.GameRoomConfigRoomTypeEnum;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
@@ -14,5 +15,8 @@ public class GameRoomCurrentJoinRoomVO {
 
     @Schema(description = "连接码：用于获取：用户主键 id，格式：simple-uuid")
     private String securityCode;
+
+    @Schema(description = "当前所在的房间类型")
+    private GameRoomConfigRoomTypeEnum currentRoomType;
 
 }
