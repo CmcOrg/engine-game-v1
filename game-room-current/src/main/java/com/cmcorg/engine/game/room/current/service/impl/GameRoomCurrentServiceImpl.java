@@ -479,7 +479,7 @@ public class GameRoomCurrentServiceImpl extends ServiceImpl<GameRoomCurrentMappe
 
         if (gameSocketServerDOList == null) {
 
-            String roomTypeSeparatorStr = SeparatorUtil.verticalLine(gameRoomConfigDO.getRoomType().name());
+            String roomTypeSeparatorStr = SeparatorUtil.verticalLine(gameRoomConfigDO.getRoomType().getCode());
 
             // 通过，房间类型，获取：所有的 socket服务器
             gameSocketServerDOList = gameSocketServerService.lambdaQuery()
