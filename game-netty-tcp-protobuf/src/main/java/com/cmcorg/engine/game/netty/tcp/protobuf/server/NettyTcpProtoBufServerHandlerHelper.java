@@ -93,6 +93,7 @@ public class NettyTcpProtoBufServerHandlerHelper {
             try {
                 NettyTcpProtoBufVO.error(BaseBizCodeEnum.ILLEGAL_REQUEST);
             } catch (BaseException baseException) {
+                // 处理并发送：BaseException
                 handlerAndSendBaseException(
                     BaseProto.BaseRequest.newBuilder().setUri(NettyOtherPathEnum.CONNECT_SECURITY.getUri()).build(),
                     baseException, channel);
@@ -113,6 +114,7 @@ public class NettyTcpProtoBufServerHandlerHelper {
             try {
                 NettyTcpProtoBufVO.error(BaseBizCodeEnum.PARAMETER_CHECK_ERROR);
             } catch (BaseException baseException) {
+                // 处理并发送：BaseException
                 handlerAndSendBaseException(
                     BaseProto.BaseRequest.newBuilder().setUri(NettyOtherPathEnum.COMMON_ERROR.getUri()).build(),
                     baseException, null);
@@ -130,7 +132,7 @@ public class NettyTcpProtoBufServerHandlerHelper {
             try {
                 NettyTcpProtoBufVO.error(BizCodeEnum.PATH_NOT_FOUND.getMsg(), baseRequest.getUri());
             } catch (BaseException baseException) {
-                handlerAndSendBaseException(baseRequest, baseException, null);
+                handlerAndSendBaseException(baseRequest, baseException, null); // 处理并发送：BaseException
                 return true;
             }
         }
@@ -167,7 +169,7 @@ public class NettyTcpProtoBufServerHandlerHelper {
             log.info("处理业务异常");
             e.printStackTrace();
             if (e instanceof BaseException) {
-                handlerAndSendBaseException(baseRequest, (BaseException)e, null);
+                handlerAndSendBaseException(baseRequest, (BaseException)e, null); // 处理并发送：BaseException
             } else {
                 sendToSelf(NettyTcpProtoBufVO.sysError().setUri(baseRequest.getUri()));
             }
