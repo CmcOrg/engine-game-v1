@@ -4,7 +4,6 @@ import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.IdUtil;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.cmcorg.engine.game.auth.model.constant.GameAuthConstant;
 import com.cmcorg.engine.game.auth.util.GameAuthUserUtil;
 import com.cmcorg.engine.game.room.config.model.entity.GameRoomConfigDO;
 import com.cmcorg.engine.game.room.config.model.enums.GameRoomConfigPlayTypeEnum;
@@ -32,6 +31,7 @@ import com.cmcorg.engine.web.model.model.dto.NotEmptyIdSet;
 import com.cmcorg.engine.web.model.model.dto.NotNullId;
 import com.cmcorg.engine.web.redisson.util.RedissonUtil;
 import com.cmcorg.engine.web.util.util.CallBack;
+import com.cmcorg.engine.web.util.util.SeparatorUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -167,10 +167,13 @@ public class GameRoomCurrentServiceImpl extends ServiceImpl<GameRoomCurrentMappe
 
         gameRoomConfigDOCallBack.setValue(gameRoomConfigDO);
 
-        // 获取：所有的 socket服务器
+        String roomTypeSeparatorStr = SeparatorUtil.verticalLine(gameRoomConfigDO.getRoomType().name());
+
+        // 通过，房间类型，获取：所有的 socket服务器
         List<GameSocketServerDO> gameSocketServerDOList = gameSocketServerService.lambdaQuery()
             .select(GameSocketServerDO::getId, GameSocketServerDO::getHost, GameSocketServerDO::getPort,
-                GameSocketServerDO::getMaxConnect).list();
+                GameSocketServerDO::getMaxConnect)
+            .like(GameSocketServerDO::getAcceptRoomTypeCodeSeparatorStr, roomTypeSeparatorStr).list();
 
         if (gameSocketServerDOList.size() == 0) {
             ApiResultVO.error("操作失败：找不到 socket服务器，请联系管理员");
@@ -399,7 +402,7 @@ public class GameRoomCurrentServiceImpl extends ServiceImpl<GameRoomCurrentMappe
 
         // 存储：连接码到 redis里
         redissonClient.getBucket(GameRedisKeyEnum.PRE_NETTY_TCP_PROTO_BUF_CONNECT_SECURITY_CODE + uuid)
-            .set(currentUserId + GameAuthConstant.AUTH_SEPARATOR + currentGameUserId,
+            .set(currentUserId + SeparatorUtil.VERTICAL_LINE_SEPARATOR + currentGameUserId,
                 BaseConstant.SHORT_CODE_EXPIRE_TIME, TimeUnit.MILLISECONDS);
 
         GameRoomCurrentJoinRoomVO gameRoomCurrentJoinRoomVO = new GameRoomCurrentJoinRoomVO();
@@ -475,10 +478,15 @@ public class GameRoomCurrentServiceImpl extends ServiceImpl<GameRoomCurrentMappe
         GameRoomConfigDO gameRoomConfigDO, Long currentGameUserId, List<GameSocketServerDO> gameSocketServerDOList) {
 
         if (gameSocketServerDOList == null) {
-            // 获取：所有的 socket服务器
+
+            String roomTypeSeparatorStr = SeparatorUtil.verticalLine(gameRoomConfigDO.getRoomType().name());
+
+            // 通过，房间类型，获取：所有的 socket服务器
             gameSocketServerDOList = gameSocketServerService.lambdaQuery()
                 .select(GameSocketServerDO::getId, GameSocketServerDO::getHost, GameSocketServerDO::getPort,
-                    GameSocketServerDO::getMaxConnect).list();
+                    GameSocketServerDO::getMaxConnect)
+                .like(GameSocketServerDO::getAcceptRoomTypeCodeSeparatorStr, roomTypeSeparatorStr).list();
+
         }
 
         if (gameSocketServerDOList.size() == 0) {

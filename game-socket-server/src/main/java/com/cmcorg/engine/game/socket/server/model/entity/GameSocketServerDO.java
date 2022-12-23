@@ -25,8 +25,8 @@ public class GameSocketServerDO extends BaseEntity {
     @Schema(description = "最大连接数")
     private Integer maxConnect;
 
-    @Schema(description = "支持的，房间类型 codeSet字符串")
-    private String acceptRoomTypeCodeSetStr;
+    @Schema(description = "支持的，房间类型 code 分隔符连接字符串")
+    private String acceptRoomTypeCodeSeparatorStr;
 
     @TableField(exist = false)
     @Schema(description = "当前：连接数")

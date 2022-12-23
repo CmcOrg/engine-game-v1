@@ -6,7 +6,6 @@ import cn.hutool.core.util.ClassUtil;
 import cn.hutool.core.util.ReflectUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.json.JSONUtil;
-import com.cmcorg.engine.game.auth.model.constant.GameAuthConstant;
 import com.cmcorg.engine.game.auth.util.GameAuthUserUtil;
 import com.cmcorg.engine.game.netty.tcp.protobuf.exception.BaseException;
 import com.cmcorg.engine.game.netty.tcp.protobuf.model.enums.NettyOtherPathEnum;
@@ -16,6 +15,7 @@ import com.cmcorg.engine.web.auth.exception.BaseBizCodeEnum;
 import com.cmcorg.engine.web.model.model.constant.LogTopicConstant;
 import com.cmcorg.engine.web.netty.boot.configuration.NettyBeanPostProcessor;
 import com.cmcorg.engine.web.netty.boot.exception.BizCodeEnum;
+import com.cmcorg.engine.web.util.util.SeparatorUtil;
 import com.cmcorg.engine.web.util.util.VoidFunc2;
 import com.google.protobuf.ByteString;
 import io.netty.channel.Channel;
@@ -76,7 +76,7 @@ public class NettyTcpProtoBufServerHandlerHelper {
             }
 
             Long[] redisValueArr =
-                Convert.convert(Long[].class, StrUtil.splitTrim(redisValue, GameAuthConstant.AUTH_SEPARATOR));
+                Convert.convert(Long[].class, StrUtil.splitTrim(redisValue, SeparatorUtil.VERTICAL_LINE_SEPARATOR));
             if (redisValueArr.length != 2) {
                 throw new RuntimeException(); // 备注：会被下面捕捉该异常
             }

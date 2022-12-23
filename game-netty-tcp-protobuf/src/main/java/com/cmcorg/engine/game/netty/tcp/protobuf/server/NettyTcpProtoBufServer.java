@@ -2,7 +2,6 @@ package com.cmcorg.engine.game.netty.tcp.protobuf.server;
 
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.thread.ThreadUtil;
-import cn.hutool.json.JSONUtil;
 import com.cmcorg.engine.game.netty.tcp.protobuf.properties.SocketProperties;
 import com.cmcorg.engine.game.socket.server.model.entity.GameSocketServerDO;
 import com.cmcorg.engine.game.socket.server.service.GameSocketServerService;
@@ -10,6 +9,7 @@ import com.cmcorg.engine.web.auth.configuration.BaseConfiguration;
 import com.cmcorg.engine.web.auth.properties.CommonProperties;
 import com.cmcorg.engine.web.model.model.dto.NotEmptyIdSet;
 import com.cmcorg.engine.web.netty.boot.configuration.NettyBeanPostProcessor;
+import com.cmcorg.engine.web.util.util.SeparatorUtil;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelInitializer;
@@ -99,8 +99,8 @@ public class NettyTcpProtoBufServer implements CommandLineRunner, DisposableBean
         gameSocketServerDO.setHost(commonProperties.getInternetAddress());
         gameSocketServerDO.setPort(port);
         gameSocketServerDO.setMaxConnect(socketProperties.getMaxConnect()); // 最大连接数
-        gameSocketServerDO
-            .setAcceptRoomTypeCodeSetStr(JSONUtil.toJsonStr(socketProperties.getAcceptRoomTypeCodeSet())); // 支持的房间类型
+        gameSocketServerDO.setAcceptRoomTypeCodeSeparatorStr(
+            SeparatorUtil.verticalLine(socketProperties.getAcceptRoomTypeCodeSet())); // 支持的房间类型
         gameSocketServerDO.setEnableFlag(true);
         gameSocketServerDO.setDelFlag(false);
         gameSocketServerDO.setRemark("");
