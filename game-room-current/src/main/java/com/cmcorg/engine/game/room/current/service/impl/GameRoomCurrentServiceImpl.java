@@ -167,13 +167,13 @@ public class GameRoomCurrentServiceImpl extends ServiceImpl<GameRoomCurrentMappe
 
         gameRoomConfigDOCallBack.setValue(gameRoomConfigDO);
 
-        String roomTypeSeparatorStr = SeparatorUtil.verticalLine(gameRoomConfigDO.getRoomType().name());
+        String roomTypeCodeSeparatorStr = SeparatorUtil.verticalLine(gameRoomConfigDO.getRoomType().getCode());
 
         // 通过，房间类型，获取：所有的 socket服务器
         List<GameSocketServerDO> gameSocketServerDOList = gameSocketServerService.lambdaQuery()
             .select(GameSocketServerDO::getId, GameSocketServerDO::getHost, GameSocketServerDO::getPort,
                 GameSocketServerDO::getMaxConnect)
-            .like(GameSocketServerDO::getAcceptRoomTypeCodeSeparatorStr, roomTypeSeparatorStr).list();
+            .like(GameSocketServerDO::getAcceptRoomTypeCodeSeparatorStr, roomTypeCodeSeparatorStr).list();
 
         if (gameSocketServerDOList.size() == 0) {
             ApiResultVO.error("操作失败：找不到 socket服务器，请联系管理员");
