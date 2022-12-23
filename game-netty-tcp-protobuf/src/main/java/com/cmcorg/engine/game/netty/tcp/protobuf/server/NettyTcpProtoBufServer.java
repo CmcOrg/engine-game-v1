@@ -2,6 +2,8 @@ package com.cmcorg.engine.game.netty.tcp.protobuf.server;
 
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.thread.ThreadUtil;
+import cn.hutool.json.JSONUtil;
+import com.cmcorg.engine.game.netty.tcp.protobuf.properties.SocketProperties;
 import com.cmcorg.engine.game.socket.server.model.entity.GameSocketServerDO;
 import com.cmcorg.engine.game.socket.server.service.GameSocketServerService;
 import com.cmcorg.engine.web.auth.configuration.BaseConfiguration;
@@ -39,6 +41,8 @@ public class NettyTcpProtoBufServer implements CommandLineRunner, DisposableBean
     GameSocketServerService gameSocketServerService;
     @Resource
     CommonProperties commonProperties;
+    @Resource
+    SocketProperties socketProperties;
 
     private Long socketServerId = null; // 启动完成之后，这个属性才有值
 
@@ -94,7 +98,9 @@ public class NettyTcpProtoBufServer implements CommandLineRunner, DisposableBean
         GameSocketServerDO gameSocketServerDO = new GameSocketServerDO();
         gameSocketServerDO.setHost(commonProperties.getInternetAddress());
         gameSocketServerDO.setPort(port);
-        gameSocketServerDO.setMaxConnect(500); // 最大连接数
+        gameSocketServerDO.setMaxConnect(socketProperties.getMaxConnect()); // 最大连接数
+        gameSocketServerDO
+            .setAcceptRoomTypeCodeSetStr(JSONUtil.toJsonStr(socketProperties.getAcceptRoomTypeCodeSet())); // 支持的房间类型
         gameSocketServerDO.setEnableFlag(true);
         gameSocketServerDO.setDelFlag(false);
         gameSocketServerDO.setRemark("");

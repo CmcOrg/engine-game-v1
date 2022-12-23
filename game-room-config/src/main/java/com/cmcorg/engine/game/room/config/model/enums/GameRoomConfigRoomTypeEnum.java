@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonValue;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import org.jetbrains.annotations.Nullable;
 
 @AllArgsConstructor
 @Getter
@@ -26,5 +27,18 @@ public enum GameRoomConfigRoomTypeEnum {
     @JsonValue
     private int code;
     private String codeDescription; // code 说明
+
+    @Nullable
+    public static GameRoomConfigRoomTypeEnum getByCode(Integer code) {
+        if (code == null) {
+            return null;
+        }
+        for (GameRoomConfigRoomTypeEnum item : GameRoomConfigRoomTypeEnum.values()) {
+            if (item.getCode() == code) {
+                return item;
+            }
+        }
+        return null;
+    }
 
 }
