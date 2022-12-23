@@ -2,7 +2,9 @@ package com.cmcorg.engine.game.netty.tcp.protobuf.server;
 
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.thread.ThreadUtil;
+import com.cmcorg.engine.game.netty.tcp.protobuf.configuration.IAcceptRoomTypeConfiguration;
 import com.cmcorg.engine.game.netty.tcp.protobuf.properties.SocketProperties;
+import com.cmcorg.engine.game.room.config.model.enums.GameRoomConfigRoomTypeEnum;
 import com.cmcorg.engine.game.socket.server.model.entity.GameSocketServerDO;
 import com.cmcorg.engine.game.socket.server.service.GameSocketServerService;
 import com.cmcorg.engine.web.auth.configuration.BaseConfiguration;
@@ -25,11 +27,15 @@ import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.DisposableBean;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 import protobuf.proto.BaseProto;
 
 import javax.annotation.Resource;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Component
 @Slf4j
@@ -43,6 +49,8 @@ public class NettyTcpProtoBufServer implements CommandLineRunner, DisposableBean
     CommonProperties commonProperties;
     @Resource
     SocketProperties socketProperties;
+    @Autowired(required = false)
+    List<IAcceptRoomTypeConfiguration> iAcceptRoomTypeConfigurationList;
 
     private Long socketServerId = null; // 启动完成之后，这个属性才有值
 
@@ -95,12 +103,23 @@ public class NettyTcpProtoBufServer implements CommandLineRunner, DisposableBean
      */
     private void insertForStartSocketServer(int port) {
 
+        // 支持的：房间类型
+        Set<Integer> acceptRoomTypeCodeSet;
+
+        if (CollUtil.isNotEmpty(iAcceptRoomTypeConfigurationList)) {
+            acceptRoomTypeCodeSet =
+                iAcceptRoomTypeConfigurationList.stream().flatMap(it -> it.acceptRoomTypeSet().stream())
+                    .map(GameRoomConfigRoomTypeEnum::getCode).collect(Collectors.toSet());
+        } else {
+            acceptRoomTypeCodeSet = CollUtil.newHashSet();
+        }
+
         GameSocketServerDO gameSocketServerDO = new GameSocketServerDO();
         gameSocketServerDO.setHost(commonProperties.getInternetAddress());
         gameSocketServerDO.setPort(port);
         gameSocketServerDO.setMaxConnect(socketProperties.getMaxConnect()); // 最大连接数
-        gameSocketServerDO.setAcceptRoomTypeCodeSeparatorStr(
-            SeparatorUtil.verticalLine(socketProperties.getAcceptRoomTypeCodeSet())); // 支持的房间类型
+        gameSocketServerDO
+            .setAcceptRoomTypeCodeSeparatorStr(SeparatorUtil.verticalLine(acceptRoomTypeCodeSet)); // 支持的房间类型
         gameSocketServerDO.setEnableFlag(true);
         gameSocketServerDO.setDelFlag(false);
         gameSocketServerDO.setRemark("");
