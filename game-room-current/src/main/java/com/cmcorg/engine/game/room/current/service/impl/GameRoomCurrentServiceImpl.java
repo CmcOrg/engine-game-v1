@@ -5,6 +5,7 @@ import cn.hutool.core.util.IdUtil;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.cmcorg.engine.game.auth.util.GameAuthUserUtil;
+import com.cmcorg.engine.game.model.model.constant.GameLogTopicConstant;
 import com.cmcorg.engine.game.room.config.model.entity.GameRoomConfigDO;
 import com.cmcorg.engine.game.room.config.model.enums.GameRoomConfigPlayTypeEnum;
 import com.cmcorg.engine.game.room.config.service.GameRoomConfigService;
@@ -27,7 +28,6 @@ import com.cmcorg.engine.web.auth.model.vo.ApiResultVO;
 import com.cmcorg.engine.web.auth.util.AuthUserUtil;
 import com.cmcorg.engine.web.datasource.util.TransactionUtil;
 import com.cmcorg.engine.web.model.model.constant.BaseConstant;
-import com.cmcorg.engine.web.model.model.constant.LogTopicConstant;
 import com.cmcorg.engine.web.model.model.dto.NotEmptyIdSet;
 import com.cmcorg.engine.web.model.model.dto.NotNullId;
 import com.cmcorg.engine.web.redisson.util.RedissonUtil;
@@ -46,7 +46,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
 @Service
-@Slf4j(topic = LogTopicConstant.ROOM_CURRENT)
+@Slf4j(topic = GameLogTopicConstant.ROOM_CURRENT)
 public class GameRoomCurrentServiceImpl extends ServiceImpl<GameRoomCurrentMapper, GameRoomCurrentDO>
     implements GameRoomCurrentService {
 
