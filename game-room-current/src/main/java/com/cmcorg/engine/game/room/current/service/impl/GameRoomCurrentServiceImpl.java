@@ -9,6 +9,7 @@ import com.cmcorg.engine.game.room.config.model.entity.GameRoomConfigDO;
 import com.cmcorg.engine.game.room.config.model.enums.GameRoomConfigPlayTypeEnum;
 import com.cmcorg.engine.game.room.config.service.GameRoomConfigService;
 import com.cmcorg.engine.game.room.current.mapper.GameRoomCurrentMapper;
+import com.cmcorg.engine.game.room.current.model.bo.GameRoomCurrentJoinRoomRedisBO;
 import com.cmcorg.engine.game.room.current.model.dto.GameRoomCurrentJoinRoomDTO;
 import com.cmcorg.engine.game.room.current.model.dto.GameRoomCurrentPageDTO;
 import com.cmcorg.engine.game.room.current.model.entity.GameRoomCurrentDO;
@@ -128,15 +129,18 @@ public class GameRoomCurrentServiceImpl extends ServiceImpl<GameRoomCurrentMappe
             return TransactionUtil.transactionExec(() -> {
 
                 CallBack<GameRoomConfigDO> gameRoomConfigDOCallBack = new CallBack<>();
+                CallBack<GameRoomCurrentDO> gameRoomCurrentDOCallBack = new CallBack<>();
 
                 // 获取：socket服务器
                 GameSocketServerDO gameSocketServerDO =
-                    getGameSocketServerDO(dto, currentUserId, currentGameUserId, gameRoomConfigDOCallBack);
+                    getGameSocketServerDO(dto, currentUserId, currentGameUserId, gameRoomConfigDOCallBack,
+                        gameRoomCurrentDOCallBack);
+
                 log.info("找到的 socket服务器信息：{}", gameSocketServerDO);
 
                 // 拿到：返回值
                 return getGameRoomCurrentJoinRoomVO(currentUserId, gameSocketServerDO, currentGameUserId,
-                    gameRoomConfigDOCallBack.getValue());
+                    gameRoomConfigDOCallBack.getValue(), gameRoomCurrentDOCallBack.getValue());
 
             });
 
@@ -153,7 +157,8 @@ public class GameRoomCurrentServiceImpl extends ServiceImpl<GameRoomCurrentMappe
      */
     @NotNull
     private GameSocketServerDO getGameSocketServerDO(GameRoomCurrentJoinRoomDTO dto, Long currentUserId,
-        Long currentGameUserId, CallBack<GameRoomConfigDO> gameRoomConfigDOCallBack) {
+        Long currentGameUserId, CallBack<GameRoomConfigDO> gameRoomConfigDOCallBack,
+        CallBack<GameRoomCurrentDO> gameRoomCurrentDOCallBack) {
 
         // 找到：房间配置
         GameRoomConfigDO gameRoomConfigDO =
@@ -197,7 +202,7 @@ public class GameRoomCurrentServiceImpl extends ServiceImpl<GameRoomCurrentMappe
                         log.info("没有房间，或者 当前房间配置下，没有房间，创建新的房间");
                         // 创建所有，通过：连接数最少的 socket服务器
                         return createAllByMinConnectSocketServer(dto, currentUserId, gameSocketServerDOList,
-                            currentGameUserId);
+                            currentGameUserId, gameRoomCurrentDOCallBack);
                     } else {
                         ApiResultVO.error("操作失败：房间人数已满，请稍后再试");
                     }
@@ -216,6 +221,7 @@ public class GameRoomCurrentServiceImpl extends ServiceImpl<GameRoomCurrentMappe
             GameRoomCurrentDO gameRoomCurrentDO = atomicGameRoomCurrentDO.get();
 
             if (gameRoomCurrentDO.getCurrentConnectTotal() < gameRoomConfigDO.getMaxUserTotal()) {
+                gameRoomCurrentDOCallBack.setValue(gameRoomCurrentDO); // 设置：回调对象
                 // 直接加入该 房间
                 return joinGameRoomCurrent(currentUserId, gameSocketServerDOList, gameRoomCurrentDO, currentGameUserId,
                     gameRoomConfigDO);
@@ -225,7 +231,7 @@ public class GameRoomCurrentServiceImpl extends ServiceImpl<GameRoomCurrentMappe
                     log.info("人数超过房间人数上限，创建新的房间");
                     // 创建所有，通过：连接数最少的 socket服务器
                     return createAllByMinConnectSocketServer(dto, currentUserId, gameSocketServerDOList,
-                        currentGameUserId);
+                        currentGameUserId, gameRoomCurrentDOCallBack);
                 } else {
                     ApiResultVO.error("操作失败：房间人数已满，请稍后再试");
                 }
@@ -275,7 +281,8 @@ public class GameRoomCurrentServiceImpl extends ServiceImpl<GameRoomCurrentMappe
      */
     @NotNull
     private GameSocketServerDO createAllByMinConnectSocketServer(GameRoomCurrentJoinRoomDTO dto, Long currentUserId,
-        List<GameSocketServerDO> gameSocketServerDOList, Long currentGameUserId) {
+        List<GameSocketServerDO> gameSocketServerDOList, Long currentGameUserId,
+        CallBack<GameRoomCurrentDO> gameRoomCurrentDOCallBack) {
 
         // 找到：连接数最少的 socket服务器
         GameSocketServerDO minConnectSocketServerDO = getMinConnectSocketServerDO(gameSocketServerDOList);
@@ -285,6 +292,8 @@ public class GameRoomCurrentServiceImpl extends ServiceImpl<GameRoomCurrentMappe
         gameRoomCurrentDO.setSocketServerId(minConnectSocketServerDO.getId());
 
         save(gameRoomCurrentDO); // 保存到：数据库
+
+        gameRoomCurrentDOCallBack.setValue(gameRoomCurrentDO);  // 设置：回调对象
 
         GameUserConnectDO gameUserConnectDO = new GameUserConnectDO();
         gameUserConnectDO.setGameUserId(currentGameUserId);
@@ -396,14 +405,20 @@ public class GameRoomCurrentServiceImpl extends ServiceImpl<GameRoomCurrentMappe
      */
     @NotNull
     private GameRoomCurrentJoinRoomVO getGameRoomCurrentJoinRoomVO(Long currentUserId,
-        GameSocketServerDO gameSocketServerDO, Long currentGameUserId, GameRoomConfigDO gameRoomConfigDO) {
+        GameSocketServerDO gameSocketServerDO, Long currentGameUserId, GameRoomConfigDO gameRoomConfigDO,
+        GameRoomCurrentDO gameRoomCurrentDO) {
 
         String uuid = IdUtil.simpleUUID();
 
+        GameRoomCurrentJoinRoomRedisBO gameRoomCurrentJoinRoomRedisBO = new GameRoomCurrentJoinRoomRedisBO();
+        gameRoomCurrentJoinRoomRedisBO.setUserId(currentUserId);
+        gameRoomCurrentJoinRoomRedisBO.setGameUserId(currentGameUserId);
+        gameRoomCurrentJoinRoomRedisBO.setGameRoomCurrentDO(gameRoomCurrentDO);
+        gameRoomCurrentJoinRoomRedisBO.setGameRoomConfigDO(gameRoomConfigDO);
+
         // 存储：连接码到 redis里
         redissonClient.getBucket(GameRedisKeyEnum.PRE_NETTY_TCP_PROTO_BUF_CONNECT_SECURITY_CODE + uuid)
-            .set(currentUserId + SeparatorUtil.VERTICAL_LINE_SEPARATOR + currentGameUserId,
-                BaseConstant.SHORT_CODE_EXPIRE_TIME, TimeUnit.MILLISECONDS);
+            .set(gameRoomCurrentJoinRoomRedisBO, BaseConstant.SHORT_CODE_EXPIRE_TIME, TimeUnit.MILLISECONDS);
 
         GameRoomCurrentJoinRoomVO gameRoomCurrentJoinRoomVO = new GameRoomCurrentJoinRoomVO();
         gameRoomCurrentJoinRoomVO.setHost(gameSocketServerDO.getHost());
@@ -466,7 +481,8 @@ public class GameRoomCurrentServiceImpl extends ServiceImpl<GameRoomCurrentMappe
         }
 
         log.info("用户重连成功，游戏用户主键 id：{}，socket服务器信息：{}", currentGameUserId, gameSocketServerDO);
-        return getGameRoomCurrentJoinRoomVO(currentUserId, gameSocketServerDO, currentGameUserId, gameRoomConfigDO);
+        return getGameRoomCurrentJoinRoomVO(currentUserId, gameSocketServerDO, currentGameUserId, gameRoomConfigDO,
+            gameRoomCurrentDO);
 
     }
 

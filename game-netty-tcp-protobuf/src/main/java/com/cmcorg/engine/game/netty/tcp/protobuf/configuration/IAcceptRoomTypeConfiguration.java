@@ -1,6 +1,7 @@
 package com.cmcorg.engine.game.netty.tcp.protobuf.configuration;
 
 import com.cmcorg.engine.game.room.config.model.enums.GameRoomConfigRoomTypeEnum;
+import io.netty.channel.Channel;
 
 import java.util.Set;
 
@@ -12,8 +13,8 @@ public interface IAcceptRoomTypeConfiguration {
     Set<GameRoomConfigRoomTypeEnum> acceptRoomTypeSet();
 
     /**
-     * 处理：该房间类型的 socket
+     * 处理通道
      */
-    void handlerRoomTypeSocket();
+    void handlerChannel(Channel channel);
 
 }

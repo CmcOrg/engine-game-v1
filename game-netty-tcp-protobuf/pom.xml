@@ -14,6 +14,12 @@
 
     <dependencies>
 
+        <!-- game-room-current -->
+        <dependency>
+            <groupId>com.cmcorg</groupId>
+            <artifactId>game-room-current</artifactId>
+        </dependency>
+
         <!-- game-room-config -->
         <dependency>
             <groupId>${project.groupId}</groupId>

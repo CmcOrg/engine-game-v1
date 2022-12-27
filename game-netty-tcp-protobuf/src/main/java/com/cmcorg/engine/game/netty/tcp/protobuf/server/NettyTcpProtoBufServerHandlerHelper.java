@@ -1,22 +1,19 @@
 package com.cmcorg.engine.game.netty.tcp.protobuf.server;
 
-import cn.hutool.core.convert.Convert;
 import cn.hutool.core.util.ArrayUtil;
 import cn.hutool.core.util.ClassUtil;
 import cn.hutool.core.util.ReflectUtil;
-import cn.hutool.core.util.StrUtil;
 import cn.hutool.json.JSONUtil;
 import com.cmcorg.engine.game.auth.util.GameAuthUserUtil;
 import com.cmcorg.engine.game.netty.tcp.protobuf.exception.BaseException;
 import com.cmcorg.engine.game.netty.tcp.protobuf.model.enums.NettyOtherPathEnum;
 import com.cmcorg.engine.game.netty.tcp.protobuf.model.vo.NettyTcpProtoBufVO;
+import com.cmcorg.engine.game.room.current.model.bo.GameRoomCurrentJoinRoomRedisBO;
 import com.cmcorg.engine.game.socket.server.model.enums.GameRedisKeyEnum;
 import com.cmcorg.engine.web.auth.exception.BaseBizCodeEnum;
 import com.cmcorg.engine.web.model.model.constant.LogTopicConstant;
 import com.cmcorg.engine.web.netty.boot.configuration.NettyBeanPostProcessor;
 import com.cmcorg.engine.web.netty.boot.exception.BizCodeEnum;
-import com.cmcorg.engine.web.util.util.SeparatorUtil;
-import com.cmcorg.engine.web.util.util.VoidFunc2;
 import com.google.protobuf.ByteString;
 import io.netty.channel.Channel;
 import lombok.extern.slf4j.Slf4j;
@@ -29,6 +26,7 @@ import protobuf.proto.ConnectProto;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
 import java.util.Set;
+import java.util.function.Consumer;
 
 @Component
 @Slf4j(topic = LogTopicConstant.NETTY)
@@ -49,7 +47,8 @@ public class NettyTcpProtoBufServerHandlerHelper {
     /**
      * 处理：身份认证的消息
      */
-    public static void handlerSecurityMessage(Object msg, Channel channel, VoidFunc2<Long, Long> voidFunc2) {
+    public static void handlerSecurityMessage(Object msg, Channel channel,
+        Consumer<GameRoomCurrentJoinRoomRedisBO> consumer) {
 
         try {
 
@@ -66,22 +65,16 @@ public class NettyTcpProtoBufServerHandlerHelper {
             ConnectProto.SecurityRequest securityRequest =
                 ConnectProto.SecurityRequest.parseFrom(baseRequest.getBody());
 
-            RBucket<String> bucket = redissonClient
+            RBucket<GameRoomCurrentJoinRoomRedisBO> bucket = redissonClient
                 .getBucket(GameRedisKeyEnum.PRE_NETTY_TCP_PROTO_BUF_CONNECT_SECURITY_CODE + securityRequest.getCode());
 
-            String redisValue = bucket.get();
+            GameRoomCurrentJoinRoomRedisBO gameRoomCurrentJoinRoomRedisBO = bucket.get();
 
-            if (redisValue == null) {
+            if (gameRoomCurrentJoinRoomRedisBO == null) {
                 throw new RuntimeException(); // 备注：会被下面捕捉该异常
             }
 
-            Long[] redisValueArr =
-                Convert.convert(Long[].class, StrUtil.splitTrim(redisValue, SeparatorUtil.VERTICAL_LINE_SEPARATOR));
-            if (redisValueArr.length != 2) {
-                throw new RuntimeException(); // 备注：会被下面捕捉该异常
-            }
-
-            voidFunc2.call(redisValueArr[0], redisValueArr[1]); // 执行：回调
+            consumer.accept(gameRoomCurrentJoinRoomRedisBO); // 执行：回调
 
             // 响应：身份认证成功
             sendToChannel(NettyTcpProtoBufVO.ok(BaseBizCodeEnum.OK).setUri(baseRequest.getUri()), channel);
