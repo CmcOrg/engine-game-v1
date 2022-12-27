@@ -18,7 +18,6 @@ import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.util.AttributeKey;
-import io.netty.util.ReferenceCountUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -226,8 +225,6 @@ public class NettyTcpProtoBufServerHandler extends ChannelInboundHandlerAdapter 
 
         } catch (Throwable e) {
             NettyTcpProtoBufServerHandlerHelper.exceptionAdvice(e); // 处理业务异常
-        } finally {
-            ReferenceCountUtil.release(msg); // 释放资源
         }
     }
 
