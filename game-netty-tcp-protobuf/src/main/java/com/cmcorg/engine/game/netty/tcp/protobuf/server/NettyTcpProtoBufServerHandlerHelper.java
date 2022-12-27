@@ -77,7 +77,7 @@ public class NettyTcpProtoBufServerHandlerHelper {
             consumer.accept(gameRoomCurrentJoinRoomRedisBO); // 执行：回调
 
             // 响应：身份认证成功
-            sendToChannel(NettyTcpProtoBufVO.ok(BaseBizCodeEnum.OK).setUri(baseRequest.getUri()), channel);
+            sendToChannel(NettyTcpProtoBufVO.ok(BaseBizCodeEnum.OK_ENGLISH).setUri(baseRequest.getUri()), channel);
 
             bucket.delete(); // 移除：验证码
 
