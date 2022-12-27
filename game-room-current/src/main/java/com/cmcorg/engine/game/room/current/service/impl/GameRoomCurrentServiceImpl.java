@@ -373,7 +373,8 @@ public class GameRoomCurrentServiceImpl extends ServiceImpl<GameRoomCurrentMappe
         gameRoomConfigDO.setConnectTotal(connectTotal);
         gameRoomConfigDO.setRoomCurrentTotal(roomCurrentTotal);
 
-        log.info("房间配置的，当前连接数：{}，当前房间数：{}，roomType：{}", connectTotal, roomCurrentTotal, gameRoomConfigDO.getRoomType());
+        log.info("房间配置的，当前连接数：{}，当前房间数：{}，房间类型：{}", connectTotal, roomCurrentTotal,
+            gameRoomConfigDO.getRoomType().getCodeDescription());
 
         return roomCurrentList;
 
