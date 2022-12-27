@@ -4,6 +4,7 @@ import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.IdUtil;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.baomidou.mybatisplus.extension.toolkit.ChainWrappers;
 import com.cmcorg.engine.game.auth.util.GameAuthUserUtil;
 import com.cmcorg.engine.game.model.model.constant.GameLogTopicConstant;
 import com.cmcorg.engine.game.room.config.model.entity.GameRoomConfigDO;
@@ -56,8 +57,15 @@ public class GameRoomCurrentServiceImpl extends ServiceImpl<GameRoomCurrentMappe
     RedissonClient redissonClient;
     @Resource
     GameRoomConfigService gameRoomConfigService;
-    @Resource
-    GameUserConnectService gameUserConnectService;
+
+    private static GameUserConnectService gameUserConnectService;
+    private static GameRoomCurrentMapper gameRoomCurrentMapper;
+
+    public GameRoomCurrentServiceImpl(GameUserConnectService gameUserConnectService,
+        GameRoomCurrentMapper gameRoomCurrentMapper) {
+        GameRoomCurrentServiceImpl.gameUserConnectService = gameUserConnectService;
+        GameRoomCurrentServiceImpl.gameRoomCurrentMapper = gameRoomCurrentMapper;
+    }
 
     /**
      * 分页排序查询
@@ -605,7 +613,8 @@ public class GameRoomCurrentServiceImpl extends ServiceImpl<GameRoomCurrentMappe
     /**
      * 重连房间：移除 不可用的数据
      */
-    private void reconnectRoomRemoveInvalidData(Long currentGameUserId, GameRoomCurrentDO gameRoomCurrentDO, int type) {
+    public static void reconnectRoomRemoveInvalidData(Long currentGameUserId, GameRoomCurrentDO gameRoomCurrentDO,
+        int type) {
 
         if (type >= 1) {
             // 移除：不可用的数据
@@ -614,21 +623,9 @@ public class GameRoomCurrentServiceImpl extends ServiceImpl<GameRoomCurrentMappe
 
         if (type >= 2) {
             // 移除：不可用的数据
-            lambdaUpdate().eq(GameRoomCurrentDO::getSocketServerId, gameRoomCurrentDO.getSocketServerId()).remove();
+            ChainWrappers.lambdaUpdateChain(gameRoomCurrentMapper)
+                .eq(GameRoomCurrentDO::getSocketServerId, gameRoomCurrentDO.getSocketServerId()).remove();
         }
-
-    }
-
-    /**
-     * 退出房间
-     */
-    @Override
-    public String exitRoom() {
-
-        // 移除：不可用的数据
-        reconnectRoomRemoveInvalidData(GameAuthUserUtil.getCurrentGameUserId(), null, 1);
-
-        return BaseBizCodeEnum.OK;
 
     }
 

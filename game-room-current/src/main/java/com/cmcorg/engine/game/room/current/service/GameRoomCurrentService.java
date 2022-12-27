@@ -20,6 +20,4 @@ public interface GameRoomCurrentService extends IService<GameRoomCurrentDO> {
 
     GameRoomCurrentJoinRoomVO joinRoom(GameRoomCurrentJoinRoomDTO dto);
 
-    String exitRoom();
-
 }

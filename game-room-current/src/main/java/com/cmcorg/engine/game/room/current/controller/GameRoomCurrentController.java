@@ -59,10 +59,4 @@ public class GameRoomCurrentController {
         return ApiResultVO.ok(baseService.joinRoom(dto));
     }
 
-    @Operation(summary = "退出房间")
-    @PostMapping("/exitRoom")
-    public ApiResultVO<GameRoomCurrentJoinRoomVO> exitRoom() {
-        return ApiResultVO.ok(baseService.exitRoom());
-    }
-
 }
