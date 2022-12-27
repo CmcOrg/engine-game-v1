@@ -1,7 +1,7 @@
 package com.cmcorg.engine.game.netty.tcp.protobuf.configuration;
 
 import com.cmcorg.engine.game.room.config.model.enums.GameRoomConfigRoomTypeEnum;
-import io.netty.channel.Channel;
+import com.cmcorg.engine.game.room.current.model.bo.GameRoomCurrentJoinRoomRedisBO;
 
 import java.util.Set;
 
@@ -13,8 +13,8 @@ public interface IAcceptRoomTypeConfiguration {
     Set<GameRoomConfigRoomTypeEnum> acceptRoomTypeSet();
 
     /**
-     * 处理通道
+     * 处理 gameRoomCurrentJoinRoomRedisBO
      */
-    void handlerChannel(Channel channel);
+    void handlerGameRoomCurrentJoinRoomRedisBO(GameRoomCurrentJoinRoomRedisBO gameRoomCurrentJoinRoomRedisBO);
 
 }

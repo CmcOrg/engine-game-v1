@@ -198,7 +198,9 @@ public class NettyTcpProtoBufServerHandler extends ChannelInboundHandlerAdapter 
 
                         if (CollUtil.isNotEmpty(iAcceptRoomTypeConfigurationList)) {
                             for (IAcceptRoomTypeConfiguration item : iAcceptRoomTypeConfigurationList) {
-                                item.handlerChannel(ctx.channel()); // 处理通道
+                                item.handlerGameRoomCurrentJoinRoomRedisBO(ctx.channel()
+                                    .attr(NettyTcpProtoBufServerHandler.GAME_ROOM_CURRENT_JOIN_ROOM_REDIS_BO_KEY)
+                                    .get()); // 处理 gameRoomCurrentJoinRoomRedisBO
                             }
                         }
 
