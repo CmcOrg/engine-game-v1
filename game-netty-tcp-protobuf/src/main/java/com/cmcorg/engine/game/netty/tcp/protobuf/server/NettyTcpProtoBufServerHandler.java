@@ -43,7 +43,7 @@ public class NettyTcpProtoBufServerHandler extends ChannelInboundHandlerAdapter 
     // 进行了身份认证的通道，备注：一个【角色】，只能有一个通道，用户可以拥有多个通道
     private static final Map<Long, Channel> GAME_USER_ID_CHANNEL_MAP = MapUtil.newConcurrentHashMap();
     // userId key
-    private static final AttributeKey<Long> USER_ID_KEY = AttributeKey.valueOf("userId");
+    private static final AttributeKey<Long> USER_ID_KEY = AttributeKey.valueOf(MyJwtUtil.PAYLOAD_MAP_USER_ID_KEY);
     // gameUserId key
     private static final AttributeKey<Long> GAME_USER_ID_KEY =
         AttributeKey.valueOf(GameJwtValidatorConfiguration.PAYLOAD_MAP_GAME_USER_ID_KEY);
@@ -211,7 +211,8 @@ public class NettyTcpProtoBufServerHandler extends ChannelInboundHandlerAdapter 
             JSONObject principalJson =
                 JSONUtil.createObj().set(MyJwtUtil.PAYLOAD_MAP_USER_ID_KEY, ctx.channel().attr(USER_ID_KEY).get())
                     .set(GameJwtValidatorConfiguration.PAYLOAD_MAP_GAME_USER_ID_KEY,
-                        ctx.channel().attr(GAME_USER_ID_KEY).get());
+                        ctx.channel().attr(GAME_USER_ID_KEY).get()).set(GAME_ROOM_CURRENT_JOIN_ROOM_REDIS_BO_KEY.name(),
+                    ctx.channel().attr(NettyTcpProtoBufServerHandler.GAME_ROOM_CURRENT_JOIN_ROOM_REDIS_BO_KEY).get());
 
             // 把 principalJson 设置到：security的上下文里面
             SecurityContextHolder.getContext()
