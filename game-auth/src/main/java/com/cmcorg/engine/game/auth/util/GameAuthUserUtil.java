@@ -1,6 +1,8 @@
 package com.cmcorg.engine.game.auth.util;
 
+import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.convert.Convert;
+import cn.hutool.json.JSONObject;
 import com.cmcorg.engine.game.auth.configuration.GameJwtValidatorConfiguration;
 import com.cmcorg.engine.game.auth.model.bo.GameRoomCurrentJoinRoomRedisBO;
 import com.cmcorg.engine.game.model.model.constant.NettyTcpProtoBufServerKeyConstant;
@@ -48,8 +50,11 @@ public class GameAuthUserUtil {
     @Nullable
     public static GameRoomCurrentJoinRoomRedisBO getGameRoomCurrentJoinRoomRedisBO() {
 
-        return AuthUserUtil.getSecurityContextHolderContextAuthenticationPrincipalJsonObjectValueByKey(
-            NettyTcpProtoBufServerKeyConstant.GAME_ROOM_CURRENT_JOIN_ROOM_REDIS_BO_STR_KEY);
+        JSONObject gameRoomCurrentJoinRoomRedisBOJson = AuthUserUtil
+            .getSecurityContextHolderContextAuthenticationPrincipalJsonObjectValueByKey(
+                NettyTcpProtoBufServerKeyConstant.GAME_ROOM_CURRENT_JOIN_ROOM_REDIS_BO_STR_KEY);
+
+        return BeanUtil.toBean(gameRoomCurrentJoinRoomRedisBOJson, GameRoomCurrentJoinRoomRedisBO.class);
 
     }
 

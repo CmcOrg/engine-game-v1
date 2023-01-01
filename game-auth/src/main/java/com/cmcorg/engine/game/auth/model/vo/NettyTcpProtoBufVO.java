@@ -1,7 +1,7 @@
-package com.cmcorg.engine.game.netty.tcp.protobuf.model.vo;
+package com.cmcorg.engine.game.auth.model.vo;
 
 import cn.hutool.core.util.StrUtil;
-import com.cmcorg.engine.game.netty.tcp.protobuf.exception.BaseException;
+import com.cmcorg.engine.game.auth.exception.BaseException;
 import com.cmcorg.engine.web.auth.exception.BaseBizCodeEnum;
 import com.cmcorg.engine.web.model.exception.IBizCode;
 import com.google.protobuf.ByteString;

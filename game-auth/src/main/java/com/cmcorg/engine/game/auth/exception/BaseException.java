@@ -1,7 +1,7 @@
-package com.cmcorg.engine.game.netty.tcp.protobuf.exception;
+package com.cmcorg.engine.game.auth.exception;
 
 import cn.hutool.json.JSONUtil;
-import com.cmcorg.engine.game.netty.tcp.protobuf.model.vo.NettyTcpProtoBufVO;
+import com.cmcorg.engine.game.auth.model.vo.NettyTcpProtoBufVO;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
