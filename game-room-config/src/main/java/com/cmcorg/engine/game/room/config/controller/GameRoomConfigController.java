@@ -1,9 +1,9 @@
 package com.cmcorg.engine.game.room.config.controller;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.cmcorg.engine.game.auth.model.entity.GameRoomConfigDO;
 import com.cmcorg.engine.game.room.config.model.dto.GameRoomConfigInsertOrUpdateDTO;
 import com.cmcorg.engine.game.room.config.model.dto.GameRoomConfigPageDTO;
-import com.cmcorg.engine.game.room.config.model.entity.GameRoomConfigDO;
 import com.cmcorg.engine.game.room.config.service.GameRoomConfigService;
 import com.cmcorg.engine.web.auth.model.vo.ApiResultVO;
 import com.cmcorg.engine.web.model.generate.model.annotation.WebPage;

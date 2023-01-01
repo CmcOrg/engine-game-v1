@@ -1,4 +1,4 @@
-package com.cmcorg.engine.game.room.current.model.entity;
+package com.cmcorg.engine.game.auth.model.entity;
 
 import com.baomidou.mybatisplus.annotation.*;
 import io.swagger.v3.oas.annotations.media.Schema;

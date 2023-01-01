@@ -1,7 +1,7 @@
 package com.cmcorg.engine.game.netty.tcp.protobuf.model.bo;
 
-import com.cmcorg.engine.game.room.config.model.entity.GameRoomConfigDO;
-import com.cmcorg.engine.game.room.current.model.entity.GameRoomCurrentDO;
+import com.cmcorg.engine.game.auth.model.entity.GameRoomConfigDO;
+import com.cmcorg.engine.game.auth.model.entity.GameRoomCurrentDO;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 

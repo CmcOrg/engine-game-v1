@@ -1,6 +1,6 @@
 package com.cmcorg.engine.game.user.exp.model.dto;
 
-import com.cmcorg.engine.game.room.config.model.enums.GameUserExpTypeEnum;
+import com.cmcorg.engine.game.auth.model.enums.GameUserExpTypeEnum;
 import com.cmcorg.engine.web.auth.model.dto.MyPageDTO;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;

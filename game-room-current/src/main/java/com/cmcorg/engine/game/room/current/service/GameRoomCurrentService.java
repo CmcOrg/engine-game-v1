@@ -2,9 +2,9 @@ package com.cmcorg.engine.game.room.current.service;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.cmcorg.engine.game.auth.model.entity.GameRoomCurrentDO;
 import com.cmcorg.engine.game.room.current.model.dto.GameRoomCurrentJoinRoomDTO;
 import com.cmcorg.engine.game.room.current.model.dto.GameRoomCurrentPageDTO;
-import com.cmcorg.engine.game.room.current.model.entity.GameRoomCurrentDO;
 import com.cmcorg.engine.game.room.current.model.vo.GameRoomCurrentJoinRoomVO;
 import com.cmcorg.engine.game.room.current.model.vo.GameRoomCurrentPageVO;
 import com.cmcorg.engine.web.model.model.dto.NotEmptyIdSet;

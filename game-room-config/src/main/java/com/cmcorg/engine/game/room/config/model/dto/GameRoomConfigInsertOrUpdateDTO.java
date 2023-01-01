@@ -1,9 +1,9 @@
 package com.cmcorg.engine.game.room.config.model.dto;
 
-import com.cmcorg.engine.game.room.config.model.enums.GameMoneyTypeEnum;
-import com.cmcorg.engine.game.room.config.model.enums.GameRoomConfigPlayTypeEnum;
-import com.cmcorg.engine.game.room.config.model.enums.GameRoomConfigRoomTypeEnum;
-import com.cmcorg.engine.game.room.config.model.enums.GameUserExpTypeEnum;
+import com.cmcorg.engine.game.auth.model.enums.GameMoneyTypeEnum;
+import com.cmcorg.engine.game.auth.model.enums.GameRoomConfigPlayTypeEnum;
+import com.cmcorg.engine.game.auth.model.enums.GameRoomConfigRoomTypeEnum;
+import com.cmcorg.engine.game.auth.model.enums.GameUserExpTypeEnum;
 import com.cmcorg.engine.web.model.generate.model.annotation.RequestField;
 import com.cmcorg.engine.web.model.model.dto.BaseInsertOrUpdateDTO;
 import io.swagger.v3.oas.annotations.media.Schema;

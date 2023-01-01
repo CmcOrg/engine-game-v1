@@ -2,7 +2,7 @@ package com.cmcorg.engine.game.user.exp.model.entity;
 
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
-import com.cmcorg.engine.game.room.config.model.enums.GameUserExpTypeEnum;
+import com.cmcorg.engine.game.auth.model.enums.GameUserExpTypeEnum;
 import com.cmcorg.engine.web.auth.model.entity.BaseEntityNoId;
 import com.cmcorg.engine.web.model.generate.model.annotation.RequestClass;
 import com.cmcorg.engine.web.model.generate.model.constant.WebModelConstant;

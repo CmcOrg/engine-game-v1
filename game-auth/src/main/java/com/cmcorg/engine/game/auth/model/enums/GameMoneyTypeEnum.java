@@ -1,4 +1,4 @@
-package com.cmcorg.engine.game.room.config.model.enums;
+package com.cmcorg.engine.game.auth.model.enums;
 
 import com.baomidou.mybatisplus.annotation.EnumValue;
 import com.fasterxml.jackson.annotation.JsonValue;

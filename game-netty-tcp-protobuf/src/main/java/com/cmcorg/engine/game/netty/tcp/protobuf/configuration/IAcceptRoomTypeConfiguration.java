@@ -1,7 +1,7 @@
 package com.cmcorg.engine.game.netty.tcp.protobuf.configuration;
 
-import com.cmcorg.engine.game.room.config.model.enums.GameRoomConfigRoomTypeEnum;
-import com.cmcorg.engine.game.room.current.model.bo.GameRoomCurrentJoinRoomRedisBO;
+import com.cmcorg.engine.game.auth.model.bo.GameRoomCurrentJoinRoomRedisBO;
+import com.cmcorg.engine.game.auth.model.enums.GameRoomConfigRoomTypeEnum;
 
 import java.util.Set;
 

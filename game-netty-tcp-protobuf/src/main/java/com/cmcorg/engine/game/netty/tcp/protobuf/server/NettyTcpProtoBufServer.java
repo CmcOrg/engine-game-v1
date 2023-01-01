@@ -2,9 +2,9 @@ package com.cmcorg.engine.game.netty.tcp.protobuf.server;
 
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.thread.ThreadUtil;
+import com.cmcorg.engine.game.auth.model.enums.GameRoomConfigRoomTypeEnum;
 import com.cmcorg.engine.game.netty.tcp.protobuf.configuration.IAcceptRoomTypeConfiguration;
 import com.cmcorg.engine.game.netty.tcp.protobuf.properties.SocketProperties;
-import com.cmcorg.engine.game.room.config.model.enums.GameRoomConfigRoomTypeEnum;
 import com.cmcorg.engine.game.socket.server.model.entity.GameSocketServerDO;
 import com.cmcorg.engine.game.socket.server.service.GameSocketServerService;
 import com.cmcorg.engine.web.auth.configuration.BaseConfiguration;

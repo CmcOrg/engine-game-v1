@@ -14,10 +14,10 @@
 
     <dependencies>
 
-        <!-- web-auth-nacos -->
+        <!-- game-auth -->
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>web-auth-nacos</artifactId>
+            <artifactId>game-auth</artifactId>
         </dependency>
 
     </dependencies>

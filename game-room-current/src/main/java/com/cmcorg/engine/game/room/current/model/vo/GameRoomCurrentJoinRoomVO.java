@@ -1,6 +1,6 @@
 package com.cmcorg.engine.game.room.current.model.vo;
 
-import com.cmcorg.engine.game.room.config.model.enums.GameRoomConfigRoomTypeEnum;
+import com.cmcorg.engine.game.auth.model.enums.GameRoomConfigRoomTypeEnum;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 

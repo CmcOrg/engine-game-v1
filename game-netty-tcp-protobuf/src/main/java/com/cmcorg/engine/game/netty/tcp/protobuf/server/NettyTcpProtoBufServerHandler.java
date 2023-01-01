@@ -6,8 +6,9 @@ import cn.hutool.core.util.BooleanUtil;
 import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
 import com.cmcorg.engine.game.auth.configuration.GameJwtValidatorConfiguration;
+import com.cmcorg.engine.game.auth.model.bo.GameRoomCurrentJoinRoomRedisBO;
+import com.cmcorg.engine.game.model.model.constant.NettyTcpProtoBufServerKeyConstant;
 import com.cmcorg.engine.game.netty.tcp.protobuf.configuration.IAcceptRoomTypeConfiguration;
-import com.cmcorg.engine.game.room.current.model.bo.GameRoomCurrentJoinRoomRedisBO;
 import com.cmcorg.engine.game.socket.server.model.enums.GameRedisKeyEnum;
 import com.cmcorg.engine.web.auth.util.MyJwtUtil;
 import com.cmcorg.engine.web.model.model.constant.BaseConstant;
@@ -49,7 +50,7 @@ public class NettyTcpProtoBufServerHandler extends ChannelInboundHandlerAdapter 
         AttributeKey.valueOf(GameJwtValidatorConfiguration.PAYLOAD_MAP_GAME_USER_ID_KEY);
     // gameRoomCurrentJoinRoomRedisBO key
     public static final AttributeKey<GameRoomCurrentJoinRoomRedisBO> GAME_ROOM_CURRENT_JOIN_ROOM_REDIS_BO_KEY =
-        AttributeKey.valueOf("GameRoomCurrentJoinRoomRedisBO");
+        AttributeKey.valueOf(NettyTcpProtoBufServerKeyConstant.GAME_ROOM_CURRENT_JOIN_ROOM_REDIS_BO_STR_KEY);
     // 进行了身份认证通道的最后活跃时间，时间戳
     private static final AttributeKey<Long> ACTIVE_TIME = AttributeKey.valueOf("activeTime");
     // 移除规定时间内，没有进行发送任意消息的，进行了身份认证成功通道，中的【规定时间】
@@ -211,8 +212,10 @@ public class NettyTcpProtoBufServerHandler extends ChannelInboundHandlerAdapter 
             JSONObject principalJson =
                 JSONUtil.createObj().set(MyJwtUtil.PAYLOAD_MAP_USER_ID_KEY, ctx.channel().attr(USER_ID_KEY).get())
                     .set(GameJwtValidatorConfiguration.PAYLOAD_MAP_GAME_USER_ID_KEY,
-                        ctx.channel().attr(GAME_USER_ID_KEY).get()).set(GAME_ROOM_CURRENT_JOIN_ROOM_REDIS_BO_KEY.name(),
-                    ctx.channel().attr(NettyTcpProtoBufServerHandler.GAME_ROOM_CURRENT_JOIN_ROOM_REDIS_BO_KEY).get());
+                        ctx.channel().attr(GAME_USER_ID_KEY).get())
+                    .set(NettyTcpProtoBufServerKeyConstant.GAME_ROOM_CURRENT_JOIN_ROOM_REDIS_BO_STR_KEY,
+                        ctx.channel().attr(NettyTcpProtoBufServerHandler.GAME_ROOM_CURRENT_JOIN_ROOM_REDIS_BO_KEY)
+                            .get());
 
             // 把 principalJson 设置到：security的上下文里面
             SecurityContextHolder.getContext()

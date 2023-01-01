@@ -2,6 +2,8 @@ package com.cmcorg.engine.game.auth.util;
 
 import cn.hutool.core.convert.Convert;
 import com.cmcorg.engine.game.auth.configuration.GameJwtValidatorConfiguration;
+import com.cmcorg.engine.game.auth.model.bo.GameRoomCurrentJoinRoomRedisBO;
+import com.cmcorg.engine.game.model.model.constant.NettyTcpProtoBufServerKeyConstant;
 import com.cmcorg.engine.web.auth.exception.BaseBizCodeEnum;
 import com.cmcorg.engine.web.auth.model.vo.ApiResultVO;
 import com.cmcorg.engine.web.auth.util.AuthUserUtil;
@@ -37,6 +39,17 @@ public class GameAuthUserUtil {
 
         return Convert.toLong(AuthUserUtil.getSecurityContextHolderContextAuthenticationPrincipalJsonObjectValueByKey(
             GameJwtValidatorConfiguration.PAYLOAD_MAP_GAME_USER_ID_KEY));
+
+    }
+
+    /**
+     * 获取 GameRoomCurrentJoinRoomRedisBO
+     */
+    @Nullable
+    public static GameRoomCurrentJoinRoomRedisBO getGameRoomCurrentJoinRoomRedisBO() {
+
+        return AuthUserUtil.getSecurityContextHolderContextAuthenticationPrincipalJsonObjectValueByKey(
+            NettyTcpProtoBufServerKeyConstant.GAME_ROOM_CURRENT_JOIN_ROOM_REDIS_BO_STR_KEY);
 
     }
 
