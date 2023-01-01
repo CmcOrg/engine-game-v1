@@ -178,7 +178,7 @@ public class GameRoomCurrentServiceImpl extends ServiceImpl<GameRoomCurrentMappe
             ApiResultVO.error("操作失败：找不到房间配置信息，请联系管理员");
         }
 
-        gameRoomConfigDOCallBack.setValue(gameRoomConfigDO);
+        gameRoomConfigDOCallBack.setValue(gameRoomConfigDO); // 设置：回调对象
 
         String roomTypeCodeSeparatorStr = SeparatorUtil.verticalLine(gameRoomConfigDO.getRoomType().getCode());
 
