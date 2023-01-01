@@ -151,11 +151,11 @@ public class NettyTcpProtoBufServerHandlerHelper {
 
             long l2 = System.currentTimeMillis();
 
-            if (l2 - l1 >= WARING_HANDLER_MESSAGE_MS) {
-                log.info("处理用户消息时间过长，游戏用户 id：{}，uri：{}，bodySize：{}", GameAuthUserUtil.getCurrentGameUserId(),
-                    baseRequest.getUri(), baseRequest.getBody().size());
-                //            } else {
-                //                log.info("处理耗时：{}", l2 - l1);
+            long handlerTs = l2 - l1; // 处理耗时，单位：时间戳
+
+            if (handlerTs >= WARING_HANDLER_MESSAGE_MS) {
+                log.info("处理用户消息时间过长：{}，游戏用户 id：{}，uri：{}，bodySize：{}", handlerTs,
+                    GameAuthUserUtil.getCurrentGameUserId(), baseRequest.getUri(), baseRequest.getBody().size());
             }
 
         } catch (Throwable e) {
@@ -204,7 +204,7 @@ public class NettyTcpProtoBufServerHandlerHelper {
      */
     public static void closeSelf() {
         Long currentGameUserId = GameAuthUserUtil.getCurrentGameUserId();
-        log.info("关闭通道：游戏用户主键 id：{}", currentGameUserId);
+        log.info("关闭通道：游戏用户 id：{}", currentGameUserId);
         Channel channel = NettyTcpProtoBufServerHandler.getGameUserIdChannelMap().get(currentGameUserId);
         if (channel != null) {
             channel.close();
