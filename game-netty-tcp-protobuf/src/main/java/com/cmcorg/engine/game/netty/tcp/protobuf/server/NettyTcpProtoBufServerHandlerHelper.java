@@ -200,12 +200,24 @@ public class NettyTcpProtoBufServerHandlerHelper {
     }
 
     /**
+     * 关闭当前通道，备注：必须进行了身份认证的通道才行
+     */
+    public static void closeSelf() {
+        Long currentGameUserId = GameAuthUserUtil.getCurrentGameUserId();
+        log.info("关闭通道：游戏用户主键 id：{}", currentGameUserId);
+        Channel channel = NettyTcpProtoBufServerHandler.getGameUserIdChannelMap().get(currentGameUserId);
+        if (channel != null) {
+            channel.close();
+        }
+    }
+
+    /**
      * 给自己发送消息，备注：必须进行了身份认证的通道才行，不然无法发送
      */
     public static void sendToSelf(NettyTcpProtoBufVO nettyTcpProtoBufVO) {
-        log.info("发送消息：sendToSelf，目标游戏用户 id：{}，消息：{}", GameAuthUserUtil.getCurrentGameUserId(),
-            JSONUtil.toJsonStr(nettyTcpProtoBufVO));
-        doSend(NettyTcpProtoBufServerHandler.getGameUserIdChannelMap().get(GameAuthUserUtil.getCurrentGameUserId()),
+        Long currentGameUserId = GameAuthUserUtil.getCurrentGameUserId();
+        log.info("发送消息：sendToSelf，目标游戏用户 id：{}，消息：{}", currentGameUserId, JSONUtil.toJsonStr(nettyTcpProtoBufVO));
+        doSend(NettyTcpProtoBufServerHandler.getGameUserIdChannelMap().get(currentGameUserId),
             handlerNettyTcpProtoBufVOToSend(nettyTcpProtoBufVO));
     }
 
