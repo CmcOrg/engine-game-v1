@@ -149,12 +149,10 @@ public class NettyTcpProtoBufServerHandlerHelper {
             // 发送：返回值
             sendToSelf(((NettyTcpProtoBufVO)invoke).setUri(baseRequest.getUri()));
 
-            long l2 = System.currentTimeMillis();
+            long handleTs = System.currentTimeMillis() - l1; // 处理耗时，单位：时间戳
 
-            long handlerTs = l2 - l1; // 处理耗时，单位：时间戳
-
-            if (handlerTs >= WARING_HANDLER_MESSAGE_MS) {
-                log.info("处理用户消息时间过长：{}，游戏用户 id：{}，uri：{}，bodySize：{}", handlerTs,
+            if (handleTs >= WARING_HANDLER_MESSAGE_MS) {
+                log.info("处理用户消息时间过长：{}，游戏用户 id：{}，uri：{}，bodySize：{}", handleTs,
                     GameAuthUserUtil.getCurrentGameUserId(), baseRequest.getUri(), baseRequest.getBody().size());
             }
 
