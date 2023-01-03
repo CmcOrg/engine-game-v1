@@ -126,11 +126,19 @@ public class GameRoomCurrentServiceImpl extends ServiceImpl<GameRoomCurrentMappe
         // 加锁进行，防止：产生多个连接
         return RedissonUtil.doLock(GameRedisKeyEnum.PRE_JOIN_ROOM_GAME_USER_ID.name() + currentGameUserId, () -> {
 
+            // roomConfigId 回调对象
+            CallBack<Long> roomConfigIdCallBack = new CallBack<>();
+
             // 先执行：重连房间
-            GameRoomCurrentJoinRoomVO gameRoomCurrentJoinRoomVO = reconnectRoom(currentUserId, currentGameUserId);
+            GameRoomCurrentJoinRoomVO gameRoomCurrentJoinRoomVO =
+                reconnectRoom(currentUserId, currentGameUserId, roomConfigIdCallBack);
 
             if (gameRoomCurrentJoinRoomVO != null) {
                 return gameRoomCurrentJoinRoomVO;
+            }
+
+            if (roomConfigIdCallBack.getValue() != null) {
+                dto.setRoomConfigId(roomConfigIdCallBack.getValue()); // 设置：roomConfigId
             }
 
             // 携带事务，执行
@@ -434,6 +442,7 @@ public class GameRoomCurrentServiceImpl extends ServiceImpl<GameRoomCurrentMappe
         gameRoomCurrentJoinRoomVO.setPort(gameSocketServerDO.getPort());
         gameRoomCurrentJoinRoomVO.setSecurityCode(uuid);
         gameRoomCurrentJoinRoomVO.setCurrentRoomType(gameRoomConfigDO.getRoomType());
+        gameRoomCurrentJoinRoomVO.setCurrentRoomConfigId(gameRoomConfigDO.getId());
 
         return gameRoomCurrentJoinRoomVO;
 
@@ -444,7 +453,8 @@ public class GameRoomCurrentServiceImpl extends ServiceImpl<GameRoomCurrentMappe
      * 备注：不要加事务，因为：无法重连时要：移除 不可用的数据
      */
     @Nullable
-    private GameRoomCurrentJoinRoomVO reconnectRoom(Long currentUserId, Long currentGameUserId) {
+    private GameRoomCurrentJoinRoomVO reconnectRoom(Long currentUserId, Long currentGameUserId,
+        CallBack<Long> roomConfigIdCallBack) {
 
         GameUserConnectDO gameUserConnectDO =
             gameUserConnectService.lambdaQuery().select(GameUserConnectDO::getRoomCurrentId)
@@ -463,6 +473,8 @@ public class GameRoomCurrentServiceImpl extends ServiceImpl<GameRoomCurrentMappe
             log.info("没有找到 当前房间信息，无法重连");
             return null;
         }
+
+        roomConfigIdCallBack.setValue(gameRoomCurrentDO.getRoomConfigId()); // 设置：回调对象的 roomConfigId
 
         GameRoomConfigDO gameRoomConfigDO =
             gameRoomConfigService.lambdaQuery().select(GameRoomConfigDO::getPlayType, GameRoomConfigDO::getRoomType)

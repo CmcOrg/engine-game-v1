@@ -6,16 +6,13 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 
-import javax.validation.constraints.Min;
-
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 public class GameRoomCurrentJoinRoomDTO {
 
-    @Min(1)
     @NotNull
-    @Schema(description = "房间配置主键 id")
+    @Schema(description = "房间配置主键 id，备注：-1 表示：重连")
     private Long roomConfigId;
 
 }

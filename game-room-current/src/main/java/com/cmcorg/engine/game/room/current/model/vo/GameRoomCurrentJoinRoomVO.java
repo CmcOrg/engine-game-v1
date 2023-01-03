@@ -19,4 +19,7 @@ public class GameRoomCurrentJoinRoomVO {
     @Schema(description = "当前所在的房间类型")
     private GameRoomConfigRoomTypeEnum currentRoomType;
 
+    @Schema(description = "当前房间配置主键 id")
+    private Long currentRoomConfigId;
+
 }
