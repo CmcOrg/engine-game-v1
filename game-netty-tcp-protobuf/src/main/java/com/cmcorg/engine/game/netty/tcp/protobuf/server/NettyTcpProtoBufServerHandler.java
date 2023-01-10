@@ -76,11 +76,13 @@ public class NettyTcpProtoBufServerHandler extends ChannelInboundHandlerAdapter 
      */
     @Scheduled(fixedRate = 10 * 1000)
     private void removeNotSecurityChannel() {
+
         for (Map.Entry<String, Channel> item : NOT_SECURITY_CHANNEL_MAP.entrySet()) {
             if ((System.currentTimeMillis() - item.getValue().attr(CREATE_TIME).get()) > SECURITY_EXPIRE_TIME) {
                 item.getValue().close(); // 关闭通道
             }
         }
+
     }
 
     /**
@@ -88,11 +90,13 @@ public class NettyTcpProtoBufServerHandler extends ChannelInboundHandlerAdapter 
      */
     @Scheduled(fixedRate = 10 * 1000)
     private void removeNotHeartbeatChannel() {
+
         for (Map.Entry<Long, Channel> item : GAME_USER_ID_CHANNEL_MAP.entrySet()) {
             if ((System.currentTimeMillis() - item.getValue().attr(ACTIVE_TIME).get()) > HEARTBEAT_EXPIRE_TIME) {
                 item.getValue().close(); // 关闭通道
             }
         }
+
     }
 
     /**
@@ -142,8 +146,11 @@ public class NettyTcpProtoBufServerHandler extends ChannelInboundHandlerAdapter 
      */
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable e) throws Exception {
+
         super.exceptionCaught(ctx, e);
+
         ctx.close(); // 会执行：channelInactive 方法
+
     }
 
     /**
@@ -228,9 +235,13 @@ public class NettyTcpProtoBufServerHandler extends ChannelInboundHandlerAdapter 
             }
 
         } catch (Throwable e) {
+
             NettyTcpProtoBufServerHandlerHelper.exceptionAdvice(e); // 处理业务异常
+
         } finally {
+
             SecurityContextHolder.clearContext(); // 清除：当前线程存储的值
+
         }
 
     }
