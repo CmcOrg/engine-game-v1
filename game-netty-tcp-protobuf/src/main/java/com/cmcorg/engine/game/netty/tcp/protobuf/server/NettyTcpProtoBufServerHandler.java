@@ -229,7 +229,10 @@ public class NettyTcpProtoBufServerHandler extends ChannelInboundHandlerAdapter 
 
         } catch (Throwable e) {
             NettyTcpProtoBufServerHandlerHelper.exceptionAdvice(e); // 处理业务异常
+        } finally {
+            SecurityContextHolder.clearContext(); // 清除：当前线程存储的值
         }
+
     }
 
 }
