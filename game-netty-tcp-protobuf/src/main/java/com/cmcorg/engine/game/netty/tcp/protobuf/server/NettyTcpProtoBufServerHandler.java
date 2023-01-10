@@ -216,13 +216,13 @@ public class NettyTcpProtoBufServerHandler extends ChannelInboundHandlerAdapter 
                 return;
             }
 
-            JSONObject principalJson =
-                JSONUtil.createObj().set(MyJwtUtil.PAYLOAD_MAP_USER_ID_KEY, ctx.channel().attr(USER_ID_KEY).get())
-                    .set(GameJwtValidatorConfiguration.PAYLOAD_MAP_GAME_USER_ID_KEY,
-                        ctx.channel().attr(GAME_USER_ID_KEY).get())
-                    .set(NettyTcpProtoBufServerKeyConstant.GAME_ROOM_CURRENT_JOIN_ROOM_REDIS_BO_STR_KEY,
-                        ctx.channel().attr(NettyTcpProtoBufServerHandler.GAME_ROOM_CURRENT_JOIN_ROOM_REDIS_BO_KEY)
-                            .get());
+            JSONObject principalJson = JSONUtil.createObj();
+
+            principalJson.set(MyJwtUtil.PAYLOAD_MAP_USER_ID_KEY, ctx.channel().attr(USER_ID_KEY).get());
+            principalJson.set(GameJwtValidatorConfiguration.PAYLOAD_MAP_GAME_USER_ID_KEY,
+                ctx.channel().attr(GAME_USER_ID_KEY).get());
+            principalJson.set(NettyTcpProtoBufServerKeyConstant.GAME_ROOM_CURRENT_JOIN_ROOM_REDIS_BO_STR_KEY,
+                ctx.channel().attr(NettyTcpProtoBufServerHandler.GAME_ROOM_CURRENT_JOIN_ROOM_REDIS_BO_KEY).get());
 
             // 把 principalJson 设置到：security的上下文里面
             SecurityContextHolder.getContext()
