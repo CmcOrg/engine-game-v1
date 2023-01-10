@@ -243,11 +243,15 @@ public class GameRoomCurrentServiceImpl extends ServiceImpl<GameRoomCurrentMappe
                     gameRoomConfigDO);
             } else {
                 // 这里是人数超过房间人数上限的情况，则判断是否可以创建新的房间，如果可以，则创建
-                if (gameRoomConfigDO.getMaxRoomTotal() > roomCurrentDOList.size()) {
-                    log.info("人数超过房间人数上限，创建新的房间");
-                    // 创建所有，通过：连接数最少的 socket服务器
-                    return createAllByMinConnectSocketServer(dto, currentUserId, gameSocketServerDOList,
-                        currentGameUserId, gameRoomCurrentDOCallBack);
+                if (gameRoomConfigDO.getMaxRoomTotal() > gameRoomConfigDO.getRoomCurrentTotal()) {
+                    if (gameRoomConfigDO.getMaxUserTotal() > 0) {
+                        log.info("人数超过房间人数上限，创建新的房间");
+                        // 创建所有，通过：连接数最少的 socket服务器
+                        return createAllByMinConnectSocketServer(dto, currentUserId, gameSocketServerDOList,
+                            currentGameUserId, gameRoomCurrentDOCallBack);
+                    } else {
+                        ApiResultVO.error("操作失败：房间人数已满，请稍后再试");
+                    }
                 } else {
                     ApiResultVO.error("操作失败：房间数已满，请稍后再试");
                 }
