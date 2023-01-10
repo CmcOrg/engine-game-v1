@@ -82,15 +82,22 @@ public class NettyTcpProtoBufServerHandlerHelper {
             bucket.delete(); // 移除：验证码
 
         } catch (Exception e) {
+
             e.printStackTrace();
+
             try {
+
                 NettyTcpProtoBufVO.error(BaseBizCodeEnum.ILLEGAL_REQUEST);
+
             } catch (BaseException baseException) {
+
                 // 处理并发送：BaseException
                 handlerAndSendBaseException(
                     BaseProto.BaseRequest.newBuilder().setUri(NettyOtherPathEnum.CONNECT_SECURITY.getUri()).build(),
                     baseException, channel);
+
             }
+
         }
 
     }
