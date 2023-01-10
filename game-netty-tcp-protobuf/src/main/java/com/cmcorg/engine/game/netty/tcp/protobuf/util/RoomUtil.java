@@ -1,7 +1,7 @@
 package com.cmcorg.engine.game.netty.tcp.protobuf.util;
 
 import cn.hutool.core.util.BooleanUtil;
-import com.cmcorg.engine.game.auth.model.bo.GameRoomCurrentJoinRoomRedisBO;
+import com.cmcorg.engine.game.auth.model.bo.GameRoomCurrentRoomBO;
 import com.cmcorg.engine.game.auth.model.enums.GameRoomConfigRoomTypeEnum;
 import com.cmcorg.engine.game.auth.model.vo.NettyTcpProtoBufVO;
 import com.cmcorg.engine.game.auth.util.GameAuthUserUtil;
@@ -23,15 +23,14 @@ public class RoomUtil {
     public static void exitRoom(Set<GameRoomConfigRoomTypeEnum> acceptRoomTypeSet) {
 
         // 判断是否在房间里
-        GameRoomCurrentJoinRoomRedisBO gameRoomCurrentJoinRoomRedisBO =
-            GameAuthUserUtil.getGameRoomCurrentJoinRoomRedisBO();
+        GameRoomCurrentRoomBO gameRoomCurrentRoomBO = GameAuthUserUtil.getGameRoomCurrentRoomBO();
 
-        if (gameRoomCurrentJoinRoomRedisBO == null) {
+        if (gameRoomCurrentRoomBO == null) {
             NettyTcpProtoBufVO.error("操作失败：不存在房间信息");
         }
 
         if (BooleanUtil
-            .isFalse(acceptRoomTypeSet.contains(gameRoomCurrentJoinRoomRedisBO.getGameRoomConfigDO().getRoomType()))) {
+            .isFalse(acceptRoomTypeSet.contains(gameRoomCurrentRoomBO.getGameRoomConfigDO().getRoomType()))) {
             NettyTcpProtoBufVO.error("操作失败：不在房间里");
         }
 

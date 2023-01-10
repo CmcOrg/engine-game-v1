@@ -5,7 +5,7 @@ import cn.hutool.core.util.ClassUtil;
 import cn.hutool.core.util.ReflectUtil;
 import cn.hutool.json.JSONUtil;
 import com.cmcorg.engine.game.auth.exception.BaseException;
-import com.cmcorg.engine.game.auth.model.bo.GameRoomCurrentJoinRoomRedisBO;
+import com.cmcorg.engine.game.auth.model.bo.GameRoomCurrentRoomBO;
 import com.cmcorg.engine.game.auth.model.vo.NettyTcpProtoBufVO;
 import com.cmcorg.engine.game.auth.util.GameAuthUserUtil;
 import com.cmcorg.engine.game.netty.tcp.protobuf.model.enums.NettyOtherPathEnum;
@@ -47,8 +47,7 @@ public class NettyTcpProtoBufServerHandlerHelper {
     /**
      * 处理：身份认证的消息
      */
-    public static void handlerSecurityMessage(Object msg, Channel channel,
-        Consumer<GameRoomCurrentJoinRoomRedisBO> consumer) {
+    public static void handlerSecurityMessage(Object msg, Channel channel, Consumer<GameRoomCurrentRoomBO> consumer) {
 
         try {
 
@@ -65,16 +64,16 @@ public class NettyTcpProtoBufServerHandlerHelper {
             ConnectProto.SecurityRequest securityRequest =
                 ConnectProto.SecurityRequest.parseFrom(baseRequest.getBody());
 
-            RBucket<GameRoomCurrentJoinRoomRedisBO> bucket = redissonClient
+            RBucket<GameRoomCurrentRoomBO> bucket = redissonClient
                 .getBucket(GameRedisKeyEnum.PRE_NETTY_TCP_PROTO_BUF_CONNECT_SECURITY_CODE + securityRequest.getCode());
 
-            GameRoomCurrentJoinRoomRedisBO gameRoomCurrentJoinRoomRedisBO = bucket.get();
+            GameRoomCurrentRoomBO gameRoomCurrentRoomBO = bucket.get();
 
-            if (gameRoomCurrentJoinRoomRedisBO == null) {
+            if (gameRoomCurrentRoomBO == null) {
                 throw new RuntimeException(); // 备注：会被下面捕捉该异常
             }
 
-            consumer.accept(gameRoomCurrentJoinRoomRedisBO); // 执行：回调
+            consumer.accept(gameRoomCurrentRoomBO); // 执行：回调
 
             // 响应：身份认证成功
             sendToChannel(NettyTcpProtoBufVO.ok(BaseBizCodeEnum.OK_ENGLISH).setUri(baseRequest.getUri()), channel);

@@ -1,4 +1,4 @@
-package com.cmcorg.engine.game.netty.tcp.protobuf.model.bo;
+package com.cmcorg.engine.game.auth.model.bo;
 
 import com.cmcorg.engine.game.auth.model.entity.GameRoomConfigDO;
 import com.cmcorg.engine.game.auth.model.entity.GameRoomCurrentDO;
@@ -19,5 +19,8 @@ public class BasePlayerBO {
 
     @Schema(description = "用户当前房间的 配置信息")
     private GameRoomConfigDO gameRoomConfigDO;
+
+    @Schema(description = "是否可用")
+    private Boolean enableFlag;
 
 }

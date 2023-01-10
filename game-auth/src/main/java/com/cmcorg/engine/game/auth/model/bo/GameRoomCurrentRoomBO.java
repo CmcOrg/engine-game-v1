@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class GameRoomCurrentJoinRoomRedisBO {
+public class GameRoomCurrentRoomBO {
 
     @Schema(description = "用户主键 id")
     private Long userId;
@@ -23,5 +23,8 @@ public class GameRoomCurrentJoinRoomRedisBO {
 
     @Schema(description = "用户当前房间的 配置信息")
     private GameRoomConfigDO gameRoomConfigDO;
+
+    @Schema(description = "当前玩家对象，备注：加入了房间才有值")
+    private BasePlayerBO basePlayerBO;
 
 }
