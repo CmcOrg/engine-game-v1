@@ -141,6 +141,10 @@ public class GameRoomCurrentServiceImpl extends ServiceImpl<GameRoomCurrentMappe
                 dto.setRoomConfigId(roomConfigIdCallBack.getValue()); // 设置：roomConfigId
             }
 
+            if (dto.getRoomConfigId().equals(BaseConstant.SYS_ID)) {
+                ApiResultVO.error("操作失败：找不到房间配置信息，请联系管理员");
+            }
+
             // 携带事务，执行
             return TransactionUtil.transactionExec(() -> {
 
@@ -183,7 +187,7 @@ public class GameRoomCurrentServiceImpl extends ServiceImpl<GameRoomCurrentMappe
                     GameRoomConfigDO::getRoomType).one();
 
         if (gameRoomConfigDO == null) {
-            ApiResultVO.error("操作失败：找不到房间配置信息，请联系管理员，{}", dto.getRoomConfigId());
+            ApiResultVO.error("操作失败：找不到房间配置信息：{}，请联系管理员", dto.getRoomConfigId());
         }
 
         gameRoomConfigDOCallBack.setValue(gameRoomConfigDO); // 设置：回调对象
