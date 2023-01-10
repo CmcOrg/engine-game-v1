@@ -211,10 +211,9 @@ public class GameRoomCurrentServiceImpl extends ServiceImpl<GameRoomCurrentMappe
                 setConnectTotalAndGetConfigRoomCurrentList(gameRoomCurrentDOList, gameSocketServerDOList,
                     gameRoomConfigDO);
 
-            // 采用：每一个房间先把人装满，然后才创建另外一个房间
             if (gameRoomCurrentDOList.size() == 0 || roomCurrentDOList.size() == 0) { // 如果：没有房间，或者 当前房间配置下，没有房间
-                if (gameRoomConfigDO.getMaxRoomTotal() != 0) {
-                    if (gameRoomConfigDO.getMaxUserTotal() != 0) {
+                if (gameRoomConfigDO.getMaxRoomTotal() > 0) {
+                    if (gameRoomConfigDO.getMaxUserTotal() > 0) {
                         log.info("没有房间，或者 当前房间配置下，没有房间，创建新的房间");
                         // 创建所有，通过：连接数最少的 socket服务器
                         return createAllByMinConnectSocketServer(dto, currentUserId, gameSocketServerDOList,
@@ -227,6 +226,7 @@ public class GameRoomCurrentServiceImpl extends ServiceImpl<GameRoomCurrentMappe
                 }
             }
 
+            // 采用：每一个房间先把人装满，然后才创建另外一个房间
             // 找到：人数最少的 房间
             AtomicReference<GameRoomCurrentDO> atomicGameRoomCurrentDO = new AtomicReference<>();
 
@@ -249,7 +249,7 @@ public class GameRoomCurrentServiceImpl extends ServiceImpl<GameRoomCurrentMappe
                     return createAllByMinConnectSocketServer(dto, currentUserId, gameSocketServerDOList,
                         currentGameUserId, gameRoomCurrentDOCallBack);
                 } else {
-                    ApiResultVO.error("操作失败：房间人数已满，请稍后再试");
+                    ApiResultVO.error("操作失败：房间数已满，请稍后再试");
                 }
             }
 
@@ -361,7 +361,6 @@ public class GameRoomCurrentServiceImpl extends ServiceImpl<GameRoomCurrentMappe
         // 获取：每个：当前房间的连接数
         Map<Long, Long> roomCurrentConnectMap = getRoomCurrentConnectMapByRoomCurrentIdSet(roomCurrentIdSet);
 
-        long roomCurrentTotal = 0; // 房间配置的 房间数
         long connectTotal = 0; // 房间配置的 当前连接数
 
         List<GameRoomCurrentDO> roomCurrentList = new ArrayList<>(); // 当前房间配置下的 房间集合
@@ -370,7 +369,6 @@ public class GameRoomCurrentServiceImpl extends ServiceImpl<GameRoomCurrentMappe
         for (GameRoomCurrentDO item : gameRoomCurrentDOList) {
             item.setCurrentConnectTotal(roomCurrentConnectMap.getOrDefault(item.getId(), 0L));
             if (item.getRoomConfigId().equals(gameRoomConfigDO.getId())) {
-                roomCurrentTotal = roomCurrentTotal + 1; // 累加：房间数
                 connectTotal = connectTotal + item.getCurrentConnectTotal(); // 累加：连接数
                 roomCurrentList.add(item);
             }
@@ -387,9 +385,9 @@ public class GameRoomCurrentServiceImpl extends ServiceImpl<GameRoomCurrentMappe
 
         // 设置：房间配置的，连接数，当前房间数
         gameRoomConfigDO.setConnectTotal(connectTotal);
-        gameRoomConfigDO.setRoomCurrentTotal(roomCurrentTotal);
+        gameRoomConfigDO.setRoomCurrentTotal((long)roomCurrentList.size());
 
-        log.info("房间配置的，当前连接数：{}，当前房间数：{}，房间类型：{}", connectTotal, roomCurrentTotal,
+        log.info("房间配置的，当前连接数：{}，当前房间数：{}，房间类型：{}", connectTotal, roomCurrentList.size(),
             gameRoomConfigDO.getRoomType().getCodeDescription());
 
         return roomCurrentList;
@@ -601,6 +599,7 @@ public class GameRoomCurrentServiceImpl extends ServiceImpl<GameRoomCurrentMappe
         // 移除：房间配置不存在的 当前房间
         List<GameRoomConfigDO> gameRoomConfigDOList =
             gameRoomConfigService.lambdaQuery().select(BaseEntity::getId).list();
+
         Set<Long> roomConfigIdSet = gameRoomConfigDOList.stream().map(BaseEntity::getId).collect(Collectors.toSet());
 
         Set<Long> removeRoomCurrentIdSet =
