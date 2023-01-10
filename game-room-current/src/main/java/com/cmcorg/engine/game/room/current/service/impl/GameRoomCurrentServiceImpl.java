@@ -482,9 +482,9 @@ public class GameRoomCurrentServiceImpl extends ServiceImpl<GameRoomCurrentMappe
 
         roomConfigIdCallBack.setValue(gameRoomCurrentDO.getRoomConfigId()); // 设置：回调对象的 roomConfigId
 
-        GameRoomConfigDO gameRoomConfigDO =
-            gameRoomConfigService.lambdaQuery().select(GameRoomConfigDO::getPlayType, GameRoomConfigDO::getRoomType)
-                .eq(BaseEntity::getId, gameRoomCurrentDO.getRoomConfigId()).one();
+        GameRoomConfigDO gameRoomConfigDO = gameRoomConfigService.lambdaQuery()
+            .select(GameRoomConfigDO::getPlayType, GameRoomConfigDO::getRoomType, BaseEntity::getId)
+            .eq(BaseEntity::getId, gameRoomCurrentDO.getRoomConfigId()).one();
         if (gameRoomConfigDO == null) {
             reconnectRoomRemoveInvalidData(currentGameUserId, gameRoomCurrentDO, 2); // 移除：不可用的数据
             log.info("没有找到 房间配置信息，无法重连");
