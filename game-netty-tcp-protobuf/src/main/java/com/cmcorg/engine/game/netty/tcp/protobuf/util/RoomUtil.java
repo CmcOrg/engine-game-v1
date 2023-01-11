@@ -6,10 +6,13 @@ import com.cmcorg.engine.game.auth.model.enums.GameRoomConfigRoomTypeEnum;
 import com.cmcorg.engine.game.auth.model.vo.NettyTcpProtoBufVO;
 import com.cmcorg.engine.game.auth.util.GameAuthUserUtil;
 import com.cmcorg.engine.game.netty.tcp.protobuf.server.NettyTcpProtoBufServerHandlerHelper;
-import com.cmcorg.engine.game.room.current.service.impl.GameRoomCurrentServiceImpl;
+import com.cmcorg.engine.game.room.current.util.GameRoomCurrentServiceUtil;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.springframework.stereotype.Component;
 
 import java.util.Set;
+import java.util.function.Function;
 
 /**
  * 房间工具类
@@ -20,7 +23,8 @@ public class RoomUtil {
     /**
      * 通用的，退出房间
      */
-    public static void exitRoom(Set<GameRoomConfigRoomTypeEnum> acceptRoomTypeSet) {
+    public static void exitRoom(@NotNull Set<GameRoomConfigRoomTypeEnum> acceptRoomTypeSet,
+        @Nullable Function<GameRoomCurrentRoomBO, Boolean> function) {
 
         // 判断是否在房间里
         GameRoomCurrentRoomBO gameRoomCurrentRoomBO = GameAuthUserUtil.getGameRoomCurrentRoomBO();
@@ -34,11 +38,19 @@ public class RoomUtil {
             NettyTcpProtoBufVO.error("操作失败：不在房间里");
         }
 
-        // 移除：不可用的数据
-        GameRoomCurrentServiceImpl.reconnectRoomRemoveInvalidData(GameAuthUserUtil.getCurrentGameUserId(), null, 1);
-
         // 关闭当前通道
         NettyTcpProtoBufServerHandlerHelper.closeSelf();
+
+        Boolean removeInvalidDataFlag = false;
+
+        if (function != null) {
+            removeInvalidDataFlag = function.apply(gameRoomCurrentRoomBO); // 进行额外的一些处理
+        }
+
+        if (BooleanUtil.isTrue(removeInvalidDataFlag)) {
+            // 移除：不可用的数据
+            GameRoomCurrentServiceUtil.reconnectRoomRemoveInvalidData(GameAuthUserUtil.getCurrentGameUserId(), null, 1);
+        }
 
     }
 

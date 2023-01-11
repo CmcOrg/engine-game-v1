@@ -4,7 +4,6 @@ import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.IdUtil;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.baomidou.mybatisplus.extension.toolkit.ChainWrappers;
 import com.cmcorg.engine.game.auth.model.bo.GameRoomCurrentRoomBO;
 import com.cmcorg.engine.game.auth.model.entity.GameRoomConfigDO;
 import com.cmcorg.engine.game.auth.model.entity.GameRoomCurrentDO;
@@ -18,6 +17,7 @@ import com.cmcorg.engine.game.room.current.model.dto.GameRoomCurrentPageDTO;
 import com.cmcorg.engine.game.room.current.model.vo.GameRoomCurrentJoinRoomVO;
 import com.cmcorg.engine.game.room.current.model.vo.GameRoomCurrentPageVO;
 import com.cmcorg.engine.game.room.current.service.GameRoomCurrentService;
+import com.cmcorg.engine.game.room.current.util.GameRoomCurrentServiceUtil;
 import com.cmcorg.engine.game.socket.server.model.entity.GameSocketServerDO;
 import com.cmcorg.engine.game.socket.server.model.enums.GameRedisKeyEnum;
 import com.cmcorg.engine.game.socket.server.service.GameSocketServerService;
@@ -59,12 +59,9 @@ public class GameRoomCurrentServiceImpl extends ServiceImpl<GameRoomCurrentMappe
     GameRoomConfigService gameRoomConfigService;
 
     private static GameUserConnectService gameUserConnectService;
-    private static GameRoomCurrentMapper gameRoomCurrentMapper;
 
-    public GameRoomCurrentServiceImpl(GameUserConnectService gameUserConnectService,
-        GameRoomCurrentMapper gameRoomCurrentMapper) {
+    public GameRoomCurrentServiceImpl(GameUserConnectService gameUserConnectService) {
         GameRoomCurrentServiceImpl.gameUserConnectService = gameUserConnectService;
-        GameRoomCurrentServiceImpl.gameRoomCurrentMapper = gameRoomCurrentMapper;
     }
 
     /**
@@ -466,7 +463,7 @@ public class GameRoomCurrentServiceImpl extends ServiceImpl<GameRoomCurrentMappe
             gameUserConnectService.lambdaQuery().select(GameUserConnectDO::getRoomCurrentId)
                 .eq(GameUserConnectDO::getGameUserId, currentGameUserId).one();
         if (gameUserConnectDO == null) {
-            log.info("没有连接信息，无法重连");
+            log.info("没有连接信息，无法重连，游戏用户主键 id：{}", currentGameUserId);
             return null;
         }
 
@@ -475,8 +472,8 @@ public class GameRoomCurrentServiceImpl extends ServiceImpl<GameRoomCurrentMappe
                 .select(GameRoomCurrentDO::getSocketServerId, GameRoomCurrentDO::getRoomConfigId,
                     GameRoomCurrentDO::getId).one();
         if (gameRoomCurrentDO == null) {
-            reconnectRoomRemoveInvalidData(currentGameUserId, null, 1); // 移除：不可用的数据
-            log.info("没有找到 当前房间信息，无法重连");
+            GameRoomCurrentServiceUtil.reconnectRoomRemoveInvalidData(currentGameUserId, null, 1); // 移除：不可用的数据
+            log.info("没有找到 当前房间信息，无法重连，游戏用户主键 id：{}", currentGameUserId);
             return null;
         }
 
@@ -486,14 +483,16 @@ public class GameRoomCurrentServiceImpl extends ServiceImpl<GameRoomCurrentMappe
             .select(GameRoomConfigDO::getPlayType, GameRoomConfigDO::getRoomType, BaseEntity::getId)
             .eq(BaseEntity::getId, gameRoomCurrentDO.getRoomConfigId()).one();
         if (gameRoomConfigDO == null) {
-            reconnectRoomRemoveInvalidData(currentGameUserId, gameRoomCurrentDO, 2); // 移除：不可用的数据
-            log.info("没有找到 房间配置信息，无法重连");
+            GameRoomCurrentServiceUtil
+                .reconnectRoomRemoveInvalidData(currentGameUserId, gameRoomCurrentDO, 2); // 移除：不可用的数据
+            log.info("没有找到 房间配置信息，无法重连，游戏用户主键 id：{}", currentGameUserId);
             return null;
         }
 
         if (gameRoomConfigDO.getPlayType().equals(GameRoomConfigPlayTypeEnum.HALL)) {
-            reconnectRoomRemoveInvalidData(currentGameUserId, gameRoomCurrentDO, 1); // 移除：不可用的数据
-            log.info("大厅类型房间，无法重连");
+            GameRoomCurrentServiceUtil
+                .reconnectRoomRemoveInvalidData(currentGameUserId, gameRoomCurrentDO, 1); // 移除：不可用的数据
+            log.info("大厅类型房间，无法重连，游戏用户主键 id：{}", currentGameUserId);
             return null;
         }
 
@@ -626,25 +625,6 @@ public class GameRoomCurrentServiceImpl extends ServiceImpl<GameRoomCurrentMappe
         }
 
         return gameRoomCurrentDOList;
-
-    }
-
-    /**
-     * 重连房间：移除 不可用的数据
-     */
-    public static void reconnectRoomRemoveInvalidData(Long currentGameUserId, GameRoomCurrentDO gameRoomCurrentDO,
-        int type) {
-
-        if (type >= 1) {
-            // 移除：不可用的数据
-            gameUserConnectService.lambdaUpdate().eq(GameUserConnectDO::getGameUserId, currentGameUserId).remove();
-        }
-
-        if (type >= 2) {
-            // 移除：不可用的数据
-            ChainWrappers.lambdaUpdateChain(gameRoomCurrentMapper)
-                .eq(GameRoomCurrentDO::getSocketServerId, gameRoomCurrentDO.getSocketServerId()).remove();
-        }
 
     }
 

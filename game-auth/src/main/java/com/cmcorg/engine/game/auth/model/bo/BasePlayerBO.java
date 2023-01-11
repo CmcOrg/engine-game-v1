@@ -20,7 +20,4 @@ public class BasePlayerBO {
     @Schema(description = "用户当前房间的 配置信息")
     private GameRoomConfigDO gameRoomConfigDO;
 
-    @Schema(description = "是否可用")
-    private Boolean enableFlag;
-
 }
