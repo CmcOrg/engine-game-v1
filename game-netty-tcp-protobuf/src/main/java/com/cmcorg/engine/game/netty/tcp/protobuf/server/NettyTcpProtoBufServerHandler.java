@@ -163,55 +163,7 @@ public class NettyTcpProtoBufServerHandler extends ChannelInboundHandlerAdapter 
         try {
 
             if (ctx.channel().attr(GAME_USER_ID_KEY).get() == null) {
-
-                String channelIdStr = ctx.channel().id().asLongText();
-
-                log.info("处理身份认证的消息，通道 id：{}", channelIdStr);
-
-                // 处理：身份认证的消息，成功之后调用：consumer 即可
-                NettyTcpProtoBufServerHandlerHelper.handlerSecurityMessage(msg, ctx.channel(), (gameCurrentRoomBO) -> {
-
-                    Long gameUserId = gameCurrentRoomBO.getGameUserId();
-
-                    // 身份认证成功，之后的处理
-                    RedissonUtil.doLock(GameRedisKeyEnum.PRE_SOCKET_AUTH_GAME_USER_ID.name() + gameUserId, () -> {
-
-                        Channel channel = GAME_USER_ID_CHANNEL_MAP.get(gameUserId);
-
-                        if (channel != null) {
-                            channel.close(); // 移除之前的通道，备注：这里是异步的
-                        }
-
-                        ctx.channel().attr(USER_ID_KEY).set(gameCurrentRoomBO.getUserId());
-
-                        ctx.channel().attr(GAME_USER_ID_KEY).set(gameUserId);
-
-                        ctx.channel().attr(GAME_ROOM_CURRENT_ROOM_BO_KEY).set(gameCurrentRoomBO);
-
-                        ctx.channel().attr(ACTIVE_TIME).set(System.currentTimeMillis());
-
-                        GAME_USER_ID_CHANNEL_MAP.put(gameUserId, ctx.channel());
-
-                        NOT_SECURITY_CHANNEL_MAP.remove(channelIdStr);
-
-                        log.info("处理身份认证的消息成功，游戏用户 id：{}，通道 id：{}，当前没有进行身份认证的通道总数：{}，当前进行了身份认证的通道总数：{}",
-                            ctx.channel().attr(GAME_USER_ID_KEY).get(), channelIdStr, NOT_SECURITY_CHANNEL_MAP.size(),
-                            GAME_USER_ID_CHANNEL_MAP.size());
-
-                        return null;
-
-                    });
-
-                    if (CollUtil.isNotEmpty(iAcceptRoomTypeConfigurationList)) {
-                        for (IAcceptRoomTypeConfiguration item : iAcceptRoomTypeConfigurationList) {
-                            item.handlerGameCurrentRoomBO(
-                                ctx.channel().attr(NettyTcpProtoBufServerHandler.GAME_ROOM_CURRENT_ROOM_BO_KEY)
-                                    .get()); // 处理 gameCurrentRoomBO
-                        }
-                    }
-
-                });
-
+                handlerSecurityMessage(ctx, msg); // 处理身份认证的消息
                 return;
             }
 
@@ -236,6 +188,61 @@ public class NettyTcpProtoBufServerHandler extends ChannelInboundHandlerAdapter 
             SecurityContextHolder.clearContext(); // 清除：当前线程存储的值
 
         }
+
+    }
+
+    /**
+     * 处理身份认证的消息
+     */
+    private void handlerSecurityMessage(ChannelHandlerContext ctx, Object msg) {
+
+        String channelIdStr = ctx.channel().id().asLongText();
+
+        log.info("处理身份认证的消息，通道 id：{}", channelIdStr);
+
+        // 处理：身份认证的消息，成功之后调用：consumer 即可
+        NettyTcpProtoBufServerHandlerHelper.handlerSecurityMessage(msg, ctx.channel(), (gameCurrentRoomBO) -> {
+
+            Long gameUserId = gameCurrentRoomBO.getGameUserId();
+
+            // 身份认证成功，之后的处理
+            RedissonUtil.doLock(GameRedisKeyEnum.PRE_SOCKET_AUTH_GAME_USER_ID.name() + gameUserId, () -> {
+
+                Channel channel = GAME_USER_ID_CHANNEL_MAP.get(gameUserId);
+
+                if (channel != null) {
+                    channel.close(); // 移除之前的通道，备注：这里是异步的
+                }
+
+                ctx.channel().attr(USER_ID_KEY).set(gameCurrentRoomBO.getUserId());
+
+                ctx.channel().attr(GAME_USER_ID_KEY).set(gameUserId);
+
+                ctx.channel().attr(GAME_ROOM_CURRENT_ROOM_BO_KEY).set(gameCurrentRoomBO);
+
+                ctx.channel().attr(ACTIVE_TIME).set(System.currentTimeMillis());
+
+                GAME_USER_ID_CHANNEL_MAP.put(gameUserId, ctx.channel());
+
+                NOT_SECURITY_CHANNEL_MAP.remove(channelIdStr);
+
+                log.info("处理身份认证的消息成功，游戏用户 id：{}，通道 id：{}，当前没有进行身份认证的通道总数：{}，当前进行了身份认证的通道总数：{}",
+                    ctx.channel().attr(GAME_USER_ID_KEY).get(), channelIdStr, NOT_SECURITY_CHANNEL_MAP.size(),
+                    GAME_USER_ID_CHANNEL_MAP.size());
+
+                return null;
+
+            });
+
+            if (CollUtil.isNotEmpty(iAcceptRoomTypeConfigurationList)) {
+                for (IAcceptRoomTypeConfiguration item : iAcceptRoomTypeConfigurationList) {
+                    item.handlerGameCurrentRoomBO(
+                        ctx.channel().attr(NettyTcpProtoBufServerHandler.GAME_ROOM_CURRENT_ROOM_BO_KEY)
+                            .get()); // 处理 gameCurrentRoomBO
+                }
+            }
+
+        });
 
     }
 
