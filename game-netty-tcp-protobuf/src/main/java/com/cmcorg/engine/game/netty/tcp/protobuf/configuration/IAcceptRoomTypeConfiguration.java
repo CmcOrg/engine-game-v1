@@ -1,6 +1,6 @@
 package com.cmcorg.engine.game.netty.tcp.protobuf.configuration;
 
-import com.cmcorg.engine.game.auth.model.bo.GameRoomCurrentRoomBO;
+import com.cmcorg.engine.game.auth.model.bo.GameCurrentRoomBO;
 import com.cmcorg.engine.game.auth.model.enums.GameRoomConfigRoomTypeEnum;
 
 import java.util.Set;
@@ -13,8 +13,8 @@ public interface IAcceptRoomTypeConfiguration {
     Set<GameRoomConfigRoomTypeEnum> acceptRoomTypeSet();
 
     /**
-     * 处理：gameRoomCurrentRoomBO
+     * 处理：gameCurrentRoomBO
      */
-    void handlerGameRoomCurrentRoomBO(GameRoomCurrentRoomBO gameRoomCurrentRoomBO);
+    void handlerGameCurrentRoomBO(GameCurrentRoomBO gameCurrentRoomBO);
 
 }

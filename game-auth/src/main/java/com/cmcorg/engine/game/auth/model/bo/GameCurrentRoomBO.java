@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class GameRoomCurrentRoomBO {
+public class GameCurrentRoomBO {
 
     @Schema(description = "用户主键 id")
     private Long userId;

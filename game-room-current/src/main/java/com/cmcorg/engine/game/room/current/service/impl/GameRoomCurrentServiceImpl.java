@@ -4,7 +4,7 @@ import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.IdUtil;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.cmcorg.engine.game.auth.model.bo.GameRoomCurrentRoomBO;
+import com.cmcorg.engine.game.auth.model.bo.GameCurrentRoomBO;
 import com.cmcorg.engine.game.auth.model.entity.GameRoomConfigDO;
 import com.cmcorg.engine.game.auth.model.entity.GameRoomCurrentDO;
 import com.cmcorg.engine.game.auth.model.enums.GameRoomConfigPlayTypeEnum;
@@ -430,15 +430,15 @@ public class GameRoomCurrentServiceImpl extends ServiceImpl<GameRoomCurrentMappe
 
         String uuid = IdUtil.simpleUUID();
 
-        GameRoomCurrentRoomBO gameRoomCurrentRoomBO = new GameRoomCurrentRoomBO();
-        gameRoomCurrentRoomBO.setUserId(currentUserId);
-        gameRoomCurrentRoomBO.setGameUserId(currentGameUserId);
-        gameRoomCurrentRoomBO.setGameRoomCurrentDO(gameRoomCurrentDO);
-        gameRoomCurrentRoomBO.setGameRoomConfigDO(gameRoomConfigDO);
+        GameCurrentRoomBO gameCurrentRoomBO = new GameCurrentRoomBO();
+        gameCurrentRoomBO.setUserId(currentUserId);
+        gameCurrentRoomBO.setGameUserId(currentGameUserId);
+        gameCurrentRoomBO.setGameRoomCurrentDO(gameRoomCurrentDO);
+        gameCurrentRoomBO.setGameRoomConfigDO(gameRoomConfigDO);
 
         // 存储：连接码到 redis里
         redissonClient.getBucket(GameRedisKeyEnum.PRE_NETTY_TCP_PROTO_BUF_CONNECT_SECURITY_CODE + uuid)
-            .set(gameRoomCurrentRoomBO, BaseConstant.SHORT_CODE_EXPIRE_TIME, TimeUnit.MILLISECONDS);
+            .set(gameCurrentRoomBO, BaseConstant.SHORT_CODE_EXPIRE_TIME, TimeUnit.MILLISECONDS);
 
         GameRoomCurrentJoinRoomVO gameRoomCurrentJoinRoomVO = new GameRoomCurrentJoinRoomVO();
         gameRoomCurrentJoinRoomVO.setHost(gameSocketServerDO.getHost());

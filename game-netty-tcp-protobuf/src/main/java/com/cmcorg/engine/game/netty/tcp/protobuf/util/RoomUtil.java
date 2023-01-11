@@ -1,7 +1,7 @@
 package com.cmcorg.engine.game.netty.tcp.protobuf.util;
 
 import cn.hutool.core.util.BooleanUtil;
-import com.cmcorg.engine.game.auth.model.bo.GameRoomCurrentRoomBO;
+import com.cmcorg.engine.game.auth.model.bo.GameCurrentRoomBO;
 import com.cmcorg.engine.game.auth.model.enums.GameRoomConfigRoomTypeEnum;
 import com.cmcorg.engine.game.auth.model.vo.NettyTcpProtoBufVO;
 import com.cmcorg.engine.game.auth.util.GameAuthUserUtil;
@@ -24,17 +24,16 @@ public class RoomUtil {
      * 通用的，退出房间
      */
     public static void exitRoom(@NotNull Set<GameRoomConfigRoomTypeEnum> acceptRoomTypeSet,
-        @Nullable Function<GameRoomCurrentRoomBO, Boolean> function) {
+        @Nullable Function<GameCurrentRoomBO, Boolean> function) {
 
         // 判断是否在房间里
-        GameRoomCurrentRoomBO gameRoomCurrentRoomBO = GameAuthUserUtil.getGameRoomCurrentRoomBO();
+        GameCurrentRoomBO gameCurrentRoomBO = GameAuthUserUtil.getGameCurrentRoomBO();
 
-        if (gameRoomCurrentRoomBO == null) {
+        if (gameCurrentRoomBO == null) {
             NettyTcpProtoBufVO.error("操作失败：不存在房间信息");
         }
 
-        if (BooleanUtil
-            .isFalse(acceptRoomTypeSet.contains(gameRoomCurrentRoomBO.getGameRoomConfigDO().getRoomType()))) {
+        if (BooleanUtil.isFalse(acceptRoomTypeSet.contains(gameCurrentRoomBO.getGameRoomConfigDO().getRoomType()))) {
             NettyTcpProtoBufVO.error("操作失败：不在房间里");
         }
 
@@ -44,7 +43,7 @@ public class RoomUtil {
         Boolean removeInvalidDataFlag = false;
 
         if (function != null) {
-            removeInvalidDataFlag = function.apply(gameRoomCurrentRoomBO); // 进行额外的一些处理
+            removeInvalidDataFlag = function.apply(gameCurrentRoomBO); // 进行额外的一些处理
         }
 
         if (BooleanUtil.isTrue(removeInvalidDataFlag)) {

@@ -4,7 +4,7 @@ import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.convert.Convert;
 import cn.hutool.json.JSONObject;
 import com.cmcorg.engine.game.auth.configuration.GameJwtValidatorConfiguration;
-import com.cmcorg.engine.game.auth.model.bo.GameRoomCurrentRoomBO;
+import com.cmcorg.engine.game.auth.model.bo.GameCurrentRoomBO;
 import com.cmcorg.engine.game.model.model.constant.NettyTcpProtoBufServerKeyConstant;
 import com.cmcorg.engine.web.auth.exception.BaseBizCodeEnum;
 import com.cmcorg.engine.web.auth.model.vo.ApiResultVO;
@@ -45,16 +45,16 @@ public class GameAuthUserUtil {
     }
 
     /**
-     * 获取 GameRoomCurrentRoomBO
+     * 获取 GameCurrentRoomBO
      */
     @Nullable
-    public static GameRoomCurrentRoomBO getGameRoomCurrentRoomBO() {
+    public static GameCurrentRoomBO getGameCurrentRoomBO() {
 
-        JSONObject gameRoomCurrentRoomBOJson = AuthUserUtil
+        JSONObject gameCurrentRoomBOJson = AuthUserUtil
             .getSecurityContextHolderContextAuthenticationPrincipalJsonObjectValueByKey(
-                NettyTcpProtoBufServerKeyConstant.GAME_ROOM_CURRENT_JOIN_ROOM_REDIS_BO_STR_KEY);
+                NettyTcpProtoBufServerKeyConstant.GAME_CURRENT_ROOM_REDIS_BO_STR_KEY);
 
-        return BeanUtil.toBean(gameRoomCurrentRoomBOJson, GameRoomCurrentRoomBO.class);
+        return BeanUtil.toBean(gameCurrentRoomBOJson, GameCurrentRoomBO.class);
 
     }
 

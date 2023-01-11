@@ -6,7 +6,7 @@ import cn.hutool.core.util.BooleanUtil;
 import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
 import com.cmcorg.engine.game.auth.configuration.GameJwtValidatorConfiguration;
-import com.cmcorg.engine.game.auth.model.bo.GameRoomCurrentRoomBO;
+import com.cmcorg.engine.game.auth.model.bo.GameCurrentRoomBO;
 import com.cmcorg.engine.game.model.model.constant.NettyTcpProtoBufServerKeyConstant;
 import com.cmcorg.engine.game.netty.tcp.protobuf.configuration.IAcceptRoomTypeConfiguration;
 import com.cmcorg.engine.game.socket.server.model.enums.GameRedisKeyEnum;
@@ -20,6 +20,7 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.util.AttributeKey;
 import lombok.extern.slf4j.Slf4j;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -48,9 +49,9 @@ public class NettyTcpProtoBufServerHandler extends ChannelInboundHandlerAdapter 
     // gameUserId key
     private static final AttributeKey<Long> GAME_USER_ID_KEY =
         AttributeKey.valueOf(GameJwtValidatorConfiguration.PAYLOAD_MAP_GAME_USER_ID_KEY);
-    // gameRoomCurrentRoomBO key
-    public static final AttributeKey<GameRoomCurrentRoomBO> GAME_ROOM_CURRENT_ROOM_BO_KEY =
-        AttributeKey.valueOf(NettyTcpProtoBufServerKeyConstant.GAME_ROOM_CURRENT_JOIN_ROOM_REDIS_BO_STR_KEY);
+    // gameCurrentRoomBO key
+    public static final AttributeKey<GameCurrentRoomBO> GAME_ROOM_CURRENT_ROOM_BO_KEY =
+        AttributeKey.valueOf(NettyTcpProtoBufServerKeyConstant.GAME_CURRENT_ROOM_REDIS_BO_STR_KEY);
     // 进行了身份认证通道的最后活跃时间，时间戳
     private static final AttributeKey<Long> ACTIVE_TIME = AttributeKey.valueOf("activeTime");
     // 移除规定时间内，没有进行发送任意消息的，进行了身份认证成功通道，中的【规定时间】
@@ -168,60 +169,53 @@ public class NettyTcpProtoBufServerHandler extends ChannelInboundHandlerAdapter 
                 log.info("处理身份认证的消息，通道 id：{}", channelIdStr);
 
                 // 处理：身份认证的消息，成功之后调用：consumer 即可
-                NettyTcpProtoBufServerHandlerHelper
-                    .handlerSecurityMessage(msg, ctx.channel(), (gameRoomCurrentRoomBO) -> {
+                NettyTcpProtoBufServerHandlerHelper.handlerSecurityMessage(msg, ctx.channel(), (gameCurrentRoomBO) -> {
 
-                        Long gameUserId = gameRoomCurrentRoomBO.getGameUserId();
+                    Long gameUserId = gameCurrentRoomBO.getGameUserId();
 
-                        // 身份认证成功，之后的处理
-                        RedissonUtil.doLock(GameRedisKeyEnum.PRE_SOCKET_AUTH_GAME_USER_ID.name() + gameUserId, () -> {
+                    // 身份认证成功，之后的处理
+                    RedissonUtil.doLock(GameRedisKeyEnum.PRE_SOCKET_AUTH_GAME_USER_ID.name() + gameUserId, () -> {
 
-                            Channel channel = GAME_USER_ID_CHANNEL_MAP.get(gameUserId);
+                        Channel channel = GAME_USER_ID_CHANNEL_MAP.get(gameUserId);
 
-                            if (channel != null) {
-                                channel.close(); // 移除之前的通道，备注：这里是异步的
-                            }
-
-                            ctx.channel().attr(USER_ID_KEY).set(gameRoomCurrentRoomBO.getUserId());
-
-                            ctx.channel().attr(GAME_USER_ID_KEY).set(gameUserId);
-
-                            ctx.channel().attr(GAME_ROOM_CURRENT_ROOM_BO_KEY).set(gameRoomCurrentRoomBO);
-
-                            ctx.channel().attr(ACTIVE_TIME).set(System.currentTimeMillis());
-
-                            GAME_USER_ID_CHANNEL_MAP.put(gameUserId, ctx.channel());
-
-                            NOT_SECURITY_CHANNEL_MAP.remove(channelIdStr);
-
-                            log.info("处理身份认证的消息成功，游戏用户 id：{}，通道 id：{}，当前没有进行身份认证的通道总数：{}，当前进行了身份认证的通道总数：{}",
-                                ctx.channel().attr(GAME_USER_ID_KEY).get(), channelIdStr,
-                                NOT_SECURITY_CHANNEL_MAP.size(), GAME_USER_ID_CHANNEL_MAP.size());
-
-                            return null;
-
-                        });
-
-                        if (CollUtil.isNotEmpty(iAcceptRoomTypeConfigurationList)) {
-                            for (IAcceptRoomTypeConfiguration item : iAcceptRoomTypeConfigurationList) {
-                                item.handlerGameRoomCurrentRoomBO(
-                                    ctx.channel().attr(NettyTcpProtoBufServerHandler.GAME_ROOM_CURRENT_ROOM_BO_KEY)
-                                        .get()); // 处理 gameRoomCurrentRoomBO
-                            }
+                        if (channel != null) {
+                            channel.close(); // 移除之前的通道，备注：这里是异步的
                         }
 
+                        ctx.channel().attr(USER_ID_KEY).set(gameCurrentRoomBO.getUserId());
+
+                        ctx.channel().attr(GAME_USER_ID_KEY).set(gameUserId);
+
+                        ctx.channel().attr(GAME_ROOM_CURRENT_ROOM_BO_KEY).set(gameCurrentRoomBO);
+
+                        ctx.channel().attr(ACTIVE_TIME).set(System.currentTimeMillis());
+
+                        GAME_USER_ID_CHANNEL_MAP.put(gameUserId, ctx.channel());
+
+                        NOT_SECURITY_CHANNEL_MAP.remove(channelIdStr);
+
+                        log.info("处理身份认证的消息成功，游戏用户 id：{}，通道 id：{}，当前没有进行身份认证的通道总数：{}，当前进行了身份认证的通道总数：{}",
+                            ctx.channel().attr(GAME_USER_ID_KEY).get(), channelIdStr, NOT_SECURITY_CHANNEL_MAP.size(),
+                            GAME_USER_ID_CHANNEL_MAP.size());
+
+                        return null;
+
                     });
+
+                    if (CollUtil.isNotEmpty(iAcceptRoomTypeConfigurationList)) {
+                        for (IAcceptRoomTypeConfiguration item : iAcceptRoomTypeConfigurationList) {
+                            item.handlerGameCurrentRoomBO(
+                                ctx.channel().attr(NettyTcpProtoBufServerHandler.GAME_ROOM_CURRENT_ROOM_BO_KEY)
+                                    .get()); // 处理 gameCurrentRoomBO
+                        }
+                    }
+
+                });
 
                 return;
             }
 
-            JSONObject principalJson = JSONUtil.createObj();
-
-            principalJson.set(MyJwtUtil.PAYLOAD_MAP_USER_ID_KEY, ctx.channel().attr(USER_ID_KEY).get());
-            principalJson.set(GameJwtValidatorConfiguration.PAYLOAD_MAP_GAME_USER_ID_KEY,
-                ctx.channel().attr(GAME_USER_ID_KEY).get());
-            principalJson.set(NettyTcpProtoBufServerKeyConstant.GAME_ROOM_CURRENT_JOIN_ROOM_REDIS_BO_STR_KEY,
-                ctx.channel().attr(NettyTcpProtoBufServerHandler.GAME_ROOM_CURRENT_ROOM_BO_KEY).get());
+            JSONObject principalJson = getPrincipalJson(ctx);
 
             // 把 principalJson 设置到：security的上下文里面
             SecurityContextHolder.getContext()
@@ -242,6 +236,24 @@ public class NettyTcpProtoBufServerHandler extends ChannelInboundHandlerAdapter 
             SecurityContextHolder.clearContext(); // 清除：当前线程存储的值
 
         }
+
+    }
+
+    /**
+     * 获取：principal
+     */
+    @NotNull
+    private JSONObject getPrincipalJson(ChannelHandlerContext ctx) {
+
+        JSONObject principalJson = JSONUtil.createObj();
+
+        principalJson.set(MyJwtUtil.PAYLOAD_MAP_USER_ID_KEY, ctx.channel().attr(USER_ID_KEY).get());
+        principalJson.set(GameJwtValidatorConfiguration.PAYLOAD_MAP_GAME_USER_ID_KEY,
+            ctx.channel().attr(GAME_USER_ID_KEY).get());
+        principalJson.set(NettyTcpProtoBufServerKeyConstant.GAME_CURRENT_ROOM_REDIS_BO_STR_KEY,
+            ctx.channel().attr(NettyTcpProtoBufServerHandler.GAME_ROOM_CURRENT_ROOM_BO_KEY).get());
+
+        return principalJson;
 
     }
 
