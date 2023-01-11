@@ -162,8 +162,17 @@ public class NettyTcpProtoBufServerHandler extends ChannelInboundHandlerAdapter 
 
         try {
 
-            if (ctx.channel().attr(GAME_USER_ID_KEY).get() == null) {
+            Long gameUserId = ctx.channel().attr(GAME_USER_ID_KEY).get();
+
+            if (gameUserId == null) {
                 handlerSecurityMessage(ctx, msg); // 处理身份认证的消息
+                return;
+            }
+
+            Channel channel = GAME_USER_ID_CHANNEL_MAP.get(gameUserId);
+            if (BooleanUtil.isFalse(channel.id().asLongText().equals(ctx.channel().id().asLongText()))) {
+                // 判断通道是否和 GAME_USER_ID_CHANNEL_MAP里面的通道一致，如果不一致，则立即关闭
+                ctx.close();
                 return;
             }
 

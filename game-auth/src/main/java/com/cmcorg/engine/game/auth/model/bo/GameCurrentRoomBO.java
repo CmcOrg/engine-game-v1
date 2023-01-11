@@ -12,6 +12,9 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class GameCurrentRoomBO {
 
+    @Schema(description = "通道 id")
+    private String channelIdStr;
+
     @Schema(description = "用户主键 id")
     private Long userId;
 

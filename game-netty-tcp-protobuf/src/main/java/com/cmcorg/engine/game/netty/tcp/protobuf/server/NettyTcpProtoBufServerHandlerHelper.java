@@ -204,15 +204,24 @@ public class NettyTcpProtoBufServerHandlerHelper {
     }
 
     /**
-     * 关闭当前通道，备注：必须进行了身份认证的通道才行
+     * 关闭当前通道，备注：这里关闭是延迟的
      */
     public static void closeSelf() {
-        Long currentGameUserId = GameAuthUserUtil.getCurrentGameUserId();
+
+        GameCurrentRoomBO gameCurrentRoomBO = GameAuthUserUtil.getGameCurrentRoomBO();
+        if (gameCurrentRoomBO == null) {
+            return;
+        }
+
+        Long currentGameUserId = gameCurrentRoomBO.getGameUserId();
+
         log.info("关闭通道：游戏用户 id：{}", currentGameUserId);
         Channel channel = NettyTcpProtoBufServerHandler.getGameUserIdChannelMap().get(currentGameUserId);
-        if (channel != null) {
+
+        if (channel != null && channel.id().asLongText().equals(gameCurrentRoomBO.getChannelIdStr())) {
             channel.close();
         }
+
     }
 
     /**

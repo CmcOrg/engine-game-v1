@@ -45,7 +45,7 @@ public class GameAuthUserUtil {
     }
 
     /**
-     * 获取 GameCurrentRoomBO
+     * 获取 GameCurrentRoomBO，备注：认证之后的通道，才有值，并且一定有值
      */
     @Nullable
     public static GameCurrentRoomBO getGameCurrentRoomBO() {
