@@ -1,5 +1,6 @@
 package com.cmcorg.engine.game.room.current.util;
 
+import com.cmcorg.engine.game.auth.model.bo.GameCurrentRoomBO;
 import com.cmcorg.engine.game.auth.model.entity.GameRoomCurrentDO;
 import com.cmcorg.engine.game.room.current.service.GameRoomCurrentService;
 import com.cmcorg.engine.game.user.connect.model.entity.GameUserConnectDO;
@@ -34,6 +35,21 @@ public class GameRoomCurrentServiceUtil {
             gameRoomCurrentService.lambdaUpdate()
                 .eq(GameRoomCurrentDO::getSocketServerId, gameRoomCurrentDO.getSocketServerId()).remove();
         }
+
+    }
+
+    /**
+     * 判断是否在房间里
+     */
+    public static boolean inRoomCheck(GameCurrentRoomBO gameCurrentRoomBO) {
+
+        if (gameCurrentRoomBO == null) {
+            return false;
+        }
+
+        return gameUserConnectService.lambdaQuery()
+            .eq(GameUserConnectDO::getGameUserId, gameCurrentRoomBO.getGameUserId())
+            .eq(GameUserConnectDO::getRoomCurrentId, gameCurrentRoomBO.getGameRoomCurrentDO().getId()).exists();
 
     }
 
