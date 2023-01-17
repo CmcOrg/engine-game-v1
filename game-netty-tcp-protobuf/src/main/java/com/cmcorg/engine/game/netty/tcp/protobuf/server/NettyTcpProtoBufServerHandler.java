@@ -223,6 +223,8 @@ public class NettyTcpProtoBufServerHandler extends ChannelInboundHandlerAdapter 
                     channel.close(); // 移除之前的通道，备注：这里是异步的
                 }
 
+                gameCurrentRoomBO.setChannelIdStr(channelIdStr); // 设置：通道 id
+
                 ctx.channel().attr(USER_ID_KEY).set(gameCurrentRoomBO.getUserId());
 
                 ctx.channel().attr(GAME_USER_ID_KEY).set(gameUserId);
